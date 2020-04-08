@@ -6,11 +6,14 @@ import android.util.Log;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import okhttp3.Request;
+
 public class NetworkUtils {
 
     private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
     private static final String THE_MOVIE_DATABASE_API_BASE_URL = "https://api.themoviedb.org/3";
-    private static final String TMD_API_DISCOVER_COMPONENT = "/discover/movie";
+    private static final String TMD_API_DISCOVER_PATH = "discover";
+    private static final String TMD_API_MOVIE_PATH = "movie";
 
     private static final String POPULARITY_DESC = "popularity.desc";
     private static final String RATE_DESC = "vote_average.desc";
@@ -28,7 +31,8 @@ public class NetworkUtils {
         }
 
         Uri mUri = Uri.parse(THE_MOVIE_DATABASE_API_BASE_URL).buildUpon()
-                .appendPath(TMD_API_DISCOVER_COMPONENT)
+                .appendPath(TMD_API_DISCOVER_PATH)
+                .appendPath(TMD_API_MOVIE_PATH)
                 .appendQueryParameter(SORT_BY_PARAM, sortByValue)
                 .appendQueryParameter(API_KEY_PARAM, PrivateApiKeyUtils.TMD_API_KEY_VALUE).build();
 
@@ -44,5 +48,14 @@ public class NetworkUtils {
         return mURL;
     }
 
+
+
+    public static Request getResponseFromTMD(URL url) {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        return request;
+    }
 
 }

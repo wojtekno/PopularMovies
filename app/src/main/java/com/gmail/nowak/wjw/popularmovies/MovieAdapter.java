@@ -12,8 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     String[] mDataSet;
-    public MovieAdapter(String[] dataSet){
-        mDataSet = dataSet;
+    private MovieDTO[] moviesData;
+
+    public MovieAdapter() {
+    }
+
+    public MovieAdapter(MovieDTO[] dataSet) {
+//        mDataSet = dataSet;
+        moviesData = dataSet;
     }
 
     @NonNull
@@ -25,23 +31,33 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-        holder.movieTitleTV.setText("my possess: "+ position);
+        MovieDTO item = moviesData[position];
+        holder.movieTitleTV.setText(item.getmOriginalTitle());
+        holder.imgUrl.setText(item.getmImageThumbnail());
 
     }
 
     @Override
     public int getItemCount() {
-        return mDataSet.length;
+        if (moviesData == null) {
+            return 0;
+        }
+        return moviesData.length;
+    }
+
+    public void setMoviesData(MovieDTO[] movies) {
+        moviesData = movies;
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
 
         TextView movieTitleTV;
+        TextView imgUrl;
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             movieTitleTV = itemView.findViewById(R.id.movie_title_tv);
-
+            imgUrl = itemView.findViewById(R.id.image_url_tv);
         }
     }
 }
