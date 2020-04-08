@@ -4,10 +4,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
+import com.squareup.picasso.Picasso;
 
 class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
@@ -34,6 +38,7 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
         MovieDTO item = moviesData[position];
         holder.movieTitleTV.setText(item.getmOriginalTitle());
         holder.imgUrl.setText(item.getmImageThumbnail());
+        Picasso.get().load(NetworkUtils.fetchPosterImage(item.getmImageThumbnail())).into(holder.imageView);
 
     }
 
@@ -53,11 +58,13 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
         TextView movieTitleTV;
         TextView imgUrl;
+        ImageView imageView;
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             movieTitleTV = itemView.findViewById(R.id.movie_title_tv);
             imgUrl = itemView.findViewById(R.id.image_url_tv);
+            imageView = itemView.findViewById(R.id.poster_IV);
         }
     }
 }

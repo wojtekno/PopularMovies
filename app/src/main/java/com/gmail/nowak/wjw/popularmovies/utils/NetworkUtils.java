@@ -18,6 +18,8 @@ public class NetworkUtils {
     private static final String POPULARITY_DESC = "popularity.desc";
     private static final String RATE_DESC = "vote_average.desc";
 
+    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
+    private static final String POSTER_SIZE_VALUE = "w185";
 
     static final String API_KEY_PARAM = "api_key";
     static final String QUERY_PARAM = "q";
@@ -49,13 +51,23 @@ public class NetworkUtils {
     }
 
 
-
     public static Request getResponseFromTMD(URL url) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
         return request;
+    }
+
+    public static Uri fetchPosterImage(String imageUrl) {
+        Uri mUri = Uri.parse(IMAGE_BASE_URL).buildUpon()
+                .appendPath(POSTER_SIZE_VALUE)
+                .appendEncodedPath(imageUrl)
+                .appendQueryParameter(API_KEY_PARAM, TMD_API_KEY_VALUE)
+                .build();
+        Log.d(LOG_TAG, "URL: " + mUri.toString());
+
+        return mUri;
     }
 
 }
