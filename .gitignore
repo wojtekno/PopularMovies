@@ -12,3 +12,4 @@
 /captures
 .externalNativeBuild
 .cxx
+app/src/main/java/com/gmail/nowak/wjw/popularmovies/utils/PrivateApiKeyUtils.java

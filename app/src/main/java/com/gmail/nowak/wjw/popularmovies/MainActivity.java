@@ -5,7 +5,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
+
+import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,5 +26,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(movieAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        NetworkUtils.buildUrl("popular");
     }
 }
