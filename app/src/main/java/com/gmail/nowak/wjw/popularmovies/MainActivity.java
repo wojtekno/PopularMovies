@@ -1,6 +1,7 @@
 package com.gmail.nowak.wjw.popularmovies;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,18 +26,17 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    MovieAdapter movieAdapter;
-    String[] mockupDataSet = {"Shrek", "Matrix", "Tangled", "Frozen", "Frozen II", "Ice Age", "The Greatest Showmen", "Avatar"};
-    TextView testTV;
-    MovieDTO[] moviesData;
+    private MovieAdapter movieAdapter;
+    private TextView testTV;
+    private MovieDTO[] moviesData;
+    private int mTMDPage;
+
+    private String[] mockupDataSet = {"Shrek", "Matrix", "Tangled", "Frozen", "Frozen II", "Ice Age", "The Greatest Showmen", "Avatar"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alternative);
-
-//        mockupDataSet
-
 
         RecyclerView recyclerView = findViewById(R.id.rv_movies);
         recyclerView.setHasFixedSize(true);
@@ -44,11 +44,15 @@ public class MainActivity extends AppCompatActivity {
         testTV = findViewById(R.id.test_tv);
         movieAdapter = new MovieAdapter();
         recyclerView.setAdapter(movieAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
 
-        NetworkUtils.buildUrl("popular");
-        getResponseFromTMD(NetworkUtils.buildUrl("popular"));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3, RecyclerView.VERTICAL, false);
+        MyGridLayoutManager myGridLayoutManager = new MyGridLayoutManager(this, 1);
+        recyclerView.setLayoutManager(myGridLayoutManager);
+
+        // fetch data starting from page 1
+        mTMDPage = 1;
+        getResponseFromTMD(NetworkUtils.buildUrl("popular", mTMDPage));
 
     }
 
@@ -57,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
+        mTMDPage++;
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -75,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
                         testTV.setText("FetchDone");
                         movieAdapter.setMoviesData(TMDUtils.parseJSONToMovieDTO(myResponse));
                         movieAdapter.notifyDataSetChanged();
+                        if (mTMDPage <= 3) {
+                            getResponseFromTMD(NetworkUtils.buildUrl("popular", mTMDPage));
+                        }
 
                     }
                 });

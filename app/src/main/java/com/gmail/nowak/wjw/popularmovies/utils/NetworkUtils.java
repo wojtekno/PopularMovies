@@ -24,9 +24,10 @@ public class NetworkUtils {
     static final String API_KEY_PARAM = "api_key";
     static final String QUERY_PARAM = "q";
     static final String SORT_BY_PARAM = "sort_by";
+    static final String PAGE_PARAM = "page";
 
 
-    public static URL buildUrl(String filter) {
+    public static URL buildUrl(String filter, int page) {
         String sortByValue = POPULARITY_DESC;
         if (filter.equals("top_rated")) {
             sortByValue = RATE_DESC;
@@ -34,9 +35,11 @@ public class NetworkUtils {
 
         Uri mUri = Uri.parse(THE_MOVIE_DATABASE_API_BASE_URL).buildUpon()
                 .appendPath(TMD_API_DISCOVER_PATH)
-                .appendPath(TMD_API_MOVIE_PATH)
+                .appendEncodedPath(TMD_API_MOVIE_PATH)
                 .appendQueryParameter(SORT_BY_PARAM, sortByValue)
-                .appendQueryParameter(API_KEY_PARAM, PrivateApiKeyUtils.TMD_API_KEY_VALUE).build();
+                .appendQueryParameter(PAGE_PARAM, String.valueOf(page))
+                .appendQueryParameter(API_KEY_PARAM, PrivateApiKeyUtils.TMD_API_KEY_VALUE)
+                .build();
 
         URL mURL = null;
 
@@ -63,7 +66,7 @@ public class NetworkUtils {
         Uri mUri = Uri.parse(IMAGE_BASE_URL).buildUpon()
                 .appendPath(POSTER_SIZE_VALUE)
                 .appendEncodedPath(imageUrl)
-                .appendQueryParameter(API_KEY_PARAM, TMD_API_KEY_VALUE)
+                .appendQueryParameter(API_KEY_PARAM, PrivateApiKeyUtils.TMD_API_KEY_VALUE)
                 .build();
         Log.d(LOG_TAG, "URL: " + mUri.toString());
 

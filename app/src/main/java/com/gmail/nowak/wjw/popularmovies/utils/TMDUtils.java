@@ -9,11 +9,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TMDUtils {
 
     private static final String LOG_TAG = TMDUtils.class.getSimpleName();
 
-    public static MovieDTO[] parseJSONToMovieDTO(String jsonResponse) {
+    public static List<MovieDTO> parseJSONToMovieDTO(String jsonResponse) {
         Gson gson = new Gson();
         MovieDTO movieDTO;
         JSONObject mJSONResponse;
@@ -23,6 +26,7 @@ public class TMDUtils {
             JSONArray jsonArray = mJSONResponse.optJSONArray("results");
             if(jsonArray!= null && jsonArray.length() != 0){
                 moviesArray = gson.fromJson(jsonArray.toString(), MovieDTO[].class);
+                //TODO delete below line
                 Log.d(LOG_TAG, moviesArray[3].toString());
             }
 
@@ -37,7 +41,7 @@ public class TMDUtils {
             e.printStackTrace();
         }
 
-        return moviesArray;
+        return Arrays.asList(moviesArray);
     }
 
     public static String[] getPostersFromJSONResponse(String jsonResponse) {
