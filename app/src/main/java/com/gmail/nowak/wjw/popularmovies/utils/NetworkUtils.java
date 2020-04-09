@@ -15,8 +15,8 @@ public class NetworkUtils {
     private static final String TMD_API_DISCOVER_PATH = "discover";
     private static final String TMD_API_MOVIE_PATH = "movie";
 
-    private static final String POPULARITY_DESC = "popularity.desc";
-    private static final String RATE_DESC = "vote_average.desc";
+    private static final String POPULARITY_DESC_VALUE = "popularity.desc";
+    private static final String RATE_DESC_VALUE = "vote_average.desc";
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
     private static final String POSTER_SIZE_VALUE = "w185";
@@ -26,11 +26,14 @@ public class NetworkUtils {
     static final String SORT_BY_PARAM = "sort_by";
     static final String PAGE_PARAM = "page";
 
+    public static final String POPULARITY_TAG_TITLE = "Popular";
+    public static final String TOP_RATED_TAG_TITLE = "Top Rated";
+
 
     public static URL buildUrl(String filter, int page) {
-        String sortByValue = POPULARITY_DESC;
-        if (filter.equals("top_rated")) {
-            sortByValue = RATE_DESC;
+        String sortByValue = POPULARITY_DESC_VALUE;
+        if (filter.equals(TOP_RATED_TAG_TITLE)) {
+            sortByValue = RATE_DESC_VALUE;
         }
 
         Uri mUri = Uri.parse(THE_MOVIE_DATABASE_API_BASE_URL).buildUpon()
@@ -49,7 +52,7 @@ public class NetworkUtils {
             e.printStackTrace();
         }
 
-        Log.d(LOG_TAG, "URL: " + mURL.toString());
+        Log.d(LOG_TAG, "buildUrl URL: " + mURL.toString());
         return mURL;
     }
 
@@ -68,7 +71,7 @@ public class NetworkUtils {
                 .appendEncodedPath(imageUrl)
                 .appendQueryParameter(API_KEY_PARAM, PrivateApiKeyUtils.TMD_API_KEY_VALUE)
                 .build();
-        Log.d(LOG_TAG, "URL: " + mUri.toString());
+//        Log.d(LOG_TAG, "IMAGE URL: " + mUri.toString());
 
         return mUri;
     }

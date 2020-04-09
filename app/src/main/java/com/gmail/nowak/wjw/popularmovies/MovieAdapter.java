@@ -41,7 +41,11 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
         MovieDTO item = moviesData.get(position);
 //        holder.movieTitleTV.setText(item.getmOriginalTitle());
 //        holder.imgUrl.setText(item.getmImageThumbnail());
-        Picasso.get().load(NetworkUtils.fetchPosterImage(item.getmImageThumbnail())).into(holder.imageView);
+        if(item.getmImageThumbnail()==null){
+            holder.imageView.setBackgroundResource(R.drawable.no_image_available_image);
+        } else {
+            Picasso.get().load(NetworkUtils.fetchPosterImage(item.getmImageThumbnail())).error(R.drawable.no_image_available_image).into(holder.imageView);
+        }
 
         //TODO load ore data when last position displayed
 
@@ -58,6 +62,10 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
     public void setMoviesData(List<MovieDTO> movies) {
         moviesData.addAll(movies);
 //    moviesData = movies;
+    }
+
+    public void clearMoviesData(){
+        moviesData.clear();
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
