@@ -14,9 +14,9 @@
             android:layout_height="wrap_content"
             android:background="@android:color/black"
             android:gravity="center"
-            android:text="Deafault"
             android:textColor="@android:color/white"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/reload_error_message_tv"
@@ -40,8 +40,8 @@
 
             <ProgressBar
                 android:id="@+id/main_progress_barr"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:layout_gravity="center"
                 android:visibility="visible" />
 

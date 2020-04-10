@@ -1,12 +1,23 @@
 package com.gmail.nowak.wjw.popularmovies.utils;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 
+import com.gmail.nowak.wjw.popularmovies.MainActivity;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 public class NetworkUtils {
 
@@ -57,13 +68,13 @@ public class NetworkUtils {
     }
 
 
-    public static Request getResponseFromTMD(URL url) {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        return request;
-    }
+//    public static Request getResponseFromTMD(URL url) {
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .build();
+//
+//        return request;
+//    }
 
     public static Uri fetchPosterImage(String imageUrl) {
         Uri mUri = Uri.parse(IMAGE_BASE_URL).buildUpon()

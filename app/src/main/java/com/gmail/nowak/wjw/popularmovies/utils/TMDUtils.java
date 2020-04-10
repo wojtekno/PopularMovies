@@ -27,7 +27,7 @@ public class TMDUtils {
             if(jsonArray!= null && jsonArray.length() != 0){
                 moviesArray = gson.fromJson(jsonArray.toString(), MovieDTO[].class);
                 //TODO delete below line
-                Log.d(LOG_TAG, moviesArray[3].toString());
+//                Log.d(LOG_TAG, moviesArray[3].toString());
             }
 
 //            String movieString = jsonArray.get(0).toString();

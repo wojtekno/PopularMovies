@@ -1,5 +1,6 @@
 package com.gmail.nowak.wjw.popularmovies;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.List;
 
 class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
+    private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
     List<String> mDataSet;
     private List<MovieDTO> moviesData;
 
@@ -61,7 +63,7 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     public void setMoviesData(List<MovieDTO> movies) {
         moviesData.addAll(movies);
-//    moviesData = movies;
+//        Log.d(LOG_TAG, "setMovieData, movies: " + movies.size());
     }
 
     public void clearMoviesData(){
