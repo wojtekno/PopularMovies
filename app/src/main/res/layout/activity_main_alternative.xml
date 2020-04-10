@@ -1,57 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
 
+<layout>
 
-    <TextView
-        android:id="@+id/sort_by_title_tv"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/black"
-        android:gravity="center"
-        android:text="Deafault"
-        android:textColor="@android:color/white"
-        android:textSize="24sp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/reload_error_message_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/black"
-        android:gravity="center"
-        android:text="Can't reload, try again."
-        android:textColor="@android:color/white"
-        android:textSize="24dp"
-        android:visibility="gone" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/rv_movies"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
-
-        <ProgressBar
-            android:id="@+id/main_progress_barr"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:visibility="visible" />
 
         <TextView
-            android:id="@+id/error_message_tv"
-            android:layout_width="wrap_content"
+            android:id="@+id/sort_by_title_tv"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="No data, try again."
-            android:textSize="32dp"
-            android:visibility="invisible" />
+            android:background="@android:color/black"
+            android:gravity="center"
+            android:text="Deafault"
+            android:textColor="@android:color/white"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/reload_error_message_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/black"
+            android:gravity="center"
+            android:text="Can't reload, try again."
+            android:textColor="@android:color/white"
+            android:textSize="24dp"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rv_movies"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+
+            <ProgressBar
+                android:id="@+id/main_progress_barr"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/error_message_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="No data, try again."
+                android:textSize="32dp"
+                android:visibility="invisible" />
 
 
-    </FrameLayout>
+        </FrameLayout>
 
-</LinearLayout>
+    </LinearLayout>
+
+</layout>

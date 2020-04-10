@@ -1,23 +1,20 @@
 package com.gmail.nowak.wjw.popularmovies;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
-
-import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gmail.nowak.wjw.popularmovies.databinding.ActivityMainAlternativeBinding;
+import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 import com.gmail.nowak.wjw.popularmovies.utils.TMDUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -38,12 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private MovieAdapter movieAdapter;
     private int mTMDPage;
 
-    private TextView sortByTitleTV;
-    private TextView errorMessageTV;
-    private ProgressBar progressBar;
-    private TextView reloadErrorMessageTV;
+    ActivityMainAlternativeBinding binding;
 
-    
 
     private String[] mockupDataSet = {"Shrek", "Matrix", "Tangled", "Frozen", "Frozen II", "Ice Age", "The Greatest Showmen", "Avatar"};
 
@@ -52,14 +45,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_alternative);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_alternative);
 
-        RecyclerView recyclerView = findViewById(R.id.rv_movies);
+
+        RecyclerView recyclerView = binding.rvMovies;
         recyclerView.setHasFixedSize(true);
 
-        sortByTitleTV = findViewById(R.id.sort_by_title_tv);
-        errorMessageTV = findViewById(R.id.error_message_tv);
-        progressBar = findViewById(R.id.main_progress_barr);
-        reloadErrorMessageTV = findViewById(R.id.reload_error_message_tv);
+
         movieAdapter = new MovieAdapter();
 
         recyclerView.setAdapter(movieAdapter);
@@ -73,14 +65,14 @@ public class MainActivity extends AppCompatActivity {
         mTMDPage = 1;
         URL defaultURL = NetworkUtils.buildUrl(NetworkUtils.POPULARITY_TAG_TITLE, mTMDPage);
         getResponseFromTMD(defaultURL);
-        sortByTitleTV.setText(NetworkUtils.POPULARITY_TAG_TITLE);
+        binding.sortByTitleTv.setText(NetworkUtils.POPULARITY_TAG_TITLE);
 
 
     }
 
     private void getResponseFromTMD(URL url) {
         if (mTMDPage > MAX_PAGES_TO_FETCH) {
-//            sortByTitleTV.append(String.format(" (%d)", movieAdapter.getItemCount()));
+//            binding.sortByTitleTv.append(String.format(" (%d)", movieAdapter.getItemCount()));
             mTMDPage = 1;
             return;
         }
@@ -88,8 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (mTMDPage == 1) {
             switchSortByTitle();
-            progressBar.setVisibility(View.VISIBLE);
-            errorMessageTV.setVisibility(View.GONE);
+            binding.mainProgressBarr.setVisibility(View.VISIBLE);
+
+            binding.errorMessageTv.setVisibility(View.GONE);
         }
 
         Log.d(LOG_TAG, "getResponseFromTMD with URL:\n " + url.toString());
@@ -112,12 +105,12 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progressBar.setVisibility(View.GONE);
-                        sortByTitleTV.setVisibility(View.GONE);
+                        binding.mainProgressBarr.setVisibility(View.GONE);
+                        binding.sortByTitleTv.setVisibility(View.GONE);
                         if (movieAdapter.getItemCount() > 0) {
-                            reloadErrorMessageTV.setVisibility(View.VISIBLE);
+                            binding.reloadErrorMessageTv.setVisibility(View.VISIBLE);
                         } else {
-                            errorMessageTV.setVisibility(View.VISIBLE);
+                            binding.errorMessageTv.setVisibility(View.VISIBLE);
                         }
 
                     }
@@ -141,10 +134,10 @@ public class MainActivity extends AppCompatActivity {
                         if (mTMDPage == 1) {
                             movieAdapter.clearMoviesData();
                         }
-                        errorMessageTV.setVisibility(View.GONE);
-                        progressBar.setVisibility(View.GONE);
-                        reloadErrorMessageTV.setVisibility(View.GONE);
-                        sortByTitleTV.setVisibility(View.VISIBLE);
+                        binding.errorMessageTv.setVisibility(View.GONE);
+                        binding.mainProgressBarr.setVisibility(View.GONE);
+                        binding.reloadErrorMessageTv.setVisibility(View.GONE);
+                        binding.sortByTitleTv.setVisibility(View.VISIBLE);
 
                         movieAdapter.setMoviesData(TMDUtils.parseJSONToMovieDTO(myResponse));
                         movieAdapter.notifyDataSetChanged();
@@ -180,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 getResponseFromTMD(NetworkUtils.buildUrl(sortBy, 1));
                 item.setTitle(newItemTitle);
-//                sortByTitleTV.setText(sortBy);
+//                binding.sortByTitleTv.setText(sortBy);
                 return true;
             }
         });
@@ -190,10 +183,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void switchSortByTitle() {
-        if (sortByTitleTV.getText().equals(NetworkUtils.POPULARITY_TAG_TITLE)) {
-            sortByTitleTV.setText(NetworkUtils.TOP_RATED_TAG_TITLE);
+        if (binding.sortByTitleTv.getText().equals(NetworkUtils.POPULARITY_TAG_TITLE)) {
+            binding.sortByTitleTv.setText(NetworkUtils.TOP_RATED_TAG_TITLE);
         } else {
-            sortByTitleTV.setText(NetworkUtils.POPULARITY_TAG_TITLE);
+            binding.sortByTitleTv.setText(NetworkUtils.POPULARITY_TAG_TITLE);
         }
 
     }
