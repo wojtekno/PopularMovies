@@ -1,19 +1,22 @@
 package com.gmail.nowak.wjw.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class MovieDTO {
+public class MovieDTO implements Parcelable {
 
     @SerializedName("original_title")
-    private String mOriginalTitle;
+    private String originalTitle;
     @SerializedName("poster_path")
-    private String mImageThumbnail;
+    private String imageThumbnail;
     @SerializedName("overview")
-    private String mOverview;
+    private String overview;
     @SerializedName("vote_average")
-    private String mAverageRating;
+    private String averageRating;
     @SerializedName("release_date")
-    private String mReleaseDate;
+    private String releaseDate;
     private String popularity;
 
     public String getPopularity() {
@@ -24,58 +27,99 @@ public class MovieDTO {
         this.popularity = popularity;
     }
 
-    public MovieDTO(){}
-
-    public String getmOriginalTitle() {
-        return mOriginalTitle;
+    public MovieDTO() {
     }
 
-    public void setmOriginalTitle(String mOriginalTitle) {
-        this.mOriginalTitle = mOriginalTitle;
+    private MovieDTO(Parcel in) {
+        originalTitle = in.readString();
+        imageThumbnail = in.readString();
+        overview = in.readString();
+        averageRating = in.readString();
+        releaseDate = in.readString();
+        popularity = in.readString();
     }
 
-    public String getmImageThumbnail() {
-        return mImageThumbnail;
+    public String getOriginalTitle() {
+        return originalTitle;
     }
 
-    public void setmImageThumbnail(String mImageThumbnail) {
-        this.mImageThumbnail = mImageThumbnail;
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
     }
 
-    public String getmOverview() {
-        return mOverview;
+    public String getImageThumbnail() {
+        return imageThumbnail;
     }
 
-    public void setmOverview(String mOverview) {
-        this.mOverview = mOverview;
+    public void setImageThumbnail(String imageThumbnail) {
+        this.imageThumbnail = imageThumbnail;
     }
 
-    public String getmAverageRating() {
-        return mAverageRating;
+    public String getOverview() {
+        return overview;
     }
 
-    public void setmAverageRating(String mAverageRating) {
-        this.mAverageRating = mAverageRating;
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 
-    public String getmReleaseDate() {
-        return mReleaseDate;
+    public String getAverageRating() {
+        return averageRating;
     }
 
-    public void setmReleaseDate(String mReleaseDate) {
-        this.mReleaseDate = mReleaseDate;
+    public void setAverageRating(String averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     @Override
     public String toString() {
         return "MovieDTO{" +
-                "mOriginalTitle='" + mOriginalTitle + '\'' +
-                ", mImageThumbnail='" + mImageThumbnail + '\'' +
-                ", mOverview='" + mOverview + '\'' +
-                ", mAverageRating='" + mAverageRating + '\'' +
-                ", mReleaseDate='" + mReleaseDate + '\'' +
+                "mOriginalTitle='" + originalTitle + '\'' +
+                ", mImageThumbnail='" + imageThumbnail + '\'' +
+                ", mOverview='" + overview + '\'' +
+                ", mAverageRating='" + averageRating + '\'' +
+                ", mReleaseDate='" + releaseDate + '\'' +
                 ", mPopularity='" + popularity + '\'' +
 
                 '}';
+    }
+
+    public static final Parcelable.Creator<MovieDTO> CREATOR
+            = new Parcelable.Creator<MovieDTO>() {
+        @Override
+        public MovieDTO createFromParcel(Parcel source) {
+            return new MovieDTO(source);
+        }
+
+        @Override
+        public MovieDTO[] newArray(int size) {
+            return new MovieDTO[size];
+        }
+
+    };
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(originalTitle);
+        dest.writeString(imageThumbnail);
+        dest.writeString(overview);
+        dest.writeString(averageRating);
+        dest.writeString(releaseDate);
+        dest.writeString(popularity);
+
     }
 }

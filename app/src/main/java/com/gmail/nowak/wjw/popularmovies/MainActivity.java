@@ -1,5 +1,6 @@
 package com.gmail.nowak.wjw.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gmail.nowak.wjw.popularmovies.databinding.ActivityMainAlternativeBinding;
+import com.gmail.nowak.wjw.popularmovies.databinding.ActivityMainBinding;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 import com.gmail.nowak.wjw.popularmovies.utils.TMDUtils;
 
@@ -27,19 +28,20 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRecyclerItemClickListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int MAX_PAGES_TO_FETCH = 3;
 
     public static final String POPULARITY_TAG_TITLE = NetworkUtils.POPULARITY_TAG_TITLE;
     public static final String TOP_RATED_TAG_TITLE = NetworkUtils.TOP_RATED_TAG_TITLE;
-    public static final int MILLIS = 2000;
+    //todo delete before release
+    public static final int MILLIS = 1;
 
     private MovieAdapter movieAdapter;
     private boolean isFetchingData;
 
-    public ActivityMainAlternativeBinding binding;
+    public ActivityMainBinding binding;
 
     private OkHttpClient client;
     private Request request;
@@ -48,11 +50,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_alternative);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         RecyclerView recyclerView = binding.rvMovies;
         recyclerView.setHasFixedSize(true);
-        movieAdapter = new MovieAdapter();
+        movieAdapter = new MovieAdapter(this);
         recyclerView.setAdapter(movieAdapter);
         MyGridLayoutManager myGridLayoutManager = new MyGridLayoutManager(this, 1);
         recyclerView.setLayoutManager(myGridLayoutManager);
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 call.cancel();
 
+                //todo delete before release
                 try {
                     Thread.sleep(MILLIS);
                 } catch (InterruptedException ex) {
@@ -117,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String myResponse = response.body().string();
 
+                //todo delete before release
                 try {
                     Thread.sleep(MILLIS);
                 } catch (InterruptedException ex) {
@@ -173,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         menu.findItem(R.id.sort_by_action).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                //if fetching data already, don't do anything
                 if (isFetchingData) {
                     showBusyToast();
                     return true;
@@ -212,5 +217,12 @@ public class MainActivity extends AppCompatActivity {
             binding.sortByTitleTv.setText(POPULARITY_TAG_TITLE);
         }
 
+    }
+
+    @Override
+    public void onRecyclerItemClick(int position) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(Intent.EXTRA_SUBJECT, movieAdapter.getMoviesData().get(position));
+        startActivity(intent);
     }
 }

@@ -1,6 +1,5 @@
 package com.gmail.nowak.wjw.popularmovies;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +18,12 @@ import java.util.List;
 class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
-    List<String> mDataSet;
     private List<MovieDTO> moviesData;
+    private OnRecyclerItemClickListener mListener;
 
-    public MovieAdapter() {
+    public MovieAdapter(OnRecyclerItemClickListener listener) {
         moviesData = new ArrayList<>();
+        mListener = listener;
     }
 
     public MovieAdapter(List<MovieDTO> dataSet) {
@@ -43,13 +43,13 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
         MovieDTO item = moviesData.get(position);
 //        holder.movieTitleTV.setText(item.getmOriginalTitle());
 //        holder.imgUrl.setText(item.getmImageThumbnail());
-        if(item.getmImageThumbnail()==null){
+        if(item.getImageThumbnail()==null){
             holder.imageView.setBackgroundResource(R.drawable.no_image_available_image);
         } else {
-            Picasso.get().load(NetworkUtils.fetchPosterImage(item.getmImageThumbnail())).error(R.drawable.no_image_available_image).into(holder.imageView);
+            Picasso.get().load(NetworkUtils.fetchPosterImage(item.getImageThumbnail())).error(R.drawable.no_image_available_image).into(holder.imageView);
         }
 
-        //TODO load ore data when last position displayed
+        //TODO load more data when last position displayed
 
     }
 
@@ -70,7 +70,7 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
         moviesData.clear();
     }
 
-    public class MovieViewHolder extends RecyclerView.ViewHolder {
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView movieTitleTV;
         TextView imgUrl;
@@ -81,7 +81,20 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 //            movieTitleTV = itemView.findViewById(R.id.movie_title_tv);
 //            imgUrl = itemView.findViewById(R.id.image_url_tv);
             imageView = itemView.findViewById(R.id.poster_IV);
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            mListener.onRecyclerItemClick(getAdapterPosition());
+        }
+    }
+
+    interface OnRecyclerItemClickListener {
+        void onRecyclerItemClick(int position);
+    }
+
+    public List<MovieDTO> getMoviesData() {
+        return moviesData;
     }
 }
