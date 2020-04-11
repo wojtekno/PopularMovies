@@ -23,9 +23,9 @@
             android:layout_height="wrap_content"
             android:background="@android:color/black"
             android:gravity="center"
-            android:text="Can't reload, try again."
+            android:text="@string/reload_error_message"
             android:textColor="@android:color/white"
-            android:textSize="24dp"
+            android:textSize="24sp"
             android:visibility="gone" />
 
         <FrameLayout
@@ -35,7 +35,7 @@
             <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/rv_movies"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+                android:layout_height="match_parent"/>
 
             <ProgressBar
                 android:id="@+id/main_progress_barr"
@@ -49,8 +49,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="No data, try again."
-                android:textSize="32dp"
+                android:text="@string/no_data_error_message"
+                android:textSize="32sp"
                 android:visibility="invisible" />
 
 

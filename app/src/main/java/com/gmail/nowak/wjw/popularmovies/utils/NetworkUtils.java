@@ -1,58 +1,57 @@
 package com.gmail.nowak.wjw.popularmovies.utils;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.util.Log;
-import android.view.View;
+import android.widget.ImageView;
 
-import com.gmail.nowak.wjw.popularmovies.MainActivity;
+import androidx.annotation.NonNull;
 
-import org.jetbrains.annotations.NotNull;
+import com.gmail.nowak.wjw.popularmovies.R;
+import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class NetworkUtils {
 
     private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
     private static final String THE_MOVIE_DATABASE_API_BASE_URL = "https://api.themoviedb.org/3";
-    private static final String TMD_API_DISCOVER_PATH = "discover";
     private static final String TMD_API_MOVIE_PATH = "movie";
+    private static final String TMD_API_POPULAR_PATH = "popular";
+    private static final String TMD_API_TOP_RATED_PATH = "top_rated";
+    private static final String THE_MOVIE_DATABASE_PRIVATE_API_KEY = PrivateApiKeyUtils.TMD_API_KEY_VALUE;
 
-    private static final String POPULARITY_DESC_VALUE = "popularity.desc";
-    private static final String RATE_DESC_VALUE = "vote_average.desc";
+    private static final String THE_MOVIE_DATABASE_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
+    public static final String IMAGE_SIZE_SMALL = "w185";
+    public static final String IMAGE_SIZE_MEDIUM = "w300";
+    public static final String IMAGE_SIZE_BIG = "w500";
 
-    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
-    private static final String POSTER_SIZE_VALUE = "w185";
 
-    static final String API_KEY_PARAM = "api_key";
-    static final String QUERY_PARAM = "q";
-    static final String SORT_BY_PARAM = "sort_by";
-    static final String PAGE_PARAM = "page";
+    private static final String API_KEY_PARAM = "api_key";
+    private static final String PAGE_PARAM = "page";
 
     public static final String POPULARITY_TAG_TITLE = "Popular";
     public static final String TOP_RATED_TAG_TITLE = "Top Rated";
 
 
-    public static URL buildUrl(String filter, int page) {
-        String sortByValue = POPULARITY_DESC_VALUE;
+    /**
+     * Build URL based on THE MOVIE DATABASE API, with a movie path.
+     *
+     * @param filter points to either popular or top rated movies
+     * @param page   set the desired page
+     * @return URL pointing to the specific path and page
+     */
+    public static URL buildTMDApiUrl(String filter, int page) {
+        String sortByValue = TMD_API_POPULAR_PATH;
         if (filter.equals(TOP_RATED_TAG_TITLE)) {
-            sortByValue = RATE_DESC_VALUE;
+            sortByValue = TMD_API_TOP_RATED_PATH;
         }
 
         Uri mUri = Uri.parse(THE_MOVIE_DATABASE_API_BASE_URL).buildUpon()
-                .appendPath(TMD_API_DISCOVER_PATH)
-                .appendEncodedPath(TMD_API_MOVIE_PATH)
-                .appendQueryParameter(SORT_BY_PARAM, sortByValue)
+                .appendPath(TMD_API_MOVIE_PATH)
+                .appendPath(sortByValue)
                 .appendQueryParameter(PAGE_PARAM, String.valueOf(page))
-                .appendQueryParameter(API_KEY_PARAM, PrivateApiKeyUtils.TMD_API_KEY_VALUE)
+                .appendQueryParameter(API_KEY_PARAM, THE_MOVIE_DATABASE_PRIVATE_API_KEY)
                 .build();
 
         URL mURL = null;
@@ -68,23 +67,39 @@ public class NetworkUtils {
     }
 
 
-//    public static Request getResponseFromTMD(URL url) {
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .build();
-//
-//        return request;
-//    }
-
-    public static Uri fetchPosterImage(String imageUrl) {
-        Uri mUri = Uri.parse(IMAGE_BASE_URL).buildUpon()
-                .appendPath(POSTER_SIZE_VALUE)
+    /**
+     * Build Uri based on THE MOVIE DATABASE pointing to images
+     *
+     * @param imageUrl component of the Uri - the image path
+     * @param size     size of the image
+     * @return complete uri of the image
+     */
+    public static Uri buildTMDImageUri(String imageUrl, String size) {
+        return Uri.parse(THE_MOVIE_DATABASE_IMAGE_BASE_URL).buildUpon()
+                .appendPath(size)
                 .appendEncodedPath(imageUrl)
-                .appendQueryParameter(API_KEY_PARAM, PrivateApiKeyUtils.TMD_API_KEY_VALUE)
+                .appendQueryParameter(API_KEY_PARAM, THE_MOVIE_DATABASE_PRIVATE_API_KEY)
                 .build();
-//        Log.d(LOG_TAG, "IMAGE URL: " + mUri.toString());
+    }
 
-        return mUri;
+    /**
+     * Fetch image using Picasso, and set it to provided view.
+     *
+     * @param imageUri    Uri used to fetch the image
+     * @param imageView   view to set the image to
+     * @param handleError set true if you want the method to handle request errors, otherwise set to false
+     */
+    public static void fetchImageAndSetToVew(Uri imageUri, @NonNull ImageView imageView, boolean handleError) {
+        if (handleError) {
+            Picasso.get()
+                    .load(imageUri)
+                    .error(R.drawable.no_image_available_image)
+                    .into(imageView);
+        } else {
+            Picasso.get()
+                    .load(imageUri)
+                    .into(imageView);
+        }
     }
 
 }

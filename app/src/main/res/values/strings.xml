@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">PopularMovies</string>
+    <string name="detail_released_date">Release date</string>
+    <string name="detail_rating">Rating</string>
+    <string name="content_description_movie_poster">Movie poster</string>
+    <string name="reload_error_message">Can\'t reload, try again.</string>
+    <string name="no_data_error_message">No data, try again.</string>
+    <string name="top_rate_tag">Top Rated</string>
 </resources>

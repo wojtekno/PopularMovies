@@ -21,63 +21,84 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black"
+                android:paddingHorizontal="40dp"
+                android:paddingTop="40dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/content_description_movie_poster"
+                    app:imageUrl="@{movie.imageThumbnail}" />
+            </FrameLayout>
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black"
+                android:gravity="center"
+                android:paddingVertical="16dp"
+                android:text="@{movie.originalTitle}"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:orientation="vertical">
+                    android:gravity="center"
+                    android:text="@string/detail_rating"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
-                        app:imageUrl="@{movie.imageThumbnail}" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="@{movie.averageRating}"
+                    android:textSize="24sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{movie.originalTitle}"
-                        android:textSize="24dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/detail_released_date"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{movie.releaseDate}"
-                        android:textSize="24dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="@{movie.releaseDate}"
+                    android:textSize="24sp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{movie.averageRating}"
-                        android:textSize="24dp" />
-
-                </LinearLayout>
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@{movie.overview}"
+                    android:textSize="24sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{movie.overview}"
-                android:textSize="24dp" />
 
         </LinearLayout>
+
 
     </ScrollView>
 

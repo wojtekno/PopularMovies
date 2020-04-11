@@ -5,16 +5,16 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
-import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 
-    ActivityDetailBinding binding;
+    private ActivityDetailBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +27,12 @@ public class DetailActivity extends AppCompatActivity {
             movieDTO = (MovieDTO) invokingIntent.getExtras().get(Intent.EXTRA_SUBJECT);
         }
         binding.setMovie(movieDTO);
-    //todo handle corrupted data
     }
 
 
     @BindingAdapter("app:imageUrl")
     public static void imageUrl(ImageView v, String url) {
-        Picasso.get().load(NetworkUtils.fetchPosterImage(url)).error(R.drawable.no_image_available_image).into(v);
+        Uri mUri = NetworkUtils.buildTMDImageUri(url, NetworkUtils.IMAGE_SIZE_MEDIUM);
+        NetworkUtils.fetchImageAndSetToVew(mUri, v, false);
     }
 }

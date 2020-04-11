@@ -12,7 +12,7 @@ public class MyGridLayoutManager extends GridLayoutManager {
     }
 
 
-    public void autoAdjustSpanCount() {
+    private void autoAdjustSpanCount() {
         int totalSpace;
         if (getOrientation() == VERTICAL) {
             totalSpace = getWidth() - getPaddingRight() - getPaddingLeft();

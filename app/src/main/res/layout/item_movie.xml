@@ -3,6 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <ImageView
+        android:contentDescription="@string/content_description_movie_poster"
         android:id="@+id/poster_IV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
