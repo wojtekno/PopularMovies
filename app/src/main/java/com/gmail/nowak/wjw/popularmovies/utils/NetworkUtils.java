@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
+import com.gmail.nowak.wjw.popularmovies.BuildConfig;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
@@ -19,7 +20,7 @@ public class NetworkUtils {
     private static final String TMD_API_MOVIE_PATH = "movie";
     private static final String TMD_API_POPULAR_PATH = "popular";
     private static final String TMD_API_TOP_RATED_PATH = "top_rated";
-    private static final String THE_MOVIE_DATABASE_PRIVATE_API_KEY = PrivateApiKeyUtils.TMD_API_KEY_VALUE;
+    private static final String THE_MOVIE_DATABASE_PRIVATE_API_KEY = BuildConfig.TMD_API_KEY;
 
     private static final String THE_MOVIE_DATABASE_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
     public static final String IMAGE_SIZE_SMALL = "w185";
