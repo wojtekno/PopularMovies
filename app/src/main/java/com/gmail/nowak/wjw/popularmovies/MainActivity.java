@@ -2,6 +2,7 @@ package com.gmail.nowak.wjw.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -10,9 +11,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityMainBinding;
+import com.gmail.nowak.wjw.popularmovies.network.TMDResponse;
+import com.gmail.nowak.wjw.popularmovies.network.TheMovieDatabaseAPI;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 import com.gmail.nowak.wjw.popularmovies.utils.TMDUtils;
 
@@ -21,14 +26,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
-import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Retrofit;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRecyclerItemClickListener {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRecyclerItemClickListener, MainViewModel.OnResponseListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int MAX_PAGES_TO_FETCH = 3;
@@ -44,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
     private OkHttpClient client;
     private Request request;
     private Toast mToast;
+    Retrofit retrofit;
+    Call<TMDResponse> call;
+    TheMovieDatabaseAPI theMovieDatabaseAPI;
+    MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +68,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         MyGridLayoutManager myGridLayoutManager = new MyGridLayoutManager(this, 1);
         recyclerView.setLayoutManager(myGridLayoutManager);
 
-        //fetch data
-        getDataAndUpdateUI(POPULARITY_TAG_TITLE);
+        MainViewModelFactory mainViewModelFactory = new MainViewModelFactory(getApplication(), this);
+
+        viewModel = ViewModelProviders.of(this, mainViewModelFactory).get(MainViewModel.class);
+//        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+//        viewModel.setOnResponseListener(this);
+        viewModel.getPopularMovies().observe(this, new Observer<List<MovieDTO>>() {
+            @Override
+            public void onChanged(List<MovieDTO> movieDTOS) {
+                Log.d("MainActivity", "LiveData onChange");
+                movieAdapter.clearMoviesData();
+                movieAdapter.setMoviesData(movieDTOS);
+                movieAdapter.notifyDataSetChanged();
+//                updateUIOnResponse();
+
+            }
+        });
     }
 
     /**
@@ -68,80 +93,30 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
      */
     private void getDataAndUpdateUI(String sortByTag) {
         if (!isFetchingData) {
-            binding.mainProgressBarr.setVisibility(View.VISIBLE);
-            binding.errorMessageTv.setVisibility(View.GONE);
-            fetchDataFromTMD(sortByTag, null);
+            updateUIOnLoading();
+//            viewModel.fetchDataWithRetrofit(sortByTag,null);
+//            fetchDataFromTMD(sortByTag, null);
+//            fetchDataWithRetrofit(sortByTag, null);
+            if (sortByTag.equals(POPULARITY_TAG_TITLE)) {
+                viewModel.getPopularMovies();
+            } else {
+                viewModel.getTopRatedMovies();
+            }
         } else {
             showBusyToast();
+            return;
         }
+
 
     }
 
-    /**
-     * Fetch data from THE MOVIE DATABASE, and update UI
-     *
-     * @param sortByTag choose between popular and top rated movies
-     * @param page      page to be fetched
-     */
-    private void fetchDataFromTMD(final String sortByTag, @Nullable Integer page) {
-        isFetchingData = true;
-        final int[] mCounter = {0};
-        if (page != null) {
-            mCounter[0] = page;
-        }
-        int mPage = mCounter[0] + 1;
-
-        if (client == null) {
-            client = new OkHttpClient();
-        }
-
-        URL mURL = NetworkUtils.buildTMDApiUrl(sortByTag, mPage);
-        request = new Request.Builder()
-                .url(mURL)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                call.cancel();
-
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateUIOnFailure();
-                        isFetchingData = false;
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                final String myResponse = response.body().string();
-
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mCounter[0] == 0) {
-                            movieAdapter.clearMoviesData();
-                            updateSortByTitleTV();
-                        }
-                        movieAdapter.setMoviesData(TMDUtils.parseJSONToMovieDTO(myResponse));
-                        movieAdapter.notifyDataSetChanged();
-                        updateUIOnResponse();
-                        mCounter[0]++;
-                        if (mCounter[0] < MAX_PAGES_TO_FETCH) {
-                            fetchDataFromTMD(sortByTag, mCounter[0]);
-                        } else {
-                            isFetchingData = false;
-                        }
-                    }
-                });
-
-            }
-        });
+    private void updateUIOnLoading() {
+        binding.mainProgressBarr.setVisibility(View.VISIBLE);
+        binding.errorMessageTv.setVisibility(View.GONE);
     }
 
     private void updateUIOnResponse() {
+        updateSortByTitleTV();
         binding.errorMessageTv.setVisibility(View.GONE);
         binding.mainProgressBarr.setVisibility(View.GONE);
         binding.reloadErrorMessageTv.setVisibility(View.GONE);
@@ -214,5 +189,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(Intent.EXTRA_SUBJECT, movieAdapter.getMoviesData().get(position));
         startActivity(intent);
+    }
+
+    public void cancelRequest(View view) {
+        if (call != null) {
+            call.cancel();
+            updateUIOnFailure();
+            Toast.makeText(this, "Request cancelled", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onResponse(boolean isResponseOK, int size) {
+        if (isResponseOK) {
+            Log.d("MainActivity.onResponse", "onResponseTriggered");
+            binding.countTV.append(String.format("(%d)", size));
+            updateUIOnResponse();
+        } else {
+            updateUIOnFailure();
+        }
     }
 }

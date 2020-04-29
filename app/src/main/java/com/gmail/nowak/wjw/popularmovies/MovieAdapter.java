@@ -54,6 +54,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             return 0;
         }
         return moviesData.size();
+//        return 18;
     }
 
     public void setMoviesData(List<MovieDTO> movies) {

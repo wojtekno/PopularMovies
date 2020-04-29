@@ -18,6 +18,19 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/countTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/cancelB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="cancel request"
+            android:onClick="cancelRequest"/>
+
+        <TextView
             android:id="@+id/reload_error_message_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,7 +48,7 @@
             <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/rv_movies"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
             <ProgressBar
                 android:id="@+id/main_progress_barr"

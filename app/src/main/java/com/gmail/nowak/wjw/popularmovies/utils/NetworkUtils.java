@@ -16,11 +16,16 @@ import java.net.URL;
 public class NetworkUtils {
 
     private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
-    private static final String THE_MOVIE_DATABASE_API_BASE_URL = "https://api.themoviedb.org/3";
-    private static final String TMD_API_MOVIE_PATH = "movie";
-    private static final String TMD_API_POPULAR_PATH = "popular";
-    private static final String TMD_API_TOP_RATED_PATH = "top_rated";
+    public static final String THE_MOVIE_DATABASE_API_BASE_URL = "https://api.themoviedb.org/3/";
+    public static final String TMD_API_MOVIE_PATH = "movie";
+    public static final String TMD_API_POPULAR_PATH = "popular";
+    public static final String TMD_API_TOP_RATED_PATH = "top_rated";
     private static final String THE_MOVIE_DATABASE_PRIVATE_API_KEY = BuildConfig.TMD_API_KEY;
+
+    public static final String TMD_API_POPULAR_MOVIE_PATH = "movie/popular";
+    public static final String TMD_API_TOP_RATED_MOVIE_PATH = "movie/top_rated";
+    public static final String ADD_QUERY ="?";
+
 
     private static final String THE_MOVIE_DATABASE_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
     public static final String IMAGE_SIZE_SMALL = "w185";
@@ -28,7 +33,8 @@ public class NetworkUtils {
     public static final String IMAGE_SIZE_BIG = "w500";
 
 
-    private static final String API_KEY_PARAM = "api_key";
+    public static final String API_KEY_PARAM = "api_key";
+    public static final String TMD_API_KEY_QUERY = API_KEY_PARAM + "=" +THE_MOVIE_DATABASE_PRIVATE_API_KEY;
     private static final String PAGE_PARAM = "page";
 
     public static final String POPULARITY_TAG_TITLE = "Popular";
