@@ -37,7 +37,7 @@ public class MoviesRepository {
     private static final Object LOCK = new Object();
     private static MoviesRepository sInstance;
     MutableLiveData<List<MovieDTO>> moviesData;
-    private int lastFetched = -1;
+    private int lastFetchedService = -1;
 
     private static final int POPULAR_MOVIES_TAG = 0;
     private static final int TOP_RATED_MOVIES_TAG = 1;
@@ -53,7 +53,7 @@ public class MoviesRepository {
 //                        .build();
             }
         }
-        Log.d(LOG_TAG, "Getting the repository instance");
+        Timber.d( "Getting the repository instance");
         return sInstance;
     }
 
@@ -67,7 +67,6 @@ public class MoviesRepository {
         theMovieDatabaseAPI = retrofit.create(TheMovieDatabaseAPI.class);
 
         moviesData = new MutableLiveData<List<MovieDTO>>();
-//        getPopularMovies();
     }
 
     /**
@@ -107,20 +106,20 @@ public class MoviesRepository {
     }
 
     public void getPopularMovies() {
-        if(lastFetched!=POPULAR_MOVIES_TAG){
-            fetchFromTMD(POPULARITY_TAG_TITLE, null);
-            lastFetched = POPULAR_MOVIES_TAG;
+        if(lastFetchedService !=POPULAR_MOVIES_TAG){
+            fetchFromTheMovieDatabase(POPULARITY_TAG_TITLE, null);
+            lastFetchedService = POPULAR_MOVIES_TAG;
         }
     }
 
     public void loadTopRatedMovies() {
-        if(lastFetched!=TOP_RATED_MOVIES_TAG){
-            fetchFromTMD(TOP_RATED_TAG_TITLE, null);
-            lastFetched = TOP_RATED_MOVIES_TAG;
+        if(lastFetchedService !=TOP_RATED_MOVIES_TAG){
+            fetchFromTheMovieDatabase(TOP_RATED_TAG_TITLE, null);
+            lastFetchedService = TOP_RATED_MOVIES_TAG;
         }
     }
 
-    private void fetchFromTMD(String category, Integer page) {
+    private void fetchFromTheMovieDatabase(String category, Integer page) {
         if (TOP_RATED_TAG_TITLE.equals(category)) {
             call = theMovieDatabaseAPI.getTopRatedMovies();
         } else {

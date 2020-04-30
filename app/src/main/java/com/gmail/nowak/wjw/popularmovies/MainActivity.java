@@ -1,6 +1,7 @@
 package com.gmail.nowak.wjw.popularmovies;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,48 +19,47 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityMainBinding;
 import com.gmail.nowak.wjw.popularmovies.network.TMDResponse;
-import com.gmail.nowak.wjw.popularmovies.network.TheMovieDatabaseAPI;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
-import retrofit2.Retrofit;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRecyclerItemClickListener {
 
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int MAX_PAGES_TO_FETCH = 3;
 
     private static final String POPULARITY_TAG_TITLE = NetworkUtils.POPULARITY_TAG_TITLE;
     private static final String TOP_RATED_TAG_TITLE = NetworkUtils.TOP_RATED_TAG_TITLE;
+
     private static final int POPULAR_MOVIES_TAG = 0;
     private static final int TOP_RATED_MOVIES_TAG = 1;
+    private static final int FAVOURITE_MOVIES_TAG = 2;
     private static final String DISPLAYED_LIST_TAG = "displayed_list";
 
     private MovieAdapter movieAdapter;
-    private boolean isFetchingData;
-
     private ActivityMainBinding binding;
 
-    private OkHttpClient client;
-    private Request request;
     private Toast mToast;
-    Retrofit retrofit;
-    Call<TMDResponse> call;
-    TheMovieDatabaseAPI theMovieDatabaseAPI;
     MainViewModel viewModel;
-    private int displayedList = -1;
+    // stores the currently displayed tab's tag
+    private int displayedTab = -1;
+    //TODO delete call & implement cancelling requests
+    Call<TMDResponse> call;
+    //TODO handle app when no internet && on failure
 
+
+//    private static final List<Integer> MOVIE_TAB_LIST = new ArrayList<>();
+//    private static final Map<String, Integer> MOVIE_TAB_MAP = new HashMap<>();
+//    private static final String POPULAR_MOVIES_TAGS = "";
+//    private static final String TOP_RATED_MOVIES_TAGS = null;
+//    private static final String FAVOURITE_MOVIES_TAGs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-//        Timber.d("OnCreate");
 
         RecyclerView recyclerView = binding.rvMovies;
         recyclerView.setHasFixedSize(true);
@@ -72,15 +72,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
 //        viewModel = ViewModelProviders.of(this, mainViewModelFactory).get(MainViewModel.class);
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-//        viewModel.setOnResponseListener(this);
+//        setUpTagMap();
         if (savedInstanceState != null) {
-            Timber.d("savedInstanceState.DisplayedListTag: %d " , savedInstanceState.getInt(DISPLAYED_LIST_TAG));
-            displayedList = savedInstanceState.getInt(DISPLAYED_LIST_TAG);
+            Timber.d("savedInstanceState.DisplayedListTag: %d ", savedInstanceState.getInt(DISPLAYED_LIST_TAG));
+            displayedTab = savedInstanceState.getInt(DISPLAYED_LIST_TAG);
         }
-        switch (displayedList) {
+        switch (displayedTab) {
             case TOP_RATED_MOVIES_TAG:
                 loadTopRatedMovies();
                 break;
+            case FAVOURITE_MOVIES_TAG:
+                Toast.makeText(this, "Favourite movies tab - work in progress", Toast.LENGTH_LONG);
             default:
                 loadPopularMovies();
         }
@@ -99,41 +101,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
     }
 
     private void loadTopRatedMovies() {
+        updateUIOnLoading();
         viewModel.loadTopRatedMovies();
-        displayedList = TOP_RATED_MOVIES_TAG;
+        displayedTab = TOP_RATED_MOVIES_TAG;
     }
 
     private void loadPopularMovies() {
+        updateUIOnLoading();
         viewModel.loadPopularMovies();
-        displayedList = POPULAR_MOVIES_TAG;
+        displayedTab = POPULAR_MOVIES_TAG;
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(DISPLAYED_LIST_TAG, displayedList);
+        outState.putInt(DISPLAYED_LIST_TAG, displayedTab);
 //        Timber.d("onSaveState.DisplayedListTag: %d" , displayedList);
-    }
-
-    /**
-     * get data from THE MOVIE DATABASE and update UI accordingly
-     *
-     * @param sortByTag choose between popular and top rated movies
-     */
-    private void getDataAndUpdateUI(String sortByTag) {
-        if (!isFetchingData) {
-            updateUIOnLoading();
-            if (sortByTag.equals(POPULARITY_TAG_TITLE)) {
-                loadPopularMovies();
-            } else {
-                loadTopRatedMovies();
-            }
-        } else {
-            showBusyToast();
-            return;
-        }
-
-
     }
 
     private void updateUIOnLoading() {
@@ -162,52 +145,65 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         new MenuInflater(this).inflate(R.menu.menu_main, menu);
-        Timber.d("onCreateOptionsMenu()");
-        if(displayedList==TOP_RATED_MOVIES_TAG){
-            menu.getItem(0).setTitle(POPULARITY_TAG_TITLE);
-        } else {
-            menu.getItem(0).setTitle(TOP_RATED_TAG_TITLE);
-        }
-        menu.findItem(R.id.sort_by_action).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                //if fetching data already, don't do anything
-                if (isFetchingData) {
-                    showBusyToast();
-                    return true;
-                }
-
-                String newItemTitle = null;
-                String sortBy = null;
-                if (displayedList == TOP_RATED_MOVIES_TAG) {
-                    newItemTitle = TOP_RATED_TAG_TITLE;
-                    sortBy = POPULARITY_TAG_TITLE;
-                } else {
-                    newItemTitle = POPULARITY_TAG_TITLE;
-                    sortBy = TOP_RATED_TAG_TITLE;
-                }
-                getDataAndUpdateUI(sortBy);
-                item.setTitle(newItemTitle);
-                return true;
-            }
-        });
-
+//        Timber.d("onCreateOptionsMenu()");
+        setMenuItemsVisibility(menu);
+        setUpOnMenuItemClickListeners(menu);
         return true;
     }
 
-    private void showBusyToast() {
-        if (mToast != null) {
-            mToast.cancel();
+    /**
+     * Set visibility of menuItems
+     *
+     * @param menu
+     */
+    private void setMenuItemsVisibility(Menu menu) {
+//        Timber.d("displayedIndex = %d", displayedList);
+        for (int i = 0; i < menu.size(); i++) {
+            boolean visible = displayedTab == i ? false : true;
+            MenuItem mitem = menu.getItem(i);
+            mitem.setVisible(visible);
+//            Timber.d("menu item ndex: %d title %s, visible: %d", i, mitem.getTitle(), visible == true ? 1 : 0);
         }
-        mToast = Toast.makeText(MainActivity.this, "Downloading data in progress, try again later", Toast.LENGTH_SHORT);
-        mToast.show();
+    }
+
+    /**
+     * Set up onMenuItemClickListeners to menu's menuitems
+     *
+     * @param menu
+     */
+    public void setUpOnMenuItemClickListeners(final Menu menu) {
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem current = menu.getItem(i);
+            current.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Resources res = getResources();
+                    CharSequence title = item.getTitle();
+                    if (res.getString(R.string.popular_tag_title).equals(title)) {
+                        loadPopularMovies();
+                    } else if (res.getString(R.string.top_rate_tag_title).equals(title)) {
+                        loadTopRatedMovies();
+                    } else {
+                        Toast.makeText(MainActivity.this, "FAvourite here to display", Toast.LENGTH_SHORT).show();
+                    }
+                    setMenuItemsVisibility(menu);
+                    return true;
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
 
     private void updateSortByTitleTV() {
-        if (displayedList== TOP_RATED_MOVIES_TAG) {
+        if (displayedTab == TOP_RATED_MOVIES_TAG) {
             binding.sortByTitleTv.setText(TOP_RATED_TAG_TITLE);
         } else {
             binding.sortByTitleTv.setText(POPULARITY_TAG_TITLE);
@@ -222,6 +218,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         startActivity(intent);
     }
 
+
+    //
+    //
+    //
+    // Trash section, let's see if we need this
+    ///////////////////////////////////////////
+    //
+    //
+
+
     public void cancelRequest(View view) {
         if (call != null) {
             call.cancel();
@@ -229,5 +235,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
             Toast.makeText(this, "Request cancelled", Toast.LENGTH_LONG).show();
         }
     }
+    /*
+    private void setUpTagMap() {
+        Resources res = getResources();
+        int[] values = res.getIntArray(R.array.movie_tabs_values);
+        String[] keys = res.getStringArray(R.array.movie_tabs_keys);
+        for (int i = 0; i < values.length; i++) {
+            MOVIE_TAB_LIST.add(values[i]);
+            MOVIE_TAB_MAP.put(keys[i], values[i]);
+        }
+        POPULAR_MOVIES_TAGS.concat(res.getString(R.string.popular_tab_key));
 
+    }
+
+     */
+
+    private void showBusyToast() {
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(MainActivity.this, "Downloading data in progress, try again later", Toast.LENGTH_SHORT);
+        mToast.show();
+    }
 }

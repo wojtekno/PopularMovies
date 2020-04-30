@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="popular_tab_value">0</integer>
+    <integer name="top_rated_tab_value">1</integer>
+    <integer name="favourite_tab_value">2</integer>
+</resources>

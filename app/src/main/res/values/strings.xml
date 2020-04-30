@@ -5,5 +5,15 @@
     <string name="content_description_movie_poster">Movie poster</string>
     <string name="reload_error_message">Can\'t reload, try again.</string>
     <string name="no_data_error_message">No data, try again.</string>
-    <string name="top_rate_tag">Top Rated</string>
+    <string name="top_rate_tag_title">Top Rated</string>
+    <string name="popular_tag_title">Popular</string>
+    <string name="favourite_tag_title">Favourite</string>
+
+    <string name="popular_tab_key" translatable="false">popular</string>
+    <string name="top_rated_tab_key" translatable="false">top_rated</string>
+    <string name="favourite_tab_key" translatable="false">favourite</string>
+
+
+
+
 </resources>
