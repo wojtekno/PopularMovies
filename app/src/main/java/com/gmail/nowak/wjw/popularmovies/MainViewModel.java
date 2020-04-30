@@ -36,22 +36,14 @@ public class MainViewModel extends AndroidViewModel {
     MoviesRepository repository;
 
 
-    public void setOnResponseListener(OnResponseListener onResponseListener) {
-        this.onResponseListener = onResponseListener;
-    }
-
-    private OnResponseListener onResponseListener;
-
-
     public void setMoviesData(MutableLiveData<List<MovieDTO>> moviesData) {
         this.moviesData = moviesData;
     }
 
-    public MainViewModel(@NonNull Application application, OnResponseListener onResponseListener) {
+    public MainViewModel(@NonNull Application application) {
         super(application);
         Log.d("MainViewModel", "Constructor");
         repository = MoviesRepository.getInstance();
-        repository.setOnResponseListener(onResponseListener);
 
         OkHttpClient.Builder httpClient =
                 new OkHttpClient.Builder();
@@ -81,12 +73,16 @@ public class MainViewModel extends AndroidViewModel {
         theMovieDatabaseAPI = retrofit.create(TheMovieDatabaseAPI.class);
     }
 
-    public LiveData<List<MovieDTO>> getPopularMovies(){
-        return repository.getPopularMovies();
+    public LiveData<List<MovieDTO>> getMoviesData(){
+        return repository.getMoviesData();
     }
 
-    public LiveData<List<MovieDTO>> getTopRatedMovies(){
-        return repository.getTopRatedMovies();
+    public void loadPopularMovies(){
+        repository.getPopularMovies();
+    }
+
+    public void loadTopRatedMovies(){
+        repository.loadTopRatedMovies();
     }
 
 
@@ -110,7 +106,6 @@ public class MainViewModel extends AndroidViewModel {
             public void onResponse(Call<TMDResponse> call, final retrofit2.Response<TMDResponse> response) {
 
                 moviesData.setValue(response.body().getResults());
-                onResponseListener.onResponse(true, response.body().getResults().size());
 //                if (mCounter[0] == 0) {
 //                    movieAdapter.clearMoviesData();
 //                    updateSortByTitleTV();
@@ -132,7 +127,6 @@ public class MainViewModel extends AndroidViewModel {
             @Override
             public void onFailure(Call<TMDResponse> call, Throwable t) {
 //                call.cancel();
-                onResponseListener.onResponse(false, 0);
 
 //                if (call.isCanceled()) {
 //                    Toast.makeText(MainActivity.this, "Request cancelled", Toast.LENGTH_SHORT).show();
@@ -144,18 +138,15 @@ public class MainViewModel extends AndroidViewModel {
         });
     }
 
-    //TODO implement this
-    public LiveData<List<MovieDTO>> getMoviesData() {
-        if (moviesData == null) {
-            Log.d("MainViewModel", "getMoviesData null");
-            moviesData = new MutableLiveData<List<MovieDTO>>();
-            fetchDataWithRetrofit(null, null);
-        }
+//    //TODO implement this
+//    public LiveData<List<MovieDTO>> getMoviesData() {
+//        if (moviesData == null) {
+//            Log.d("MainViewModel", "getMoviesData null");
+//            moviesData = new MutableLiveData<List<MovieDTO>>();
+//            fetchDataWithRetrofit(null, null);
+//        }
+//
+//        return moviesData;
+//    }
 
-        return moviesData;
-    }
-
-    public interface OnResponseListener{
-        void onResponse(boolean isResponse, int size);
-    }
 }

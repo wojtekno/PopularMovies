@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 
+import timber.log.Timber;
+
 public class DetailActivity extends AppCompatActivity {
 
     private ActivityDetailBinding binding;
@@ -20,6 +22,7 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+        Timber.d("Started");
 
         Intent invokingIntent = getIntent();
         MovieDTO movieDTO = null;

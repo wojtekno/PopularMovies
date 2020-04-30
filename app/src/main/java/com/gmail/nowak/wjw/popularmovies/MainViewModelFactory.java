@@ -7,10 +7,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory {
-    private MainViewModel.OnResponseListener mOnResponseListener;
     private Application mApplication;
-    public MainViewModelFactory(Application application, MainViewModel.OnResponseListener onResponseListener){
-        mOnResponseListener = onResponseListener;
+    public MainViewModelFactory(Application application){
         mApplication = application;
     }
 
@@ -18,7 +16,7 @@ public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
 //        return super.create(modelClass);
-        return (T) new MainViewModel(mApplication, mOnResponseListener);
+        return (T) new MainViewModel(mApplication);
     }
 //    public <T extends ViewModel> T create
 }
