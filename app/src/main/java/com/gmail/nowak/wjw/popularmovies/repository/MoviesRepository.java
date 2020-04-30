@@ -36,7 +36,8 @@ public class MoviesRepository {
     TheMovieDatabaseAPI theMovieDatabaseAPI;
     private static final Object LOCK = new Object();
     private static MoviesRepository sInstance;
-    MutableLiveData<List<MovieDTO>> moviesData;
+    private MutableLiveData<List<MovieDTO>> moviesData;
+    private MutableLiveData<Boolean> lastCallStatus;
     private int lastFetchedService = -1;
 
     private static final int POPULAR_MOVIES_TAG = 0;
@@ -67,6 +68,9 @@ public class MoviesRepository {
         theMovieDatabaseAPI = retrofit.create(TheMovieDatabaseAPI.class);
 
         moviesData = new MutableLiveData<List<MovieDTO>>();
+        lastCallStatus = new MutableLiveData<Boolean>();
+        lastCallStatus.setValue(true);
+        Timber.d("lastCallstatus: %d",lastCallStatus.getValue()==true?1:0);
     }
 
     /**
@@ -131,15 +135,21 @@ public class MoviesRepository {
             public void onResponse(Call<TMDResponse> call, final retrofit2.Response<TMDResponse> response) {
                 Timber.d( "fetchFromTMD.onResponse");
                 moviesData.setValue(response.body().getResults());
+                lastCallStatus.setValue(true);
             }
 
             @Override
             public void onFailure(Call<TMDResponse> call, Throwable t) {
                 call.cancel();
                 Timber.d("fetchFromTMD.onFailure");
+                lastCallStatus.setValue(false);
             }
 
         });
 
+    }
+
+    public LiveData<Boolean> getLastCallStatus() {
+        return lastCallStatus;
     }
 }

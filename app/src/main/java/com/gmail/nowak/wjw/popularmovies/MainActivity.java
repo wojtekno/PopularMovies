@@ -90,12 +90,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         viewModel.getMoviesData().observe(this, new Observer<List<MovieDTO>>() {
             @Override
             public void onChanged(List<MovieDTO> movieDTOS) {
-                Log.d("MainActivity", "LiveData onChange");
+                Log.d("MainActivity", "getMoviesData.onChange");
                 movieAdapter.clearMoviesData();
                 movieAdapter.setMoviesData(movieDTOS);
                 movieAdapter.notifyDataSetChanged();
                 updateUIOnResponse();
 
+            }
+        });
+
+        viewModel.getLastCallStatus().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+//                    Toast.makeText(MainActivity.this, "LastCallStatus Success", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "LastCallStatus Failure", Toast.LENGTH_SHORT).show();
+                    updateUIOnFailure();
+                    movieAdapter.clearMoviesData();
+//                    movieAdapter.setMoviesData(movieDTOS);
+                    movieAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
