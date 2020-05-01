@@ -71,6 +71,7 @@ public class MoviesRepository {
         lastCallStatus = new MutableLiveData<Boolean>();
         lastCallStatus.setValue(true);
         Timber.d("lastCallstatus: %d",lastCallStatus.getValue()==true?1:0);
+
     }
 
     /**

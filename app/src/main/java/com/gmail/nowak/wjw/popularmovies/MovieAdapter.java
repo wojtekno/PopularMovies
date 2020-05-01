@@ -14,6 +14,8 @@ import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
@@ -45,6 +47,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             Uri mUri = NetworkUtils.buildTMDImageUri(item.getImageThumbnail(), NetworkUtils.IMAGE_SIZE_SMALL);
             NetworkUtils.fetchImageAndSetToVew(mUri, holder.imageView, true);
         }
+
+        Timber.d("item data: TMDID: %d", item.getTMDId());
         //TODO load more data when last position displayed
     }
 

@@ -18,6 +18,16 @@ public class MovieDTO implements Parcelable {
     @SerializedName("release_date")
     private String releaseDate;
     private String popularity;
+    @SerializedName("id")
+    private int tMDId;
+
+    public int getTMDId() {
+        return tMDId;
+    }
+
+    public void setTMDId(int mTMDId) {
+        this.tMDId = mTMDId;
+    }
 
     public String getPopularity() {
         return popularity;
@@ -37,6 +47,7 @@ public class MovieDTO implements Parcelable {
         averageRating = in.readString();
         releaseDate = in.readString();
         popularity = in.readString();
+        tMDId = in.readInt();
     }
 
     public String getOriginalTitle() {
@@ -88,7 +99,7 @@ public class MovieDTO implements Parcelable {
                 ", mAverageRating='" + averageRating + '\'' +
                 ", mReleaseDate='" + releaseDate + '\'' +
                 ", mPopularity='" + popularity + '\'' +
-
+                ", mTMDId='" + tMDId + '\'' +
                 '}';
     }
 
@@ -120,6 +131,7 @@ public class MovieDTO implements Parcelable {
         dest.writeString(averageRating);
         dest.writeString(releaseDate);
         dest.writeString(popularity);
+        dest.writeInt(tMDId);
 
     }
 }
