@@ -1,11 +1,11 @@
-package com.gmail.nowak.wjw.popularmovies;
+package com.gmail.nowak.wjw.popularmovies.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class MovieDTO implements Parcelable {
+public class MovieVM implements Parcelable, MovieInterface{
 
     @SerializedName("original_title")
     private String originalTitle;
@@ -37,10 +37,10 @@ public class MovieDTO implements Parcelable {
         this.popularity = popularity;
     }
 
-    public MovieDTO() {
+    public MovieVM() {
     }
 
-    private MovieDTO(Parcel in) {
+    private MovieVM(Parcel in) {
         originalTitle = in.readString();
         imageThumbnail = in.readString();
         overview = in.readString();
@@ -103,16 +103,16 @@ public class MovieDTO implements Parcelable {
                 '}';
     }
 
-    public static final Parcelable.Creator<MovieDTO> CREATOR
-            = new Parcelable.Creator<MovieDTO>() {
+    public static final Parcelable.Creator<MovieVM> CREATOR
+            = new Parcelable.Creator<MovieVM>() {
         @Override
-        public MovieDTO createFromParcel(Parcel source) {
-            return new MovieDTO(source);
+        public MovieVM createFromParcel(Parcel source) {
+            return new MovieVM(source);
         }
 
         @Override
-        public MovieDTO[] newArray(int size) {
-            return new MovieDTO[size];
+        public MovieVM[] newArray(int size) {
+            return new MovieVM[size];
         }
 
     };
@@ -133,5 +133,10 @@ public class MovieDTO implements Parcelable {
         dest.writeString(popularity);
         dest.writeInt(tMDId);
 
+    }
+
+    @Override
+    public int getType() {
+        return MovieInterface.TYPE_MOVIE_DTO;
     }
 }

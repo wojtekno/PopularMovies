@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies;
+package com.gmail.nowak.wjw.popularmovies.presenter.main;
 
 import android.app.Application;
 
@@ -8,15 +8,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     private Application mApplication;
-    public MainViewModelFactory(Application application){
+
+    public MainViewModelFactory(Application application) {
         mApplication = application;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-//        return super.create(modelClass);
         return (T) new MainViewModel(mApplication);
     }
-//    public <T extends ViewModel> T create
 }

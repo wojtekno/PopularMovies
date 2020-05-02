@@ -6,7 +6,7 @@
 
         <variable
             name="movie"
-            type="com.gmail.nowak.wjw.popularmovies.MovieDTO" />
+            type="com.gmail.nowak.wjw.popularmovies.data.model.MovieVM" />
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,7 +14,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".DetailActivity">
+        tools:context=".presenter.detail.DetailActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,6 +35,13 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/content_description_movie_poster"
                     app:imageUrl="@{movie.imageThumbnail}" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="like"
+                    android:layout_gravity="bottom|end"
+                    android:onClick="addToFavourite"/>
             </FrameLayout>
 
             <TextView
@@ -54,6 +61,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@{String.valueOf(movie.TMDId)}"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -84,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
-                    android:text="@{movie.TMDId}"
+                    android:text="@{movie.releaseDate}"
                     android:textSize="24sp" />
 
                 <TextView

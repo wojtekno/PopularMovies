@@ -16,6 +16,13 @@ android {
         // Please ensure you have a valid API KEY for themoviedb.org to use this app
         // A valid key will need to be entered
         buildConfigField("String", "TMD_API_KEY", THE_MOVIE_DATABASE_API_KEY)
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -27,6 +34,10 @@ android {
 
     dataBinding {
         enabled true
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 
 }

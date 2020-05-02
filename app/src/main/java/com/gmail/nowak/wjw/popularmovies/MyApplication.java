@@ -2,6 +2,8 @@ package com.gmail.nowak.wjw.popularmovies;
 
 import android.app.Application;
 
+import com.gmail.nowak.wjw.popularmovies.utils.MyTagTree;
+
 import timber.log.Timber;
 
 public class MyApplication extends Application {
@@ -9,7 +11,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Timber.plant(new Timber.DebugTree());
-        Timber.d("Timber initialized");
+        Timber.plant(new MyTagTree());
+//        Timber.d("Timber initialized");
     }
 }

@@ -12,8 +12,9 @@
     <string name="popular_tab_key" translatable="false">popular</string>
     <string name="top_rated_tab_key" translatable="false">top_rated</string>
     <string name="favourite_tab_key" translatable="false">favourite</string>
-
-
+    <string name="couldnt_read_results">Couldn\'t read results. Try again later.</string>
+    <string name="no_items_found">Didn\'t find any items. Try again later.</string>
+    <string name="response_failure">Connection problem, try again later</string>
 
 
 </resources>

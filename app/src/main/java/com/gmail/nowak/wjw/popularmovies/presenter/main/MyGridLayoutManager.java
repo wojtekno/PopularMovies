@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies;
+package com.gmail.nowak.wjw.popularmovies.presenter.main;
 
 import android.content.Context;
 
