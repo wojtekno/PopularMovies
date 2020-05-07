@@ -3,6 +3,8 @@ package com.gmail.nowak.wjw.popularmovies.presenter.detail;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -23,22 +25,28 @@ import timber.log.Timber;
 public class DetailActivity extends AppCompatActivity {
 
     private ActivityDetailBinding binding;
-    MoviesRepository repository;
-    MovieVM movieVM;
+    private DetailActivityViewModel detailViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+        binding.setLifecycleOwner(this);
         Timber.d("Started");
-        repository = MoviesRepository.getInstance(getApplication());
+//        repository = MoviesRepository.getInstance(getApplication());
 
         Intent invokingIntent = getIntent();
-        movieVM = null;
+        //TODO first make intent later viewModel or maybe put intent as parameter in viewmodel constructor?
+        MovieVM movieVM = null;
         if (invokingIntent.getExtras().containsKey(Intent.EXTRA_SUBJECT)) {
             movieVM = (MovieVM) invokingIntent.getExtras().get(Intent.EXTRA_SUBJECT);
         }
-        binding.setMovie(movieVM);
+
+        DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), movieVM);
+        detailViewModel = ViewModelProviders.of(this, factory).get(DetailActivityViewModel.class);
+
+        binding.setMovie(detailViewModel.getMovie());
+        binding.setViewModel(detailViewModel);
     }
 
 
@@ -48,15 +56,13 @@ public class DetailActivity extends AppCompatActivity {
         NetworkUtils.fetchImageAndSetToVew(mUri, v, false);
     }
 
-    public void addToFavourite(View view) {
-        final FavouriteMovie movie = new FavouriteMovie(movieVM.getTMDId(), movieVM.getOriginalTitle());
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                repository.addFavouriteMovie(movie);
-
-            }
-        });
+    //todo is this better or observing the detailViewModel.isFavourite() and setting onClickListeners on change?
+    public void favouriteButtonClicked(View view) {
+        if (detailViewModel.isFavourite().getValue()) {
+            detailViewModel.removeFromFavourite();
+        } else {
+            detailViewModel.addToFavourite();
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package com.gmail.nowak.wjw.popularmovies.data.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -21,4 +22,13 @@ public interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public void insertMovie(FavouriteMovie... movies);
+
+    @Query("SELECT * FROM favourite_movies where tmd_id =:tmdId")
+    LiveData<FavouriteMovie> selectByTmdId(int tmdId);
+
+    @Delete()
+    void removeMovie(FavouriteMovie... movies);
+
+    @Query("DELETE FROM favourite_movies where tmd_id =:tmdid")
+    void removeMovieById(int tmdid);
 }

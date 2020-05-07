@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.gmail.nowak.wjw.popularmovies.AppExecutors;
 import com.gmail.nowak.wjw.popularmovies.BuildConfig;
 import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
 import com.gmail.nowak.wjw.popularmovies.data.db.AppDatabase;
@@ -146,7 +147,7 @@ public class MoviesRepository {
 
     //todo handle in viewmodel if list is null, or there is an error
     public LiveData<List<FavouriteMovie>> getFavouriteMoviesLD() {
-        if (favMoviesData == null || favMoviesData.getValue()==null) {
+        if (favMoviesData == null || favMoviesData.getValue() == null) {
 //            Timber.d("Actively fetching from DB");
             favMoviesData = database.movieDao().getAllMoviesLIVE();
         } else {
@@ -156,7 +157,22 @@ public class MoviesRepository {
     }
 
     public void addFavouriteMovie(FavouriteMovie... movies) {
-        database.movieDao().insertMovie(movies);
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            database.movieDao().insertMovie(movies);
+
+        });
+    }
+
+    public void removeFavouriteMovie(FavouriteMovie... movies) {
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            database.movieDao().removeMovie(movies);
+        });
+    }
+
+    public void removeFavouriteMovieByServerId(int id) {
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            database.movieDao().removeMovieById(id);
+        });
     }
 
 
@@ -172,5 +188,9 @@ public class MoviesRepository {
             fetchFromTheMovieDatabase(TOP_RATED_TAG_TITLE, null);
         }
         return topRatedMoviesResponseLD;
+    }
+
+    public LiveData<FavouriteMovie> getFavouriteMovieByTmdId(int tmdId) {
+        return database.movieDao().selectByTmdId(tmdId);
     }
 }

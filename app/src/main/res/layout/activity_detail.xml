@@ -4,9 +4,15 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="movie"
             type="com.gmail.nowak.wjw.popularmovies.data.model.MovieVM" />
+
+        <variable
+            name="viewModel"
+            type="com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailActivityViewModel" />
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -36,12 +42,15 @@
                     android:contentDescription="@string/content_description_movie_poster"
                     app:imageUrl="@{movie.imageThumbnail}" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="like"
+                <ImageButton
+                    android:id="@+id/add_favourite_Bt"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_gravity="bottom|end"
-                    android:onClick="addToFavourite"/>
+                    android:background="@android:color/black"
+                    android:onClick="favouriteButtonClicked"
+                    android:src="@drawable/ic_grade_black_24dp"
+                    android:tint="@{viewModel.isFavourite()?@color/colorFavourite: @android:color/darker_gray}" />
             </FrameLayout>
 
             <TextView
@@ -66,9 +75,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@{String.valueOf(movie.TMDId)}"
+                    android:text="@{String.valueOf(movie.apiId)}"
                     android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -76,7 +86,8 @@
                     android:gravity="center"
                     android:text="@string/detail_rating"
                     android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="@{movie.averageRating==null|| movie.averageRating.empty ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -92,7 +103,8 @@
                     android:gravity="center"
                     android:text="@string/detail_released_date"
                     android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="@{movie.releaseDate == null || movie.averageRating.empty ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"

@@ -19,14 +19,14 @@ public class MovieVM implements Parcelable, MovieInterface{
     private String releaseDate;
     private String popularity;
     @SerializedName("id")
-    private int tMDId;
+    private int apiId;
 
-    public int getTMDId() {
-        return tMDId;
+    public int getApiId() {
+        return apiId;
     }
 
-    public void setTMDId(int mTMDId) {
-        this.tMDId = mTMDId;
+    public void setApiId(int mTMDId) {
+        this.apiId = mTMDId;
     }
 
     public String getPopularity() {
@@ -47,7 +47,7 @@ public class MovieVM implements Parcelable, MovieInterface{
         averageRating = in.readString();
         releaseDate = in.readString();
         popularity = in.readString();
-        tMDId = in.readInt();
+        apiId = in.readInt();
     }
 
     public String getOriginalTitle() {
@@ -99,7 +99,7 @@ public class MovieVM implements Parcelable, MovieInterface{
                 ", mAverageRating='" + averageRating + '\'' +
                 ", mReleaseDate='" + releaseDate + '\'' +
                 ", mPopularity='" + popularity + '\'' +
-                ", mTMDId='" + tMDId + '\'' +
+                ", mTMDId='" + apiId + '\'' +
                 '}';
     }
 
@@ -131,7 +131,7 @@ public class MovieVM implements Parcelable, MovieInterface{
         dest.writeString(averageRating);
         dest.writeString(releaseDate);
         dest.writeString(popularity);
-        dest.writeInt(tMDId);
+        dest.writeInt(apiId);
 
     }
 
