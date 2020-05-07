@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
     private static final int POPULAR_MOVIES_TAG = 0;
     private static final int TOP_RATED_MOVIES_TAG = 1;
     private static final int FAVOURITE_MOVIES_TAG = 2;
-    private static final String DISPLAYED_LIST_TAG = "displayed_list";
+    public static final String DISPLAYED_LIST_TAG = "displayed_list";
 
+    public static final String EXTRA_API_ID = "extra_api_id";
     private MovieAdapter movieAdapter;
     private ActivityMainBinding binding;
 
@@ -56,13 +57,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
 
     RecyclerView recyclerView;
     MyGridLayoutManager myGridLayoutManager;
-
-
-//    private static final List<Integer> MOVIE_TAB_LIST = new ArrayList<>();
-//    private static final Map<String, Integer> MOVIE_TAB_MAP = new HashMap<>();
-//    private static final String POPULAR_MOVIES_TAGS = "";
-//    private static final String TOP_RATED_MOVIES_TAGS = null;
-//    private static final String FAVOURITE_MOVIES_TAGs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -296,7 +290,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
     @Override
     public void onRecyclerItemClick(int position) {
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(Intent.EXTRA_SUBJECT, (MovieVM) movieAdapter.getMoviesData().get(position));
+//        intent.putExtra(Intent.EXTRA_SUBJECT, (MovieVM) movieAdapter.getMoviesData().get(position));
+        intent.putExtra(EXTRA_API_ID, position);
+        intent.putExtra(DISPLAYED_LIST_TAG, displayedTab);
         startActivity(intent);
     }
 

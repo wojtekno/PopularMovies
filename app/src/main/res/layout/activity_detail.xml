@@ -78,7 +78,7 @@
                     android:text="@{String.valueOf(movie.apiId)}"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -120,6 +120,21 @@
                     android:gravity="center"
                     android:text="@{movie.overview}"
                     android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="Reviews"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reviews_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="540dp"/>
+
 
             </LinearLayout>
 

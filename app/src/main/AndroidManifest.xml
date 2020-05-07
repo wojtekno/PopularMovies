@@ -22,7 +22,9 @@
                 android:value=".presenter.main.MainActivity" />
 
         </activity>
-        <activity android:name=".presenter.main.MainActivity">
+        <activity
+            android:name=".presenter.main.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

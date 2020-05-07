@@ -11,7 +11,7 @@ import androidx.lifecycle.Transformations;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.ApiResponseObject;
+import com.gmail.nowak.wjw.popularmovies.data.model.MovieApiResponseObject;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private void setPopularMoviesLD() {
         Timber.d("Processing PopularLD from repo");
-        LiveData<ApiResponseObject> response = repository.getPopularMoviesResponseLD();
+        LiveData<MovieApiResponseObject> response = repository.getPopularMoviesResponseLD();
         LiveData<List<MovieVM>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
         popularMoviesLD = (MutableLiveData) newLiveData;
         LiveData<Boolean> newStatus = Transformations.map(response, this::transformTMDResponseStatus);
@@ -51,7 +51,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private void setTopRatedMoviesLD() {
         Timber.d("Processing TopRatedLD from repo");
-        LiveData<ApiResponseObject> response = repository.getTopRatedMoviesResponseLD();
+        LiveData<MovieApiResponseObject> response = repository.getTopRatedMoviesResponseLD();
         LiveData<List<MovieVM>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
         topRatedMoviesLD = (MutableLiveData) newLiveData;
         LiveData<Boolean> newStatus = Transformations.map(response, this::transformTMDResponseStatus);
@@ -85,7 +85,7 @@ public class MainViewModel extends AndroidViewModel {
         return topRatedMoviesStatusLD;
     }
 
-    private List<MovieVM> transformTMDResponseResults(ApiResponseObject input) {
+    private List<MovieVM> transformTMDResponseResults(MovieApiResponseObject input) {
         switch (input.getResponseResult()) {
             case 100:
                 return input.getResults();
@@ -96,7 +96,7 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
-    private Boolean transformTMDResponseStatus(ApiResponseObject input) {
+    private Boolean transformTMDResponseStatus(MovieApiResponseObject input) {
         if (input.getResponseResult() == 400) {
             return false;
         } else {

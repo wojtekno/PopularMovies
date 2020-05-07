@@ -2,7 +2,7 @@ package com.gmail.nowak.wjw.popularmovies.data.model;
 
 import java.util.List;
 
-public class ApiResponseObject {
+public class MovieApiResponseObject {
     public static final int RESULT_OK = 100;
     public static final int RESULT_NO_ITEMS = 300;
     public static final int RESULT_FAILURE = 400;
@@ -19,12 +19,12 @@ public class ApiResponseObject {
         return responseResult;
     }
 
-    public ApiResponseObject(List<MovieVM> movies, int responseStatus) {
+    public MovieApiResponseObject(List<MovieVM> movies, int responseStatus) {
         this.results = movies;
         this.responseResult = responseStatus;
     }
 
-    public ApiResponseObject(List<MovieVM> movies) {
+    public MovieApiResponseObject(List<MovieVM> movies) {
         this.results = movies;
         this.responseResult = RESULT_FAILURE;
     }
