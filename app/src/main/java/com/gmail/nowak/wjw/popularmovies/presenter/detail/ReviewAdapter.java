@@ -72,6 +72,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         if (wrappedList != null) {
             return wrappedList.size();
         }
+
         return 0;
     }
 

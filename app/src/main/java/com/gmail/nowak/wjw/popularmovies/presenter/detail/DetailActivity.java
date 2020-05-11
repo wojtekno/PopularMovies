@@ -16,18 +16,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.ReviewAPI;
+import com.gmail.nowak.wjw.popularmovies.data.model.VideoAPI;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
 import com.gmail.nowak.wjw.popularmovies.presenter.main.MainActivity;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity {
+import timber.log.Timber;
+
+public class DetailActivity extends AppCompatActivity implements VideoAdapter.OnVideoCLickListener {
 
     private ActivityDetailBinding binding;
-    private DetailActivityViewModel detailViewModel;
+    private DetailViewModel detailViewModel;
     private RecyclerView reviewsRV;
     private ReviewAdapter reviewAdapter;
+    private RecyclerView videoRV;
+    private VideoAdapter videoAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +42,7 @@ public class DetailActivity extends AppCompatActivity {
         binding.setLifecycleOwner(this);
 
         Intent invokingIntent = getIntent();
-        //TODO first make intent later viewModel or maybe put intent as parameter in viewmodel constructor?
+        //TODO Q? first make intent later viewModel or maybe put intent as parameter in viewmodel constructor?
         int listPosition = 0;
         int displayedTab = 0;
         if (invokingIntent.getExtras().containsKey(MainActivity.EXTRA_API_ID)) {
@@ -54,10 +60,23 @@ public class DetailActivity extends AppCompatActivity {
 //        }
 
         DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), listPosition, displayedTab);
-        detailViewModel = ViewModelProviders.of(this, factory).get(DetailActivityViewModel.class);
+        detailViewModel = ViewModelProviders.of(this, factory).get(DetailViewModel.class);
 
         binding.setMovie(detailViewModel.getMovie());
         binding.setViewModel(detailViewModel);
+        videoRV = binding.videoRv;
+        videoAdapter = new VideoAdapter(this);
+        videoRV.setAdapter(videoAdapter);
+        videoRV.setLayoutManager(new LinearLayoutManager(this));
+
+        detailViewModel.getVideosLD().observe(this, new Observer<List<VideoAPI>>() {
+            @Override
+            public void onChanged(List<VideoAPI> videoAPIS) {
+                videoAdapter.setVideoList(videoAPIS);
+                videoAdapter.notifyDataSetChanged();
+            }
+        });
+
         reviewsRV = binding.reviewsRv;
         reviewsRV.setLayoutManager(new LinearLayoutManager(this));
         reviewAdapter = new ReviewAdapter();
@@ -70,6 +89,16 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+//        detailViewModel.getVideosLD().observe(this, (videos) -> {
+//            Timber.d("getVideosTriggered");
+//            StringBuffer buffer = new StringBuffer();
+//            for(VideoAPI video : videos){
+//                buffer.append(video.getKey()+"\n");
+//            }
+//            Timber.d("Buffer: %s", buffer.toString());
+//            binding.videoTv.setText(buffer.toString());
+//
+//        });
     }
 
 
@@ -77,14 +106,39 @@ public class DetailActivity extends AppCompatActivity {
     public static void imageUrl(ImageView v, String url) {
         Uri mUri = NetworkUtils.buildTMDImageUri(url, NetworkUtils.IMAGE_SIZE_MEDIUM);
         NetworkUtils.fetchImageAndSetToVew(mUri, v, false);
+
     }
 
-    //todo is this better or observing the detailViewModel.isFavourite() and setting onClickListeners on change?
+    //todo Q? is this better or observing the detailViewModel.isFavourite() and setting onClickListeners on change?
     public void favouriteButtonClicked(View view) {
+//        binding.videoTv.setText(detailViewModel.getVideoStrings());
         if (detailViewModel.isFavourite().getValue()) {
             detailViewModel.removeFromFavourite();
         } else {
             detailViewModel.addToFavourite();
         }
+    }
+
+    public void openVideo(String key){
+//       String videoKey = detailViewModel.getVideosLD().getValue().get(0).getKey();
+        String ytUrl = "https://youtu.be/";
+        String url2 = "https://www.youtube.com/watch?v=";
+        openWebPage(url2.concat(key));
+    }
+
+
+    private void openWebPage(String url) {
+        Uri webpage = Uri.parse(url);
+        Timber.d("string url: %s", url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onVideoClicked(int position) {
+        String key = detailViewModel.getVideosLD().getValue().get(position).getKey();
+        openVideo(key);
     }
 }

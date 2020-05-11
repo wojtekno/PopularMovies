@@ -31,9 +31,9 @@ public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if(movieVM==null){
-            return (T) new DetailActivityViewModel(application, listPosition, displayedTab);
+            return (T) new DetailViewModel(application, listPosition, displayedTab);
         }
-        return (T) new DetailActivityViewModel(application, movieVM);
+        return (T) new DetailViewModel(application, movieVM);
     }
 
 

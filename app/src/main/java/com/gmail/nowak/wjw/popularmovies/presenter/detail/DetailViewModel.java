@@ -10,6 +10,7 @@ import androidx.lifecycle.Transformations;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
 import com.gmail.nowak.wjw.popularmovies.data.model.ReviewAPI;
+import com.gmail.nowak.wjw.popularmovies.data.model.VideoAPI;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
@@ -17,15 +18,17 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class DetailActivityViewModel extends AndroidViewModel {
+public class DetailViewModel extends AndroidViewModel {
+    //todo implement YT Android Player, so users can play trailer wihin the app
 
-    //todo ask how to resolve this? why having MovieVN here? is having two variables in layout ok (movieVn and ViewModel)?
+    //todo Q? ask how to resolve this? why having MovieVN here? is having two variables in layout ok (movieVn and ViewModel)?
     private MovieVM movieVM;
     private MoviesRepository repository;
     private LiveData<Boolean> isFavourite = new MutableLiveData<>();
     private LiveData<List<ReviewAPI>> reviewsLD;
+    private LiveData<List<VideoAPI>> videosLD;
 
-    public DetailActivityViewModel(@NonNull Application application, MovieVM movieVM) {
+    public DetailViewModel(@NonNull Application application, MovieVM movieVM) {
         super(application);
         this.movieVM = movieVM;
         repository = MoviesRepository.getInstance(application);
@@ -39,7 +42,7 @@ public class DetailActivityViewModel extends AndroidViewModel {
 
     }
 
-    public DetailActivityViewModel(@NonNull Application application, int listPosition, int displayedTab) {
+    public DetailViewModel(@NonNull Application application, int listPosition, int displayedTab) {
         super(application);
         //todo transform apiResultObject to DetailActivityViewModel or object held within
         repository = MoviesRepository.getInstance(application);
@@ -60,6 +63,7 @@ public class DetailActivityViewModel extends AndroidViewModel {
             }
         });
         reviewsLD = repository.getReviewsByMovieApiId(movieVM.getApiId());
+        videosLD = repository.getVideosByMovieApiId(movieVM.getApiId());
 
     }
 
@@ -83,5 +87,17 @@ public class DetailActivityViewModel extends AndroidViewModel {
 
     public LiveData<List<ReviewAPI>> getReviewsList() {
         return reviewsLD;
+    }
+    public LiveData<List<VideoAPI>> getVideosLD(){
+        return videosLD;
+    }
+
+    public String getVideoStrings(){
+        return Transformations.map(videosLD, input -> {
+            StringBuffer string = new StringBuffer();
+            for(VideoAPI video : input){
+                string.append(video.getKey()+"\n");
+            }
+            return string.toString();}).getValue();
     }
 }

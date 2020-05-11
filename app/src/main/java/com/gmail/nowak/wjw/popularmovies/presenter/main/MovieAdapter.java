@@ -63,7 +63,7 @@ public class MovieAdapter extends RecyclerView.Adapter {
         }
 
 //        Timber.d("item data: TMDID: %d", item.getTMDId());
-        //TODO load more data when last position displayed
+        //TODO Q? how to load more data when last position displayed
     }
 
     @Override

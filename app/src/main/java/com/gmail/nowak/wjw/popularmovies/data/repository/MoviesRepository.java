@@ -10,6 +10,8 @@ import com.gmail.nowak.wjw.popularmovies.BuildConfig;
 import com.gmail.nowak.wjw.popularmovies.data.model.ReviewApiResponseObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
 import com.gmail.nowak.wjw.popularmovies.data.db.AppDatabase;
+import com.gmail.nowak.wjw.popularmovies.data.model.VideoAPI;
+import com.gmail.nowak.wjw.popularmovies.data.model.VideoApiResponseObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.MovieApiResponseObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.ReviewAPI;
@@ -71,7 +73,7 @@ public class MoviesRepository {
     }
 
 
-    //todo quest move to another class?
+    //todo Q? move to another class?
     /**
      * Set up HttpClient intercepting with api key param
      *
@@ -208,6 +210,24 @@ public class MoviesRepository {
 
             @Override
             public void onFailure(Call<ReviewApiResponseObject> call, Throwable t) {
+
+            }
+        });
+        return list;
+    }
+
+    public LiveData<List<VideoAPI>> getVideosByMovieApiId(int apiId){
+        MutableLiveData<List<VideoAPI>> list = new MutableLiveData<>();
+        Call<VideoApiResponseObject> call;
+        call=theMovieDatabaseOrgAPI.getVideosForMovie(apiId);
+        call.enqueue(new Callback<VideoApiResponseObject>() {
+            @Override
+            public void onResponse(Call<VideoApiResponseObject> call, retrofit2.Response<VideoApiResponseObject> response) {
+                list.setValue(response.body().getResults());
+            }
+
+            @Override
+            public void onFailure(Call<VideoApiResponseObject> call, Throwable t) {
 
             }
         });
