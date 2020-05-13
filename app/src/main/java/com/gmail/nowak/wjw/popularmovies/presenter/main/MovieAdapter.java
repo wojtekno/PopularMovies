@@ -30,6 +30,7 @@ public class MovieAdapter extends RecyclerView.Adapter {
         mListener = listener;
     }
 
+
     public MovieAdapter(List<MovieInterface> dataSet) {
         moviesData = dataSet;
     }
@@ -129,4 +130,6 @@ public class MovieAdapter extends RecyclerView.Adapter {
     public List<MovieInterface> getMoviesData() {
         return moviesData;
     }
+
+
 }

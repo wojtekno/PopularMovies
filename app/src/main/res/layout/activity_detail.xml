@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presenter.detail.DetailActivity">
 
     <data>
 
         <import type="android.view.View" />
+
+        <variable
+            name="videoAdapter"
+            type="com.gmail.nowak.wjw.popularmovies.presenter.detail.VideoAdapter" />
 
         <variable
             name="movie"
@@ -16,11 +22,9 @@
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".presenter.detail.DetailActivity">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,12 +39,12 @@
                 android:paddingTop="40dp">
 
                 <ImageView
+                    myImage="@{movie.imageThumbnail}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
-                    android:contentDescription="@string/content_description_movie_poster"
-                    app:imageUrl="@{movie.imageThumbnail}" />
+                    android:contentDescription="@string/content_description_movie_poster" />
 
                 <ImageButton
                     android:id="@+id/add_favourite_Bt"
@@ -48,7 +52,7 @@
                     android:layout_height="48dp"
                     android:layout_gravity="bottom|end"
                     android:background="@android:color/black"
-                    android:onClick="favouriteButtonClicked"
+                    android:onClick="@{viewModel::favouriteButtonClicked}"
                     android:src="@drawable/ic_grade_black_24dp"
                     android:tint="@{viewModel.isFavourite()?@color/colorFavourite: @android:color/darker_gray}" />
             </FrameLayout>
@@ -104,7 +108,7 @@
                     android:text="@string/detail_released_date"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:visibility="@{movie.releaseDate == null || movie.averageRating.empty ? View.GONE : View.VISIBLE}" />
+                    android:visibility="@{movie.releaseDate == null || movie.releaseDate.empty ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -121,6 +125,7 @@
                     android:text="@{movie.overview}"
                     android:textSize="24sp" />
 
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -130,16 +135,32 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/video_tv"
-                    android:layout_width="match_parent"
+                <Button
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:onClick="@{()->viewModel.addVideo()}"
+                    android:text="add movie" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/video_rv"
+                    adapterList="@{viewModel.videosLD}"
+                    dynamicHeight="@{viewModel.videosLD.size()}"
+                    isFolded="@{viewModel.isVideoListFolded()}"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:adapter="@{videoAdapter}"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:onClick="@{viewModel::unfoldVideoRVClicked}"
+                    android:text='@{viewModel.isVideoListFolded()?"more...":"less"}'
+                    android:textSize="24sp"
+                    android:visibility="@{viewModel.videosLD.size()>2?View.VISIBLE:View.GONE}" />
+
 
                 <TextView
                     android:layout_width="match_parent"
