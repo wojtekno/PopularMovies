@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.R;
-import com.gmail.nowak.wjw.popularmovies.data.model.ReviewAPI;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +41,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 //        Timber.d("onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_review, parent, false);
+        int a = view.getMeasuredHeight();
+        int b = view.getHeight();
+        int c = view.getLayoutParams().height;
+        Timber.d("oncreate veiw holder a: %d  b: %d  c:%d", a, b, c);
+
         return new ReviewViewHolder(view);
     }
 
@@ -55,15 +60,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.content.setText(object.getReview().getContent());
         holder.author.setText(object.getReview().getAuthor());
         holder.mRootView.setOnClickListener((view) -> {
-                    if (!object.isExpanded()) {
-                        holder.content.setMaxLines(Integer.MAX_VALUE);
-                        object.setExpanded(true);
-                    } else {
-                        object.setExpanded(false);
-                        holder.content.setMaxLines(3);
-                    }
+            if (!object.isExpanded()) {
+                holder.content.setMaxLines(Integer.MAX_VALUE);
+                object.setExpanded(true);
+            } else {
+                object.setExpanded(false);
+                holder.content.setMaxLines(3);
+            }
                 }
         );
+        int a = holder.mRootView.getMeasuredHeight();
+        int b = holder.mRootView.getHeight();
+        int c = holder.mRootView.getLayoutParams().height;
+        Timber.d("onBindVeiw holder a: %d  b: %d  c:%d", a, b, c);
     }
 
 
@@ -76,26 +85,28 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         return 0;
     }
 
-    public void setReviewList(List<ReviewAPI> reviewList) {
+    public void setReviewList(List<ApiReview> reviewList) {
         wrappedList.clear();
-        for (ReviewAPI review : reviewList) {
+        for (ApiReview review : reviewList) {
             wrappedList.add(new ReviewWrapper(review));
         }
     }
 
+
+
     private class ReviewWrapper {
-        private ReviewAPI review;
+        private ApiReview review;
         private boolean expanded;
 
-        public ReviewWrapper(ReviewAPI comment) {
+        public ReviewWrapper(ApiReview comment) {
             review = comment;
         }
 
-        public ReviewAPI getReview() {
+        public ApiReview getReview() {
             return review;
         }
 
-        public void setReview(ReviewAPI review) {
+        public void setReview(ApiReview review) {
             this.review = review;
         }
 

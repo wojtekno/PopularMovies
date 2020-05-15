@@ -1,6 +1,6 @@
-package com.gmail.nowak.wjw.popularmovies.data.model;
+package com.gmail.nowak.wjw.popularmovies.data.model.api;
 
-public class VideoAPI {
+public class ApiVideo {
 
     private String id;
     private String iso_639_1;

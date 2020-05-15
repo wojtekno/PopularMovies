@@ -11,10 +11,13 @@
         <variable
             name="videoAdapter"
             type="com.gmail.nowak.wjw.popularmovies.presenter.detail.VideoAdapter" />
-
         <variable
-            name="movie"
-            type="com.gmail.nowak.wjw.popularmovies.data.model.MovieVM" />
+            name="reviewAdapter"
+            type="com.gmail.nowak.wjw.popularmovies.presenter.detail.ReviewAdapter" />
+
+        <!--        <variable-->
+        <!--            name="movie"-->
+        <!--            type="com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieDetailViewData" />-->
 
         <variable
             name="viewModel"
@@ -39,7 +42,7 @@
                 android:paddingTop="40dp">
 
                 <ImageView
-                    myImage="@{movie.imageThumbnail}"
+                    myImage="@{viewModel.movieLD.posterPath}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -54,7 +57,7 @@
                     android:background="@android:color/black"
                     android:onClick="@{viewModel::favouriteButtonClicked}"
                     android:src="@drawable/ic_grade_black_24dp"
-                    android:tint="@{viewModel.isFavourite()?@color/colorFavourite: @android:color/darker_gray}" />
+                    android:tint="@{viewModel.movieLD.isFavourite()?@color/colorFavourite: @android:color/darker_gray}" />
             </FrameLayout>
 
             <TextView
@@ -64,7 +67,7 @@
                 android:background="@android:color/black"
                 android:gravity="center"
                 android:paddingVertical="16dp"
-                android:text="@{movie.originalTitle}"
+                android:text="@{viewModel.movieLD.originalTitle}"
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp" />
 
@@ -79,7 +82,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@{String.valueOf(movie.apiId)}"
+                    android:text="@{String.valueOf(viewModel.movieLD.apiId)}"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:visibility="visible" />
@@ -91,15 +94,16 @@
                     android:text="@string/detail_rating"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:visibility="@{movie.averageRating==null|| movie.averageRating.empty ? View.GONE : View.VISIBLE}" />
+                    android:visibility="@{viewModel.movieLD.averageRating==0 ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
-                    android:text="@{movie.averageRating}"
-                    android:textSize="24sp" />
+                    android:text="@{String.valueOf(viewModel.movieLD.averageRating)}"
+                    android:textSize="24sp"
+                    android:visibility="@{viewModel.movieLD.averageRating==0 ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -108,21 +112,21 @@
                     android:text="@string/detail_released_date"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:visibility="@{movie.releaseDate == null || movie.releaseDate.empty ? View.GONE : View.VISIBLE}" />
+                    android:visibility="@{viewModel.movieLD.releaseDate == null || viewModel.movieLD.releaseDate.empty ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
-                    android:text="@{movie.releaseDate}"
+                    android:text="@{viewModel.movieLD.releaseDate}"
                     android:textSize="24sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@{movie.overview}"
+                    android:text="@{viewModel.movieLD.overview}"
                     android:textSize="24sp" />
 
 
@@ -135,6 +139,15 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="@{viewModel.fm.title}"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -143,8 +156,8 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/video_rv"
-                    adapterList="@{viewModel.videosLD}"
-                    dynamicHeight="@{viewModel.videosLD.size()}"
+                    adapterList="@{viewModel.movieLD.videosLD}"
+                    dynamicHeight="@{viewModel.movieLD.videosLD.size()}"
                     isFolded="@{viewModel.isVideoListFolded()}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -159,8 +172,7 @@
                     android:onClick="@{viewModel::unfoldVideoRVClicked}"
                     android:text='@{viewModel.isVideoListFolded()?"more...":"less"}'
                     android:textSize="24sp"
-                    android:visibility="@{viewModel.videosLD.size()>2?View.VISIBLE:View.GONE}" />
-
+                    android:visibility="@{viewModel.movieLD.videosLD.size()>2?View.VISIBLE:View.GONE}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -174,7 +186,12 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/reviews_rv"
                     android:layout_width="match_parent"
-                    android:layout_height="540dp" />
+                    android:layout_height="wrap_content"
+                    android:adapter="@{reviewAdapter}"
+                    adapterList="@{viewModel.movieLD.reviewsLD}"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:layout_marginBottom="16dp"/>
 
 
             </LinearLayout>

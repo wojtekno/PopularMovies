@@ -1,25 +1,38 @@
-package com.gmail.nowak.wjw.popularmovies.data.model;
+package com.gmail.nowak.wjw.popularmovies.data.model.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.gmail.nowak.wjw.popularmovies.data.model.MovieInterface;
 import com.google.gson.annotations.SerializedName;
 
-public class MovieVM implements Parcelable, MovieInterface{
+public class ApiMovie implements Parcelable, MovieInterface {
 
+    //todo change to id
+    @SerializedName("id")
+    private int apiId;
+    @SerializedName("poster_path")
+    private String posterPath;
     @SerializedName("original_title")
     private String originalTitle;
-    @SerializedName("poster_path")
-    private String imageThumbnail;
+    private String title;
     @SerializedName("overview")
     private String overview;
     @SerializedName("vote_average")
-    private String averageRating;
+    private float averageRating;
     @SerializedName("release_date")
     private String releaseDate;
-    private String popularity;
-    @SerializedName("id")
-    private int apiId;
+    private float popularity;
+    private boolean video;
+    @SerializedName("vote_count")
+    private int voteCount;
+    @SerializedName("backdrop_path")
+    private String backdropPath;
+    @SerializedName("original_language")
+    private String originalLanguage;
+    @SerializedName("genre_ids")
+    private int[] genreIds;
+    private boolean adult;
 
     public int getApiId() {
         return apiId;
@@ -29,24 +42,24 @@ public class MovieVM implements Parcelable, MovieInterface{
         this.apiId = mTMDId;
     }
 
-    public String getPopularity() {
+    public float getPopularity() {
         return popularity;
     }
 
-    public void setPopularity(String popularity) {
+    public void setPopularity(float popularity) {
         this.popularity = popularity;
     }
 
-    public MovieVM() {
+    public ApiMovie() {
     }
 
-    private MovieVM(Parcel in) {
+    private ApiMovie(Parcel in) {
         originalTitle = in.readString();
-        imageThumbnail = in.readString();
+        posterPath = in.readString();
         overview = in.readString();
-        averageRating = in.readString();
+        averageRating = in.readFloat();
         releaseDate = in.readString();
-        popularity = in.readString();
+        popularity = in.readFloat();
         apiId = in.readInt();
     }
 
@@ -58,12 +71,12 @@ public class MovieVM implements Parcelable, MovieInterface{
         this.originalTitle = originalTitle;
     }
 
-    public String getImageThumbnail() {
-        return imageThumbnail;
+    public String getPosterPath() {
+        return posterPath;
     }
 
-    public void setImageThumbnail(String imageThumbnail) {
-        this.imageThumbnail = imageThumbnail;
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
     public String getOverview() {
@@ -74,11 +87,11 @@ public class MovieVM implements Parcelable, MovieInterface{
         this.overview = overview;
     }
 
-    public String getAverageRating() {
+    public float getAverageRating() {
         return averageRating;
     }
 
-    public void setAverageRating(String averageRating) {
+    public void setAverageRating(float averageRating) {
         this.averageRating = averageRating;
     }
 
@@ -94,7 +107,7 @@ public class MovieVM implements Parcelable, MovieInterface{
     public String toString() {
         return "MovieDTO{" +
                 "mOriginalTitle='" + originalTitle + '\'' +
-                ", mImageThumbnail='" + imageThumbnail + '\'' +
+                ", mImageThumbnail='" + posterPath + '\'' +
                 ", mOverview='" + overview + '\'' +
                 ", mAverageRating='" + averageRating + '\'' +
                 ", mReleaseDate='" + releaseDate + '\'' +
@@ -103,16 +116,16 @@ public class MovieVM implements Parcelable, MovieInterface{
                 '}';
     }
 
-    public static final Parcelable.Creator<MovieVM> CREATOR
-            = new Parcelable.Creator<MovieVM>() {
+    public static final Parcelable.Creator<ApiMovie> CREATOR
+            = new Parcelable.Creator<ApiMovie>() {
         @Override
-        public MovieVM createFromParcel(Parcel source) {
-            return new MovieVM(source);
+        public ApiMovie createFromParcel(Parcel source) {
+            return new ApiMovie(source);
         }
 
         @Override
-        public MovieVM[] newArray(int size) {
-            return new MovieVM[size];
+        public ApiMovie[] newArray(int size) {
+            return new ApiMovie[size];
         }
 
     };
@@ -126,11 +139,11 @@ public class MovieVM implements Parcelable, MovieInterface{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(originalTitle);
-        dest.writeString(imageThumbnail);
+        dest.writeString(posterPath);
         dest.writeString(overview);
-        dest.writeString(averageRating);
+        dest.writeFloat(averageRating);
         dest.writeString(releaseDate);
-        dest.writeString(popularity);
+        dest.writeFloat(popularity);
         dest.writeInt(apiId);
 
     }
@@ -138,5 +151,13 @@ public class MovieVM implements Parcelable, MovieInterface{
     @Override
     public int getType() {
         return MovieInterface.TYPE_MOVIE_DTO;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getOriginalLanguage() {
+        return originalLanguage;
     }
 }

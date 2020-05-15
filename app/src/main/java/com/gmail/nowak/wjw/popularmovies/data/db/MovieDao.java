@@ -26,6 +26,12 @@ public interface MovieDao {
     @Query("SELECT * FROM favourite_movies where tmd_id =:tmdId")
     LiveData<FavouriteMovie> selectByTmdId(int tmdId);
 
+    @Query("SELECT * FROM favourite_movies where tmd_id =:tmdId")
+    FavouriteMovie selectFMByTmdId(int tmdId);
+
+    @Query("SELECT * FROM favourite_movies where _id =:dbId")
+    FavouriteMovie selectDirectlyById(int dbId);
+
     @Delete()
     void removeMovie(FavouriteMovie... movies);
 

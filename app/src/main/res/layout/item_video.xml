@@ -6,7 +6,7 @@
 
         <variable
             name="video"
-            type="com.gmail.nowak.wjw.popularmovies.data.model.VideoAPI" />
+            type="com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo" />
 
         <variable
             name="listener"

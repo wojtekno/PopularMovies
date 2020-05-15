@@ -6,18 +6,18 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 
 public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory {
-    private MovieVM movieVM;
+    private ApiMovie apiMovie;
     private Application application;
     private int listPosition;
     private int displayedTab;
 
-    public DetailViewModelFactory(Application application, MovieVM movieVM) {
+    public DetailViewModelFactory(Application application, ApiMovie apiMovie) {
         super();
         this.application = application;
-        this.movieVM = movieVM;
+        this.apiMovie = apiMovie;
     }
 
     public DetailViewModelFactory(Application application, int listPosition, int displayedTab) {
@@ -30,10 +30,7 @@ public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if(movieVM==null){
             return (T) new DetailViewModel(application, listPosition, displayedTab);
-        }
-        return (T) new DetailViewModel(application, movieVM);
     }
 
 

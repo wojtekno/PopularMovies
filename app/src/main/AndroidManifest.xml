@@ -14,16 +14,16 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".presenter.detail.DetailActivity"
-            android:parentActivityName=".presenter.main.MainActivity">
+            android:parentActivityName=".presenter.main.MovieListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".presenter.main.MainActivity" />
+                android:value=".presenter.main.MovieListActivity" />
 
         </activity>
         <activity
-            android:name=".presenter.main.MainActivity"
+            android:name=".presenter.main.MovieListActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -16,12 +16,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailActivity;
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieInterface;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityMainBinding;
@@ -31,7 +29,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRecyclerItemClickListener {
+public class MovieListActivity extends AppCompatActivity implements MovieAdapter.OnRecyclerItemClickListener {
 
     private static final int MAX_PAGES_TO_FETCH = 3;
 
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
     private ActivityMainBinding binding;
 
     private Toast mToast;
-    MainViewModel viewModel;
+    MovieListViewModel viewModel;
     // stores the currently displayed tab's tag
     private int displayedTab = POPULAR_MOVIES_TAG;
     //TODO delete call & implement cancelling requests
@@ -61,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.d("onCreate");
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         /*RecyclerView */
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         //todo handle layoutmanager on demand
         myGridLayoutManager = new MyGridLayoutManager(this, 1);
 
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(MovieListViewModel.class);
         if (savedInstanceState != null) {
             Timber.d("savedInstanceState.DisplayedListTag: %d ", savedInstanceState.getInt(DISPLAYED_LIST_TAG));
             displayedTab = savedInstanceState.getInt(DISPLAYED_LIST_TAG);
@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
             default:
                 loadPopularMovies();
         }
+        Timber.d("onCreate-finished - displayedTab: %d", displayedTab);
+
     }
 
 
@@ -112,24 +114,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
 
     private void removeOldObserversAddNew(LiveData listLD, @Nullable LiveData statusLD) {
         //remove recent observers
-        List<LiveData> list = viewModel.getLivaDataList();
+        List<LiveData> list = viewModel.getLiveDataList();
         for (LiveData ld : list) {
             ld.removeObservers(this);
+            Timber.d("ld has observers: %s  ative: %s", ld.hasObservers(), ld.hasActiveObservers());
         }
 
         //observe specific data
-        listLD.observe(this, new Observer<List<MovieVM>>() {
+        listLD.observe(this, new Observer<List<MovieListItemViewData>>() {
             @Override
-            public void onChanged(List<MovieVM> movieVMs) {
+            public void onChanged(List<MovieListItemViewData> apiMovies) {
                 Timber.d("%d OnChange triggered", displayedTab);
-                if (movieVMs == null || movieVMs.size() == 0) {
-                    updateUIWhenNoResults(movieVMs);
+                if (apiMovies == null || apiMovies.size() == 0) {
+                    updateUIWhenNoResults(apiMovies);
                 } else {
-                    reloadRecyclerView(movieVMs);
+                    reloadRecyclerView(apiMovies);
                 }
 //                        }
             }
         });
+        Timber.d("ListLd has observers %s  acive: %s", listLD.hasObservers(), listLD.hasActiveObservers());
 
         if (statusLD != null) {
             statusLD.observe(this, new Observer<Boolean>() {
@@ -148,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         }
     }
 
-    private void reloadRecyclerView(List<? extends MovieInterface> movieDTOS) {
+    private void reloadRecyclerView(List<MovieListItemViewData> movieDTOS) {
         updateUIOnLoading();
         movieAdapter.clearMoviesData();
         movieAdapter.setMoviesData(movieDTOS);
@@ -157,12 +161,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         if (movieDTOS.size() > 0) {
             binding.countTV.setVisibility(View.VISIBLE);
             binding.countTV.setText(String.format("(%d)", movieDTOS.size()));
+            recyclerView.setLayoutManager(myGridLayoutManager);
 
-            if (movieDTOS.get(0).getType() != MovieInterface.TYPE_MOVIE_DTO) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-            } else {
-                recyclerView.setLayoutManager(myGridLayoutManager);
-            }
+//            if (movieDTOS.get(0).getType() != MovieInterface.TYPE_MOVIE_DTO) {
+//                recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+//            } else {
+//                recyclerView.setLayoutManager(myGridLayoutManager);
+//            }
         }
 
 
@@ -188,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         binding.sortByTitleTv.setVisibility(View.VISIBLE);
     }
 
-    private void updateUIWhenNoResults(List<? extends MovieInterface> list) {
+    private void updateUIWhenNoResults(List<MovieListItemViewData> list) {
         if (list == null) {
             binding.centralErrorMessageTv.setText(getString(R.string.couldnt_read_results));
 
@@ -257,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
                         loadTopRatedMovies();
                     } else {
                         loadFavouriteMovies(null);
-                        Toast.makeText(MainActivity.this, "FAvourite here to display", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MovieListActivity.this, "FAvourite here to display", Toast.LENGTH_SHORT).show();
                     }
                     setMenuItemsVisibility(menu);
                     return true;
@@ -267,10 +272,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        return super.onOptionsItemSelected(item);
+//    }
 
 
     private void updateSortByTitleTV() {
@@ -289,9 +294,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
 
     @Override
     public void onRecyclerItemClick(int position) {
+        Timber.d("go to Detail clicked %d", position);
         Intent intent = new Intent(this, DetailActivity.class);
 //        intent.putExtra(Intent.EXTRA_SUBJECT, (MovieVM) movieAdapter.getMoviesData().get(position));
-        intent.putExtra(EXTRA_API_ID, position);
+        if (displayedTab == FAVOURITE_MOVIES_TAG) {
+            intent.putExtra(EXTRA_API_ID, movieAdapter.getNewData().get(position).getApiId());
+        } else {
+            intent.putExtra(EXTRA_API_ID, position);
+        }
         intent.putExtra(DISPLAYED_LIST_TAG, displayedTab);
         startActivity(intent);
     }
@@ -300,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnRe
         if (mToast != null) {
             mToast.cancel();
         }
-        mToast = Toast.makeText(MainActivity.this, "Downloading data in progress, try again later", Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(MovieListActivity.this, "Downloading data in progress, try again later", Toast.LENGTH_SHORT);
         mToast.show();
     }
 }

@@ -1,16 +1,16 @@
-package com.gmail.nowak.wjw.popularmovies.data.model;
+package com.gmail.nowak.wjw.popularmovies.data.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ReviewApiResponseObject {
+public class ApiResponseReviewObject {
     private int id;
     private int page;
     @SerializedName("total_pages")
     private int totalPages;
     private int totalResults;
-    private List<ReviewAPI> results;
+    private List<ApiReview> results;
 
     public int getId() {
         return id;
@@ -28,7 +28,7 @@ public class ReviewApiResponseObject {
         return totalResults;
     }
 
-    public List<ReviewAPI> getResults() {
+    public List<ApiReview> getResults() {
         return results;
     }
 }

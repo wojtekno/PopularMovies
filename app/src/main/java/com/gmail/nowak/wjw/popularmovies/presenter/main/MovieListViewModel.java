@@ -1,49 +1,63 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.main;
 
 import android.app.Application;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieListItemViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieApiResponseObject;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import timber.log.Timber;
 
-public class MainViewModel extends AndroidViewModel {
+public class MovieListViewModel extends AndroidViewModel {
 
     private MoviesRepository repository;
-    private MutableLiveData<List<MovieVM>> popularMoviesLD = new MutableLiveData<>();
+    private MutableLiveData<List<MovieListItemViewData>> popularMoviesLD = new MutableLiveData<List<MovieListItemViewData>>();
     private MutableLiveData<Boolean> popularMoviesStatusLD = new MutableLiveData<>();
 
-    private MutableLiveData<List<MovieVM>> topRatedMoviesLD = new MutableLiveData<>();
+    private MutableLiveData<List<MovieListItemViewData>> topRatedMoviesLD = new MutableLiveData<List<MovieListItemViewData>>();
     private MutableLiveData<Boolean> topRatedMoviesStatusLD = new MutableLiveData<>();
+    private MutableLiveData<List<MovieListItemViewData>> favouriteMoviesLD = new MutableLiveData<>();
 
 
-    public MainViewModel(@NonNull Application application) {
+    public MovieListViewModel(@NonNull Application application) {
         super(application);
         Log.d("MainViewModel", "Constructor");
         repository = MoviesRepository.getInstance(application);
     }
 
+    public LiveData<List<MovieListItemViewData>> getFavouriteMovies() {
+        if (!isListPopulated(favouriteMoviesLD)) {
+            favouriteMoviesLD = (MutableLiveData) Transformations.map(repository.getFavouriteMoviesLD(), this::convertToMovieListItem);
+        }
+        return favouriteMoviesLD;
+    }
 
-    public LiveData<List<FavouriteMovie>> getFavouriteMovies() {
-        return repository.getFavouriteMoviesLD();
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private List<MovieListItemViewData> convertToMovieListItem(List<FavouriteMovie> list) {
+        if (list == null) {
+            return null;
+        }
+        return list.stream().map(fm -> new MovieListItemViewData(fm.getTMDId(), fm.getTitle(), null)).collect(Collectors.toList());
     }
 
     private void setPopularMoviesLD() {
         Timber.d("Processing PopularLD from repo");
-        LiveData<MovieApiResponseObject> response = repository.getPopularMoviesResponseLD();
-        LiveData<List<MovieVM>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
+        LiveData<ApiResponseMovieObject> response = repository.getPopularMoviesResponseLD();
+        LiveData<List<MovieListItemViewData>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
         popularMoviesLD = (MutableLiveData) newLiveData;
         LiveData<Boolean> newStatus = Transformations.map(response, this::transformTMDResponseStatus);
         popularMoviesStatusLD = (MutableLiveData) newStatus;
@@ -51,14 +65,14 @@ public class MainViewModel extends AndroidViewModel {
 
     private void setTopRatedMoviesLD() {
         Timber.d("Processing TopRatedLD from repo");
-        LiveData<MovieApiResponseObject> response = repository.getTopRatedMoviesResponseLD();
-        LiveData<List<MovieVM>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
+        LiveData<ApiResponseMovieObject> response = repository.getTopRatedMoviesResponseLD();
+        LiveData<List<MovieListItemViewData>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
         topRatedMoviesLD = (MutableLiveData) newLiveData;
         LiveData<Boolean> newStatus = Transformations.map(response, this::transformTMDResponseStatus);
         topRatedMoviesStatusLD = (MutableLiveData) newStatus;
     }
 
-    public LiveData<List<MovieVM>> getPopularMoviesLD() {
+    public LiveData<List<MovieListItemViewData>> getPopularMoviesLD() {
         Timber.d("getPopularMoviesLD()");
         if (!isStatusTrue(popularMoviesStatusLD) || !isListPopulated(popularMoviesLD)) {
             setPopularMoviesLD();
@@ -71,7 +85,7 @@ public class MainViewModel extends AndroidViewModel {
         return popularMoviesStatusLD;
     }
 
-    public LiveData<List<MovieVM>> getTopRatedMoviesLD() {
+    public LiveData<List<MovieListItemViewData>> getTopRatedMoviesLD() {
         Timber.d("getTopRatedMoviesLD()");
         if (!isStatusTrue(topRatedMoviesStatusLD) || !isListPopulated(topRatedMoviesLD)) {
             setTopRatedMoviesLD();
@@ -85,18 +99,20 @@ public class MainViewModel extends AndroidViewModel {
         return topRatedMoviesStatusLD;
     }
 
-    private List<MovieVM> transformTMDResponseResults(MovieApiResponseObject input) {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private List<MovieListItemViewData> transformTMDResponseResults(ApiResponseMovieObject input) {
+        Timber.d("transformTMDResponseResults()");
         switch (input.getResponseResult()) {
             case 100:
-                return input.getResults();
+                return input.getResults().stream().map((r) -> new MovieListItemViewData(r.getApiId(), r.getOriginalTitle(), r.getPosterPath())).collect(Collectors.toList());
             case 300:
-                return new ArrayList<MovieVM>();
+                return new ArrayList<MovieListItemViewData>();
             default:
                 return null;
         }
     }
 
-    private Boolean transformTMDResponseStatus(MovieApiResponseObject input) {
+    private Boolean transformTMDResponseStatus(ApiResponseMovieObject input) {
         if (input.getResponseResult() == 400) {
             return false;
         } else {
@@ -104,7 +120,7 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
-    private boolean isListPopulated(LiveData<List<MovieVM>> liveData) {
+    private boolean isListPopulated(LiveData<List<MovieListItemViewData>> liveData) {
         if (liveData.getValue() == null || liveData.getValue().size() == 0) {
             return false;
         }
@@ -118,12 +134,13 @@ public class MainViewModel extends AndroidViewModel {
         return true;
     }
 
-    public List<LiveData> getLivaDataList() {
+    public List<LiveData> getLiveDataList() {
         List<LiveData> lDList = new ArrayList();
         lDList.add(popularMoviesLD);
         lDList.add(popularMoviesStatusLD);
         lDList.add(topRatedMoviesLD);
         lDList.add(topRatedMoviesStatusLD);
+        lDList.add(favouriteMoviesLD);
         return lDList;
     }
 }

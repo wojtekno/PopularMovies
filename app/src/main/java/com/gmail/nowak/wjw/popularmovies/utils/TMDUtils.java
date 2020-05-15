@@ -1,6 +1,6 @@
 package com.gmail.nowak.wjw.popularmovies.utils;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieVM;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -14,15 +14,15 @@ public class TMDUtils {
 
     private static final String LOG_TAG = TMDUtils.class.getSimpleName();
 
-    public static List<MovieVM> parseJSONToMovieDTO(String jsonResponse) {
+    public static List<ApiMovie> parseJSONToMovieDTO(String jsonResponse) {
         Gson gson = new Gson();
         JSONObject mJSONResponse;
-        MovieVM[] moviesArray = null;
+        ApiMovie[] moviesArray = null;
         try {
             mJSONResponse = new JSONObject(jsonResponse);
             JSONArray jsonArray = mJSONResponse.optJSONArray("results");
             if (jsonArray != null && jsonArray.length() != 0) {
-                moviesArray = gson.fromJson(jsonArray.toString(), MovieVM[].class);
+                moviesArray = gson.fromJson(jsonArray.toString(), ApiMovie[].class);
             }
         } catch (JSONException e) {
             e.printStackTrace();

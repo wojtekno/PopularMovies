@@ -1,17 +1,17 @@
-package com.gmail.nowak.wjw.popularmovies.data.model;
+package com.gmail.nowak.wjw.popularmovies.data.model.api;
 
 import java.util.List;
 
-public class MovieApiResponseObject {
+public class ApiResponseMovieObject {
     public static final int RESULT_OK = 100;
     public static final int RESULT_NO_ITEMS = 300;
     public static final int RESULT_FAILURE = 400;
 
 
-    List<MovieVM> results;
+    List<ApiMovie> results;
     int responseResult;
 
-    public List<MovieVM> getResults() {
+    public List<ApiMovie> getResults() {
         return results;
     }
 
@@ -19,12 +19,12 @@ public class MovieApiResponseObject {
         return responseResult;
     }
 
-    public MovieApiResponseObject(List<MovieVM> movies, int responseStatus) {
+    public ApiResponseMovieObject(List<ApiMovie> movies, int responseStatus) {
         this.results = movies;
         this.responseResult = responseStatus;
     }
 
-    public MovieApiResponseObject(List<MovieVM> movies) {
+    public ApiResponseMovieObject(List<ApiMovie> movies) {
         this.results = movies;
         this.responseResult = RESULT_FAILURE;
     }

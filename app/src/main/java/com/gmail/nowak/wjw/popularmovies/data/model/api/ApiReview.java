@@ -1,6 +1,6 @@
-package com.gmail.nowak.wjw.popularmovies.data.model;
+package com.gmail.nowak.wjw.popularmovies.data.model.api;
 
-public class ReviewAPI {
+public class ApiReview {
 
     private String content;
     private String author;
