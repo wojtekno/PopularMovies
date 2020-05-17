@@ -85,7 +85,7 @@ public class DetailViewModel extends AndroidViewModel {
 
     private void addToFavourite() {
         Timber.d("Adding to Favourite");
-        FavouriteMovie fMovie = new FavouriteMovie(movie.getValue().getApiId(), movie.getValue().getOriginalTitle());
+        FavouriteMovie fMovie = new FavouriteMovie(movie.getValue().getApiId(), movie.getValue().getOriginalTitle(), movie.getValue().getPosterPath());
         repository.addFavouriteMovie(fMovie);
     }
 
@@ -150,7 +150,7 @@ public class DetailViewModel extends AndroidViewModel {
 
         if (fMovie == null) {
             movieApiId = movie.getValue().getApiId();
-            fMovie= new FavouriteMovie(movieApiId, movie.getValue().getOriginalTitle());
+            fMovie= new FavouriteMovie(movieApiId, movie.getValue().getOriginalTitle(), movie.getValue().getPosterPath());
         } else {
             movieApiId = fMovie.getTMDId();
         }
@@ -160,6 +160,12 @@ public class DetailViewModel extends AndroidViewModel {
 
         Timber.d("converting value");
         return MovieDetailViewDataFactory.create(fMovie, mVid, reviewsLD, isFavourite);
+    }
+
+    private MovieDetailViewData fetchMovieFromApiServer(int apiId){
+        repository.fetchMovieWithDetails(apiId);
+
+        return null;
     }
 
 }

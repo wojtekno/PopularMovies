@@ -9,10 +9,11 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface TheMovieDataBaseOrgAPI {
-    public static final String TMDB_API_POPULAR_MOVIE_PATH = "movie/popular";
-    public static final String TMDB_API_TOP_RATED_MOVIE_PATH = "movie/top_rated";
+    String TMDB_API_POPULAR_MOVIE_PATH = "movie/popular";
+    String TMDB_API_TOP_RATED_MOVIE_PATH = "movie/top_rated";
     String TMDB_API_MOVIE_REVIEWS_PATH = "movie/{apiId}/reviews";
     String TMDB_API_MOVIE_VIDEOS_PATH = "movie/{apiId}/videos";
+    String TMDB_API_MOVIE_DETAILS_W_REVIEWS_AND_VIDEOS = "movie/{apiId}?append_to_response=videos,reviews";
 
     @GET(TMDB_API_POPULAR_MOVIE_PATH)
     Call<ApiResponseMovieObject> getPopularMovies();
@@ -25,4 +26,7 @@ public interface TheMovieDataBaseOrgAPI {
 
     @GET(TMDB_API_MOVIE_VIDEOS_PATH)
     Call<ApiResponseVideoObject> getVideosForMovie(@Path("apiId") int apiId);
+
+    @GET(TMDB_API_MOVIE_DETAILS_W_REVIEWS_AND_VIDEOS)
+    Call<ApiResponseMovieObject> getMovieDetailsWithVideosAndReviews(@Path("apiId") int apiId);
 }

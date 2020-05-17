@@ -7,7 +7,6 @@ public class ApiResponseMovieObject {
     public static final int RESULT_NO_ITEMS = 300;
     public static final int RESULT_FAILURE = 400;
 
-
     List<ApiMovie> results;
     int responseResult;
 

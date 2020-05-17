@@ -45,12 +45,13 @@ public class MovieDetailViewData {
         this.isFavourite = (MutableLiveData<Boolean>) isFavourite;
     }
 
-    public MovieDetailViewData(int apiId, String originalTitle, LiveData<List<ApiReview>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
+    public MovieDetailViewData(int apiId, String originalTitle, String posterPath, LiveData<List<ApiReview>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
         this.apiId = apiId;
         this.originalTitle = originalTitle;
         this.reviewsLD = reviewsLD;
         this.videosLD = (MutableLiveData) videosLD;
         this.isFavourite = (MutableLiveData) isFavourite;
+        this.posterPath = posterPath;
     }
 
     public int getApiId() {

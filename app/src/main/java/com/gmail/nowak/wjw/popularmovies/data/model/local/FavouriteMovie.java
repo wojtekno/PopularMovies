@@ -20,21 +20,35 @@ public class FavouriteMovie implements MovieInterface {
     @ColumnInfo(name = "title")
     private String title;
 
-    public FavouriteMovie(){};
+    @ColumnInfo(name = "poster_path")
+    private String posterPath;
 
-    @Ignore
-    public FavouriteMovie(int tMDId, String title) {
-        this.tMDId = tMDId;
-        this.title = title;
+    public FavouriteMovie() {
     }
 
     @Ignore
-    public FavouriteMovie(int id, int tMDId, String title) {
+    public FavouriteMovie(int tMDId, String title, String posterPath) {
+        this.tMDId = tMDId;
+        this.title = title;
+        this.posterPath = posterPath;
+
+    }
+
+    @Ignore
+    public FavouriteMovie(int id, int tMDId, String title, String posterPath) {
         this.id = id;
         this.tMDId = tMDId;
         this.title = title;
+        this.posterPath = posterPath;
     }
 
+    public String getPosterPath() {
+        return posterPath;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
 
     public int getId() {
         return id;

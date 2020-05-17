@@ -17,7 +17,7 @@ public class MovieDetailViewDataFactory {
     }
 
     public static MovieDetailViewData create(FavouriteMovie favouriteMovie, LiveData<List<ApiVideo>> videoLD, LiveData<List<ApiReview>> reviewLD, LiveData<Boolean> isFavourite) {
-        return new MovieDetailViewData(favouriteMovie.getTMDId(), favouriteMovie.getTitle(), reviewLD, videoLD, isFavourite);
+        return new MovieDetailViewData(favouriteMovie.getTMDId(), favouriteMovie.getTitle(),favouriteMovie.getPosterPath(), reviewLD, videoLD, isFavourite);
     }
 
     public static MovieDetailViewData create(ApiMovie apiMovie, LiveData<List<ApiVideo>> videoLD, LiveData<List<ApiReview>> reviewLD,  LiveData<Boolean> isFavourite) {

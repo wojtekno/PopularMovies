@@ -277,4 +277,8 @@ public class MoviesRepository {
             return topRatedMoviesResponseLD.getValue().getResults().get(position);
         }
     }
+
+    public LiveData<ApiMovie> fetchMovieWithDetails(int apiId) {
+        return null;
+    }
 }

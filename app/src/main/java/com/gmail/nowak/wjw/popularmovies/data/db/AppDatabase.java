@@ -12,7 +12,7 @@ import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 
 import timber.log.Timber;
 
-@Database(entities = FavouriteMovie.class, version = 2, exportSchema = false)
+@Database(entities = FavouriteMovie.class, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final Object LOCK = new Object();
@@ -26,6 +26,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
                         .addMigrations(MIGRATION_1_2)
+                        .addMigrations(MIGRATION_2_3)
                         .build();
             }
         }
@@ -39,6 +40,15 @@ public abstract class AppDatabase extends RoomDatabase {
             database.execSQL("Alter TABLE movie rename to favourite_movies");
         }
     };
+
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE favourite_movies ADD poster_path varchar(255);");
+        }
+    };
+
+
 
     public abstract MovieDao movieDao();
 }

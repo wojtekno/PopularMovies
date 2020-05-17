@@ -51,7 +51,7 @@ public class MovieListViewModel extends AndroidViewModel {
         if (list == null) {
             return null;
         }
-        return list.stream().map(fm -> new MovieListItemViewData(fm.getTMDId(), fm.getTitle(), null)).collect(Collectors.toList());
+        return list.stream().map(fm -> new MovieListItemViewData(fm.getTMDId(), fm.getTitle(), fm.getPosterPath())).collect(Collectors.toList());
     }
 
     private void setPopularMoviesLD() {
