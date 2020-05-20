@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.ReviewViewData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         int a = view.getMeasuredHeight();
         int b = view.getHeight();
         int c = view.getLayoutParams().height;
-        Timber.d("oncreate veiw holder a: %d  b: %d  c:%d", a, b, c);
+//        Timber.d("oncreate veiw holder a: %d  b: %d  c:%d", a, b, c);
 
         return new ReviewViewHolder(view);
     }
@@ -72,7 +73,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         int a = holder.mRootView.getMeasuredHeight();
         int b = holder.mRootView.getHeight();
         int c = holder.mRootView.getLayoutParams().height;
-        Timber.d("onBindVeiw holder a: %d  b: %d  c:%d", a, b, c);
+//        Timber.d("onBindVeiw holder a: %d  b: %d  c:%d", a, b, c);
     }
 
 
@@ -85,9 +86,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         return 0;
     }
 
-    public void setReviewList(List<ApiReview> reviewList) {
+    public void setReviewList(List<ReviewViewData> reviewList) {
         wrappedList.clear();
-        for (ApiReview review : reviewList) {
+        for (ReviewViewData review : reviewList) {
             wrappedList.add(new ReviewWrapper(review));
         }
     }
@@ -95,18 +96,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
 
     private class ReviewWrapper {
-        private ApiReview review;
+        private ReviewViewData review;
         private boolean expanded;
 
-        public ReviewWrapper(ApiReview comment) {
+        public ReviewWrapper(ReviewViewData comment) {
             review = comment;
         }
 
-        public ApiReview getReview() {
+        public ReviewViewData getReview() {
             return review;
         }
 
-        public void setReview(ApiReview review) {
+        public void setReview(ReviewViewData review) {
             this.review = review;
         }
 

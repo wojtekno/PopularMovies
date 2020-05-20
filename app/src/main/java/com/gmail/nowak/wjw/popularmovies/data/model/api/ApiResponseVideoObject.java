@@ -14,4 +14,8 @@ public class ApiResponseVideoObject {
     public List<ApiVideo> getResults() {
         return results;
     }
+
+    public void setResults(List<ApiVideo> list){
+        results = list;
+    }
 }

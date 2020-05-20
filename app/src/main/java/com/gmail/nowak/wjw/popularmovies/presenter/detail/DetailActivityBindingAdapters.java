@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieDetailViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.ReviewViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.VideoViewData;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 
 import java.util.List;
@@ -47,7 +49,7 @@ public class DetailActivityBindingAdapters {
     }
 
     @BindingAdapter({"adapterList"})
-    public static void setVideoAdapterList(RecyclerView view, List<ApiVideo> list) {
+    public static void setVideoAdapterList(RecyclerView view, List<VideoViewData> list) {
 //        Timber.d("xml updateAdapter: listSie: %d view.getAdapter: %s", list.getValue() != null ? list.getValue().size() : -1, view.getAdapter() == null ? "null" : "object");
 //        Timber.d("setVideoAdapterList movie = %s", movie==null?"null":"notNull");
 //        if(movie!=null && movie.getVideosLD()!=null && movie.getVideosLD().getValue()!=null){
@@ -66,7 +68,7 @@ public class DetailActivityBindingAdapters {
     }
 
     @BindingAdapter("adapterList")
-    public static void setAdapterList(RecyclerView view, List<ApiReview> list) {
+    public static void setAdapterList(RecyclerView view, List<ReviewViewData> list) {
 //        Timber.d("setting reviewAdapter");
         ReviewAdapter adapter = (ReviewAdapter) view.getAdapter();
         if (list != null && adapter != null) {

@@ -18,7 +18,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieListItemViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailActivity;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
@@ -49,7 +49,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     private Toast mToast;
     MovieListViewModel viewModel;
     // stores the currently displayed tab's tag
-    private int displayedTab = POPULAR_MOVIES_TAG;
+    private int displayedTab = FAVOURITE_MOVIES_TAG;
     //TODO delete call & implement cancelling requests
     //TODO handle app when no internet && on failure
 
@@ -96,16 +96,19 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 
 
     private void loadPopularMovies() {
+        updateUIOnLoading();
         displayedTab = POPULAR_MOVIES_TAG;
         removeOldObserversAddNew(viewModel.getPopularMoviesLD(), viewModel.getPopularMoviesStatusLD());
     }
 
     private void loadTopRatedMovies() {
+        updateUIOnLoading();
         displayedTab = TOP_RATED_MOVIES_TAG;
         removeOldObserversAddNew(viewModel.getTopRatedMoviesLD(), viewModel.getTopRatedMoviesStatusLD());
     }
 
     private void loadFavouriteMovies(@Nullable List<FavouriteMovie> movies) {
+        updateUIOnLoading();
         displayedTab = FAVOURITE_MOVIES_TAG;
         removeOldObserversAddNew(viewModel.getFavouriteMovies(), null);
 //        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false));
@@ -117,7 +120,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
         List<LiveData> list = viewModel.getLiveDataList();
         for (LiveData ld : list) {
             ld.removeObservers(this);
-            Timber.d("ld has observers: %s  ative: %s", ld.hasObservers(), ld.hasActiveObservers());
+//            Timber.d("ld has observers: %s  ative: %s", ld.hasObservers(), ld.hasActiveObservers());
         }
 
         //observe specific data
@@ -133,7 +136,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 //                        }
             }
         });
-        Timber.d("ListLd has observers %s  acive: %s", listLD.hasObservers(), listLD.hasActiveObservers());
+//        Timber.d("ListLd has observers %s  acive: %s", listLD.hasObservers(), listLD.hasActiveObservers());
 
         if (statusLD != null) {
             statusLD.observe(this, new Observer<Boolean>() {
@@ -153,7 +156,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     }
 
     private void reloadRecyclerView(List<MovieListItemViewData> movieDTOS) {
-        updateUIOnLoading();
+//        updateUIOnLoading();
         movieAdapter.clearMoviesData();
         movieAdapter.setMoviesData(movieDTOS);
         movieAdapter.notifyDataSetChanged();
@@ -297,11 +300,13 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
         Timber.d("go to Detail clicked %d", position);
         Intent intent = new Intent(this, DetailActivity.class);
 //        intent.putExtra(Intent.EXTRA_SUBJECT, (MovieVM) movieAdapter.getMoviesData().get(position));
-        if (displayedTab == FAVOURITE_MOVIES_TAG) {
-            intent.putExtra(EXTRA_API_ID, movieAdapter.getNewData().get(position).getApiId());
-        } else {
-            intent.putExtra(EXTRA_API_ID, position);
-        }
+//        if (displayedTab == FAVOURITE_MOVIES_TAG) {
+//            intent.putExtra(EXTRA_API_ID, movieAdapter.getNewData().get(position).getApiId());
+//        } else {
+//            intent.putExtra(EXTRA_API_ID, position);
+//        }
+        intent.putExtra(EXTRA_API_ID, movieAdapter.getNewData().get(position).getApiId());
+
         intent.putExtra(DISPLAYED_LIST_TAG, displayedTab);
         startActivity(intent);
     }

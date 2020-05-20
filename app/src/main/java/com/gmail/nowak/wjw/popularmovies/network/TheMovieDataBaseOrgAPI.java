@@ -1,6 +1,7 @@
 package com.gmail.nowak.wjw.popularmovies.network;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieObject;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieListObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseReviewObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseVideoObject;
 
@@ -16,10 +17,10 @@ public interface TheMovieDataBaseOrgAPI {
     String TMDB_API_MOVIE_DETAILS_W_REVIEWS_AND_VIDEOS = "movie/{apiId}?append_to_response=videos,reviews";
 
     @GET(TMDB_API_POPULAR_MOVIE_PATH)
-    Call<ApiResponseMovieObject> getPopularMovies();
+    Call<ApiResponseMovieListObject> getPopularMovies();
 
     @GET(TMDB_API_TOP_RATED_MOVIE_PATH)
-    Call<ApiResponseMovieObject> getTopRatedMovies();
+    Call<ApiResponseMovieListObject> getTopRatedMovies();
 
     @GET(TMDB_API_MOVIE_REVIEWS_PATH)
     Call<ApiResponseReviewObject> getReviewsForMovie(@Path("apiId") int apiId);
@@ -28,5 +29,5 @@ public interface TheMovieDataBaseOrgAPI {
     Call<ApiResponseVideoObject> getVideosForMovie(@Path("apiId") int apiId);
 
     @GET(TMDB_API_MOVIE_DETAILS_W_REVIEWS_AND_VIDEOS)
-    Call<ApiResponseMovieObject> getMovieDetailsWithVideosAndReviews(@Path("apiId") int apiId);
+    Call<ApiMovie> getMovieDetailsWithVideosAndReviews(@Path("apiId") int apiId);
 }

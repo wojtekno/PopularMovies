@@ -6,7 +6,7 @@
 
         <variable
             name="video"
-            type="com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo" />
+            type="com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.VideoViewData" />
 
         <variable
             name="listener"
@@ -16,7 +16,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{()->listener.onVideoClicked(video.key)}"
+        android:onClick="@{()->listener.onVideoClicked(video.videoKey)}"
         android:orientation="vertical"
         android:paddingHorizontal="16dp">
 
@@ -37,7 +37,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="16dp"
-                android:text="@{video.name}"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:text="@{video.title}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         </LinearLayout>

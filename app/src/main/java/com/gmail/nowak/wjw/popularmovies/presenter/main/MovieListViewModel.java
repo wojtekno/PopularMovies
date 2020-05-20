@@ -11,8 +11,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieListItemViewData;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieObject;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieListObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
@@ -56,7 +56,7 @@ public class MovieListViewModel extends AndroidViewModel {
 
     private void setPopularMoviesLD() {
         Timber.d("Processing PopularLD from repo");
-        LiveData<ApiResponseMovieObject> response = repository.getPopularMoviesResponseLD();
+        LiveData<ApiResponseMovieListObject> response = repository.getPopularMoviesResponseLD();
         LiveData<List<MovieListItemViewData>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
         popularMoviesLD = (MutableLiveData) newLiveData;
         LiveData<Boolean> newStatus = Transformations.map(response, this::transformTMDResponseStatus);
@@ -65,7 +65,7 @@ public class MovieListViewModel extends AndroidViewModel {
 
     private void setTopRatedMoviesLD() {
         Timber.d("Processing TopRatedLD from repo");
-        LiveData<ApiResponseMovieObject> response = repository.getTopRatedMoviesResponseLD();
+        LiveData<ApiResponseMovieListObject> response = repository.getTopRatedMoviesResponseLD();
         LiveData<List<MovieListItemViewData>> newLiveData = Transformations.map(response, this::transformTMDResponseResults);
         topRatedMoviesLD = (MutableLiveData) newLiveData;
         LiveData<Boolean> newStatus = Transformations.map(response, this::transformTMDResponseStatus);
@@ -100,7 +100,7 @@ public class MovieListViewModel extends AndroidViewModel {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private List<MovieListItemViewData> transformTMDResponseResults(ApiResponseMovieObject input) {
+    private List<MovieListItemViewData> transformTMDResponseResults(ApiResponseMovieListObject input) {
         Timber.d("transformTMDResponseResults()");
         switch (input.getResponseResult()) {
             case 100:
@@ -112,7 +112,7 @@ public class MovieListViewModel extends AndroidViewModel {
         }
     }
 
-    private Boolean transformTMDResponseStatus(ApiResponseMovieObject input) {
+    private Boolean transformTMDResponseStatus(ApiResponseMovieListObject input) {
         if (input.getResponseResult() == 400) {
             return false;
         } else {

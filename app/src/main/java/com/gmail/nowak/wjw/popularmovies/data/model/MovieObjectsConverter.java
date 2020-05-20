@@ -2,7 +2,7 @@ package com.gmail.nowak.wjw.popularmovies.data.model;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieListItemViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 
 import java.util.ArrayList;
 import java.util.List;

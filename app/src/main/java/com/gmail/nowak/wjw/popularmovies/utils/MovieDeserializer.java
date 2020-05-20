@@ -8,12 +8,16 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-public class MovieDeserializer implements JsonDeserializer<ApiMovie> {
+import timber.log.Timber;
+
+public class MovieDeserializer {} /* implements JsonDeserializer<ApiMovie> {
     @Override
     public ApiMovie deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        if(json.getAsJsonObject().has("results")){
-
-        }
+                if(json.getAsJsonObject().has("videos")){
+                    JsonElement videosElement = json.getAsJsonObject().getAsJsonObject("videos");
+                    Timber.d("videosElement = %s" , videosElement==null?"null": videosElement.toString());
+                }
         return null;
     }
 }
+*/

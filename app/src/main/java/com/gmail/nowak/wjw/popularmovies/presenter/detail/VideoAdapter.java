@@ -11,7 +11,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.R;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.VideoViewData;
 import com.gmail.nowak.wjw.popularmovies.databinding.ItemVideoBinding;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
 
-    List<ApiVideo> videoList = new ArrayList<>();
+    List<VideoViewData> videoList = new ArrayList<>();
     private OnVideoCLickListener listener;
     Context context;
 
@@ -61,7 +61,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         return videoList.size();
     }
 
-    public void setVideoList(List<ApiVideo> apiVideos) {
+    public void setVideoList(List<VideoViewData> apiVideos) {
         videoList.clear();
         videoList.addAll(apiVideos);
     }

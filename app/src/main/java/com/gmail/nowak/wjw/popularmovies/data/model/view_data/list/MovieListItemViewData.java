@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies.data.model.view_data;
+package com.gmail.nowak.wjw.popularmovies.data.model.view_data.list;
 
 public class MovieListItemViewData {
 

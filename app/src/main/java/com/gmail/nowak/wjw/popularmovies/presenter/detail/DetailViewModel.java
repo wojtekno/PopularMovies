@@ -13,7 +13,9 @@ import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieDetailViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.ReviewViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.VideoViewData;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
 import java.util.List;
@@ -28,35 +30,41 @@ public class DetailViewModel extends AndroidViewModel {
     //todo Q? ask how to resolve this? why having MovieVN here? is having two variables in layout ok (movieVn and ViewModel)?
     private MutableLiveData<MovieDetailViewData> movie = new MutableLiveData<>();
     private MoviesRepository repository;
-    //    private LiveData<Boolean> isFavourite = new MutableLiveData<>();
-    //    private LiveData<List<ApiReview>> reviewsLD;
-//    private MutableLiveData<List<ApiVideo>> videosLD;
     //todo update lifecycle dependency so there is a MutableData construcot with initial value
     private MutableLiveData<Boolean> isVideoListFolded = new MutableLiveData<Boolean>();
-    public LiveData<FavouriteMovie> fm = new MutableLiveData<>();
-    LiveData<List<FavouriteMovie>> fList = new MutableLiveData<>();
 
 
-    public DetailViewModel(@NonNull Application application, int listPosition, int displayedTab) {
+    public DetailViewModel(@NonNull Application application, int apiId, int displayedTab) {
         super(application);
         Timber.d("constructor start  displayedTab: %d", displayedTab);
         //todo Q? transform apiResultObject to DetailActivityViewModel or to object held within (MovieVN)
         repository = MoviesRepository.getInstance(application);
-        switch (displayedTab) {
-            case 2:
-                fm = repository.getFavouriteMovieByTmdId(listPosition);
-                fList = Transformations.map(repository.getFavouriteMoviesLD(), (x) -> (x));
-                movie = (MutableLiveData) Transformations.map(fm, this::convertToMovieDetail);
-//                isFavourite = Transformations.map(repository.getFavouriteMovieByTmdId(listPosition), this::transformIsFavourite);
-                break;
-            default:
-                movie.setValue(convertToMovieDetail(repository.getApiMovieFromList(displayedTab, listPosition)));
-//                isFavourite = Transformations.map(repository.getFavouriteMovieByTmdId(movie.getValue().getApiId()), this::transformIsFavourite);
-//                reviewsLD = repository.getReviewsByMovieApiId(movie.getValue().getApiId());
-//                videosLD = (MutableLiveData) repository.getVideosByMovieApiId(movie.getValue().getApiId());
-        }
+        LiveData<ApiMovie> aMLD = repository.fetchMovieWithDetails(apiId);
+        movie = (MutableLiveData) Transformations.map(aMLD, this::convertToMovieDetail);
         isVideoListFolded.setValue(true);
         Timber.d("Constructor END");
+    }
+
+    private MovieDetailViewData convertToMovieDetail(ApiMovie apiMovie) {
+        if (apiMovie != null) {
+            Timber.d("convertToMovieDetail apiMovie.videos %s  reviews: %s", apiMovie.getVideoList() == null ? "null" : String.valueOf(apiMovie.getVideoList().size()), apiMovie.getReviewList() == null ? "null" : String.valueOf(apiMovie.getReviewList().size()));
+        } else {
+            Timber.d("convertToMovieDetail:apiMovie == null");
+            return null;
+        }
+        //TODO handle UI if there is no apimovie for favourite movie
+        MutableLiveData<Boolean> isFavourite = (MutableLiveData) Transformations.map(repository.getFavouriteMovieByTmdId(apiMovie.getApiId()), this::transformIsFavourite);
+
+        return MovieDetailViewDataFactory.create(apiMovie, isFavourite);
+    }
+
+
+    public MovieDetailViewData getMovieViewData() {
+        return movie.getValue();
+    }
+
+    public LiveData<MovieDetailViewData> getMovieLD() {
+        return movie;
     }
 
     private Boolean transformIsFavourite(FavouriteMovie source) {
@@ -66,14 +74,6 @@ public class DetailViewModel extends AndroidViewModel {
         } else {
             return true;
         }
-    }
-
-    public MovieDetailViewData getMovieViewData() {
-        return movie.getValue();
-    }
-
-    public LiveData<MovieDetailViewData> getMovieLD() {
-        return movie;
     }
 
     public LiveData<Boolean> isFavourite() {
@@ -94,14 +94,14 @@ public class DetailViewModel extends AndroidViewModel {
         repository.removeFavouriteMovieByServerId(movie.getValue().getApiId());
     }
 
-    public LiveData<List<ApiReview>> getReviewsList() {
+    public LiveData<List<ReviewViewData>> getReviewsList() {
 //        if (movie.getValue() == null) {
 //            return new MutableLiveData<>();
 //        }
         return movie.getValue().getReviewsLD();
     }
 
-    public LiveData<List<ApiVideo>> getVideosLD() {
+    public LiveData<List<VideoViewData>> getVideosLD() {
         return movie.getValue().getVideosLD();
     }
 
@@ -120,52 +120,27 @@ public class DetailViewModel extends AndroidViewModel {
     public void unfoldVideoRVClicked(View view) {
         isVideoListFolded.setValue(!isVideoListFolded.getValue());
     }
-
     public interface OnVideoItemClickListener {
         void onVideoClick(String videoUrl);
+
     }
 
     public void addVideo() {
         Timber.d("movie %d", movie.getValue().getApiId());
 //        List<ApiVideo> list = videosLD.getValue();
-        List<ApiVideo> list = movie.getValue().getVideosLD().getValue();
+        List<VideoViewData> list = movie.getValue().getVideosLD().getValue();
 
-        ApiVideo mvideo = new ApiVideo();
-        mvideo.setName("nowe");
+        VideoViewData mvideo = new VideoViewData("Title", "nonexistingKey");
+//        mvideo.setName("nowe");
         list.add(mvideo);
 //        videosLD.setValue(list);
         movie.getValue().getVideosLD().setValue(list);
     }
 
-    private MovieDetailViewData convertToMovieDetail(ApiMovie apiMovie) {
-        MutableLiveData<List<ApiReview>> reviewsLD = (MutableLiveData) repository.getReviewsByMovieApiId(apiMovie.getApiId());
-        MutableLiveData<List<ApiVideo>> mVid = (MutableLiveData) repository.getVideosByMovieApiId(apiMovie.getApiId());
-        MutableLiveData<Boolean> isFavourite = (MutableLiveData) Transformations.map(repository.getFavouriteMovieByTmdId(apiMovie.getApiId()), this::transformIsFavourite);
-
-        return MovieDetailViewDataFactory.create(apiMovie, mVid, reviewsLD, isFavourite);
-    }
-
-    private MovieDetailViewData convertToMovieDetail(FavouriteMovie fMovie) {
-        int movieApiId;
-
-        if (fMovie == null) {
-            movieApiId = movie.getValue().getApiId();
-            fMovie= new FavouriteMovie(movieApiId, movie.getValue().getOriginalTitle(), movie.getValue().getPosterPath());
-        } else {
-            movieApiId = fMovie.getTMDId();
-        }
-        MutableLiveData<List<ApiReview>> reviewsLD = (MutableLiveData) repository.getReviewsByMovieApiId(movieApiId);
-        MutableLiveData<List<ApiVideo>> mVid = (MutableLiveData) repository.getVideosByMovieApiId(movieApiId);
-        MutableLiveData<Boolean> isFavourite = (MutableLiveData) Transformations.map(repository.getFavouriteMovieByTmdId(movieApiId), this::transformIsFavourite);
-
-        Timber.d("converting value");
-        return MovieDetailViewDataFactory.create(fMovie, mVid, reviewsLD, isFavourite);
-    }
-
-    private MovieDetailViewData fetchMovieFromApiServer(int apiId){
-        repository.fetchMovieWithDetails(apiId);
-
-        return null;
+    private LiveData<ApiMovie> turnFavToApi(FavouriteMovie fMovie) {
+        Timber.d("getmovieDetails");
+        LiveData<ApiMovie> apiMovie = repository.fetchMovieWithDetails(fMovie.getTMDId());
+        return apiMovie;
     }
 
 }

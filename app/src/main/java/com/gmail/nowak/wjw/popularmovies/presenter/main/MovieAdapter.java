@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieListItemViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.data.model.MovieInterface;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;

@@ -1,9 +1,8 @@
-package com.gmail.nowak.wjw.popularmovies.data.model.view_data;
+package com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
 
 import java.util.List;
@@ -18,20 +17,20 @@ public class MovieDetailViewData {
     private String releaseDate;
     private String originalLanguage;
 
-    private LiveData<List<ApiReview>> reviewsLD = new MutableLiveData<>();
-    private MutableLiveData<List<ApiVideo>> videosLD;
+    private LiveData<List<ReviewViewData>> reviewsLD = new MutableLiveData<List<ReviewViewData>>();
+    private MutableLiveData<List<VideoViewData>> videosLD = new MutableLiveData<List<VideoViewData>>();
     private MutableLiveData<Boolean> isFavourite;
 
 
-    public MutableLiveData<List<ApiVideo>> getVideosLD() {
+    public MutableLiveData<List<VideoViewData>> getVideosLD() {
         return videosLD;
     }
 
-    public LiveData<List<ApiReview>> getReviewsLD() {
+    public LiveData<List<ReviewViewData>> getReviewsLD() {
         return reviewsLD;
     }
 
-    public MovieDetailViewData(int apiId, String posterPath, String originalTitle, String title, String overview, float averageRating, String releaseDate, String originalLanguage, LiveData<List<ApiReview>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
+    public MovieDetailViewData(int apiId, String posterPath, String originalTitle, String title, String overview, float averageRating, String releaseDate, String originalLanguage, LiveData<List<ReviewViewData>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
         this.apiId = apiId;
         this.posterPath = posterPath;
         this.originalTitle = originalTitle;
@@ -45,7 +44,21 @@ public class MovieDetailViewData {
         this.isFavourite = (MutableLiveData<Boolean>) isFavourite;
     }
 
-    public MovieDetailViewData(int apiId, String originalTitle, String posterPath, LiveData<List<ApiReview>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
+    public MovieDetailViewData(int apiId, String posterPath, String originalTitle, String title, String overview, float averageRating, String releaseDate, String originalLanguage, LiveData<List<ReviewViewData>> reviewsLD, List<VideoViewData> videos, LiveData<Boolean> isFavourite) {
+        this.apiId = apiId;
+        this.posterPath = posterPath;
+        this.originalTitle = originalTitle;
+        this.title = title;
+        this.overview = overview;
+        this.averageRating = averageRating;
+        this.releaseDate = releaseDate;
+        this.originalLanguage = originalLanguage;
+        this.reviewsLD = reviewsLD;
+        this.videosLD.setValue(videos);
+        this.isFavourite = (MutableLiveData<Boolean>) isFavourite;
+    }
+
+    public MovieDetailViewData(int apiId, String originalTitle, String posterPath, LiveData<List<ReviewViewData>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
         this.apiId = apiId;
         this.originalTitle = originalTitle;
         this.reviewsLD = reviewsLD;

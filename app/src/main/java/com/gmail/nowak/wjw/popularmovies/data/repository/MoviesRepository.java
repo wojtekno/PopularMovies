@@ -7,14 +7,14 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.gmail.nowak.wjw.popularmovies.AppExecutors;
 import com.gmail.nowak.wjw.popularmovies.BuildConfig;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseReviewObject;
 import com.gmail.nowak.wjw.popularmovies.data.db.AppDatabase;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieListObject;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseReviewObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseVideoObject;
-import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
+import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.network.TheMovieDataBaseOrgAPI;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 
@@ -44,10 +44,12 @@ public class MoviesRepository {
     TheMovieDataBaseOrgAPI theMovieDatabaseOrgAPI;
     private static final Object LOCK = new Object();
     private static MoviesRepository sInstance;
-    private MutableLiveData<ApiResponseMovieObject> topRatedMoviesResponseLD = new MutableLiveData<>();
-    private MutableLiveData<ApiResponseMovieObject> popularMovieResponseLD = new MutableLiveData<>();
+    private MutableLiveData<ApiResponseMovieListObject> topRatedMoviesResponseLD = new MutableLiveData<>();
+    private MutableLiveData<ApiResponseMovieListObject> popularMovieResponseLD = new MutableLiveData<>();
     private LiveData<List<FavouriteMovie>> favMoviesData;// = new MutableLiveData<>();
+    private MutableLiveData<ApiMovie> apiMovieDetails = new MutableLiveData<>();
     public AppDatabase database;
+    OkHttpClient okHttpClient;
 
     public static MoviesRepository getInstance(Application application) {
         if (sInstance == null) {
@@ -63,7 +65,7 @@ public class MoviesRepository {
     private MoviesRepository(Application application) {
         database = AppDatabase.getInstance(application);
 
-        OkHttpClient okHttpClient = setUpOkHttpClient();
+        okHttpClient = setUpOkHttpClient();
 
         retrofit = new Retrofit.Builder().baseUrl(NetworkUtils.THE_MOVIE_DATABASE_API_BASE_URL)
                 .client(okHttpClient)
@@ -71,7 +73,6 @@ public class MoviesRepository {
                 .build();
         theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
     }
-
 
     //todo Q? move to another class?
 
@@ -105,26 +106,27 @@ public class MoviesRepository {
     }
 
     private void fetchFromTheMovieDatabase(final String category, Integer page) {
-        Call<ApiResponseMovieObject> call;
+        okHttpClient.dispatcher().cancelAll();
+        Call<ApiResponseMovieListObject> call;
         if (TOP_RATED_TAG_TITLE.equals(category)) {
             call = theMovieDatabaseOrgAPI.getTopRatedMovies();
         } else {
             call = theMovieDatabaseOrgAPI.getPopularMovies();
         }
-
-        call.enqueue(new retrofit2.Callback<ApiResponseMovieObject>() {
+        Timber.d("calling TMDB");
+        call.enqueue(new retrofit2.Callback<ApiResponseMovieListObject>() {
             @Override
-            public void onResponse(Call<ApiResponseMovieObject> call, final retrofit2.Response<ApiResponseMovieObject> response) {
+            public void onResponse(Call<ApiResponseMovieListObject> call, final retrofit2.Response<ApiResponseMovieListObject> response) {
                 Timber.d("fetchFromTMD.onResponse");
 
                 List<ApiMovie> results = response.body().getResults();
-                ApiResponseMovieObject responseObj = null;
+                ApiResponseMovieListObject responseObj = null;
                 if (results == null) {
-                    responseObj = new ApiResponseMovieObject(results, ApiResponseMovieObject.RESULT_FAILURE);
+                    responseObj = new ApiResponseMovieListObject(results, ApiResponseMovieListObject.RESULT_FAILURE);
                 } else if (results.size() == 0) {
-                    responseObj = new ApiResponseMovieObject(results, ApiResponseMovieObject.RESULT_NO_ITEMS);
+                    responseObj = new ApiResponseMovieListObject(results, ApiResponseMovieListObject.RESULT_NO_ITEMS);
                 } else if (results.size() > 0) {
-                    responseObj = new ApiResponseMovieObject(results, ApiResponseMovieObject.RESULT_OK);
+                    responseObj = new ApiResponseMovieListObject(results, ApiResponseMovieListObject.RESULT_OK);
                 }
 
                 if (TOP_RATED_TAG_TITLE.equals((category))) {
@@ -135,13 +137,13 @@ public class MoviesRepository {
             }
 
             @Override
-            public void onFailure(Call<ApiResponseMovieObject> call, Throwable t) {
+            public void onFailure(Call<ApiResponseMovieListObject> call, Throwable t) {
                 call.cancel();
                 Timber.d("fetchFromTMD.onFailure");
                 if (TOP_RATED_TAG_TITLE.equals((category))) {
-                    topRatedMoviesResponseLD.setValue(new ApiResponseMovieObject(null, ApiResponseMovieObject.RESULT_FAILURE));
+                    topRatedMoviesResponseLD.setValue(new ApiResponseMovieListObject(null, ApiResponseMovieListObject.RESULT_FAILURE));
                 } else {
-                    popularMovieResponseLD.setValue(new ApiResponseMovieObject(null, ApiResponseMovieObject.RESULT_FAILURE));
+                    popularMovieResponseLD.setValue(new ApiResponseMovieListObject(null, ApiResponseMovieListObject.RESULT_FAILURE));
                 }
 
             }
@@ -181,14 +183,14 @@ public class MoviesRepository {
     }
 
 
-    public LiveData<ApiResponseMovieObject> getPopularMoviesResponseLD() {
+    public LiveData<ApiResponseMovieListObject> getPopularMoviesResponseLD() {
         if (popularMovieResponseLD.getValue() == null || popularMovieResponseLD.getValue().getResponseResult() != 100) {
             fetchFromTheMovieDatabase(POPULARITY_TAG_TITLE, null);
         }
         return popularMovieResponseLD;
     }
 
-    public LiveData<ApiResponseMovieObject> getTopRatedMoviesResponseLD() {
+    public LiveData<ApiResponseMovieListObject> getTopRatedMoviesResponseLD() {
         if (topRatedMoviesResponseLD.getValue() == null || topRatedMoviesResponseLD.getValue().getResponseResult() != 100) {
             fetchFromTheMovieDatabase(TOP_RATED_TAG_TITLE, null);
         }
@@ -226,6 +228,7 @@ public class MoviesRepository {
         MutableLiveData<List<ApiReview>> list = new MutableLiveData<>();
         Call<ApiResponseReviewObject> call;
         call = theMovieDatabaseOrgAPI.getReviewsForMovie(apiId);
+        Timber.d("calling TMDB");
         call.enqueue(new Callback<ApiResponseReviewObject>() {
             @Override
             public void onResponse(Call<ApiResponseReviewObject> call, retrofit2.Response<ApiResponseReviewObject> response) {
@@ -246,9 +249,11 @@ public class MoviesRepository {
     }
 
     public LiveData<List<ApiVideo>> getVideosByMovieApiId(int apiId) {
+        //todo add here ?          okHttpClient.dispatcher().cancelAll();
         MutableLiveData<List<ApiVideo>> list = new MutableLiveData<>();
         Call<ApiResponseVideoObject> call;
         call = theMovieDatabaseOrgAPI.getVideosForMovie(apiId);
+        Timber.d("calling TMDB");
         call.enqueue(new Callback<ApiResponseVideoObject>() {
             @Override
             public void onResponse(Call<ApiResponseVideoObject> call, retrofit2.Response<ApiResponseVideoObject> response) {
@@ -272,13 +277,41 @@ public class MoviesRepository {
 
     public ApiMovie getApiMovieFromList(int listTag, int position) {
         if (0 == listTag) {
-            return popularMovieResponseLD.getValue().getResults().get(position);
+            ApiMovie apiMovie = popularMovieResponseLD.getValue().getResults().get(position);
+            return apiMovie;
+//            return popularMovieResponseLD.getValue().getResults().get(position);
         } else {
             return topRatedMoviesResponseLD.getValue().getResults().get(position);
         }
     }
 
     public LiveData<ApiMovie> fetchMovieWithDetails(int apiId) {
-        return null;
+        //todo call.cancel!!
+        okHttpClient.dispatcher().cancelAll();
+        Call<ApiMovie> call = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
+
+        Timber.d("calling TMDB");
+        //todo clear apiMovieDetails
+        apiMovieDetails = new MutableLiveData<>();
+        call.enqueue(new Callback<ApiMovie>() {
+            @Override
+            public void onResponse(Call<ApiMovie> call, retrofit2.Response<ApiMovie> response) {
+                //todo handle if error response
+                Timber.d("Fetching moviedetails response");
+                if (response.code() != 200) {
+                    apiMovieDetails.setValue(null);
+                }
+
+//                List<ApiVideo> videos =
+                apiMovieDetails.setValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiMovie> call, Throwable t) {
+                Timber.d("Fetching moviedetails failure");
+                Timber.e(t.getMessage());
+            }
+        });
+        return apiMovieDetails;
     }
 }

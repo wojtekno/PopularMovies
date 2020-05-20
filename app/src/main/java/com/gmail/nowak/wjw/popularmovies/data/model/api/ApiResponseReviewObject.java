@@ -31,4 +31,8 @@ public class ApiResponseReviewObject {
     public List<ApiReview> getResults() {
         return results;
     }
+
+    public void setResults(List<ApiReview> results) {
+        this.results = results;
+    }
 }

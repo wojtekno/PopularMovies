@@ -3,10 +3,15 @@ package com.gmail.nowak.wjw.popularmovies.data.model.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.lifecycle.LiveData;
+
 import com.gmail.nowak.wjw.popularmovies.data.model.MovieInterface;
 import com.google.gson.annotations.SerializedName;
 
-public class ApiMovie implements Parcelable, MovieInterface {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ApiMovie {
 
     //todo change to id
     @SerializedName("id")
@@ -34,6 +39,14 @@ public class ApiMovie implements Parcelable, MovieInterface {
     private int[] genreIds;
     private boolean adult;
 
+    //TODO manage to set retrofit, gson,converterFactories and ApiReviewDeserialize so it can be List<ApiReview>
+    @SerializedName("reviews")
+    private ApiResponseReviewObject apiResponseReviewObject;
+    //    private List<ApiReview> reviewList;
+    @SerializedName("videos")
+    private ApiResponseVideoObject apiResponseVideoObject;
+//    private List<ApiVideo> videoList;
+
     public int getApiId() {
         return apiId;
     }
@@ -53,14 +66,42 @@ public class ApiMovie implements Parcelable, MovieInterface {
     public ApiMovie() {
     }
 
-    private ApiMovie(Parcel in) {
-        originalTitle = in.readString();
-        posterPath = in.readString();
-        overview = in.readString();
-        averageRating = in.readFloat();
-        releaseDate = in.readString();
-        popularity = in.readFloat();
-        apiId = in.readInt();
+    public List<ApiReview> getReviewList() {
+        if (apiResponseReviewObject == null || apiResponseVideoObject.getResults() == null) {
+            return null;
+        }
+        return apiResponseReviewObject.getResults();
+    }
+
+    public void setReviewList(List<ApiReview> reviews) {
+        if (apiResponseReviewObject == null) {
+            apiResponseReviewObject = new ApiResponseReviewObject();
+        }
+//        if (apiResponseVideoObject.getResults() == null) {
+//            apiResponseReviewObject.setResults(new ArrayList<>());
+//        }
+
+        apiResponseReviewObject.setResults(reviews);
+
+    }
+
+    public void setVideoList(List<ApiVideo> reviews) {
+        if (apiResponseVideoObject == null) {
+            apiResponseVideoObject = new ApiResponseVideoObject();
+        }
+//        if (apiResponseVideoObject.getResults() == null) {
+//            apiResponseReviewObject.setResults(new ArrayList<>());
+//        }
+
+        apiResponseVideoObject.setResults(reviews);
+
+    }
+
+    public List<ApiVideo> getVideoList() {
+        if (apiResponseVideoObject == null) {
+            return null;
+        }
+        return apiResponseVideoObject.getResults();
     }
 
     public String getOriginalTitle() {
@@ -116,43 +157,6 @@ public class ApiMovie implements Parcelable, MovieInterface {
                 '}';
     }
 
-    public static final Parcelable.Creator<ApiMovie> CREATOR
-            = new Parcelable.Creator<ApiMovie>() {
-        @Override
-        public ApiMovie createFromParcel(Parcel source) {
-            return new ApiMovie(source);
-        }
-
-        @Override
-        public ApiMovie[] newArray(int size) {
-            return new ApiMovie[size];
-        }
-
-    };
-
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(originalTitle);
-        dest.writeString(posterPath);
-        dest.writeString(overview);
-        dest.writeFloat(averageRating);
-        dest.writeString(releaseDate);
-        dest.writeFloat(popularity);
-        dest.writeInt(apiId);
-
-    }
-
-    @Override
-    public int getType() {
-        return MovieInterface.TYPE_MOVIE_DTO;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -160,4 +164,5 @@ public class ApiMovie implements Parcelable, MovieInterface {
     public String getOriginalLanguage() {
         return originalLanguage;
     }
+
 }

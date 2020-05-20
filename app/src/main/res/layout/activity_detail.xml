@@ -17,7 +17,7 @@
 
         <!--        <variable-->
         <!--            name="movie"-->
-        <!--            type="com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieDetailViewData" />-->
+        <!--            type="com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewData" />-->
 
         <variable
             name="viewModel"
@@ -48,6 +48,12 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/content_description_movie_poster" />
+                <ProgressBar
+                    android:id="@+id/detail_activity_progress_barr"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center"
+                    android:visibility="@{viewModel.movieLD==null?View.VISIBLE:View.GONE}" />
 
                 <ImageButton
                     android:id="@+id/add_favourite_Bt"
@@ -139,14 +145,14 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="center"
-                    android:text="@{viewModel.fm.title}"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="16dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="@{viewModel.fm.title}"-->
+<!--                    android:textSize="24sp"-->
+<!--                    android:textStyle="bold" />-->
 
                 <Button
                     android:layout_width="wrap_content"

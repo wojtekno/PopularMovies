@@ -1,26 +1,18 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.detail;
 
 import android.content.Intent;
-import android.icu.text.RelativeDateTimeFormatter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.R;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
-import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.MovieDetailViewData;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
 import com.gmail.nowak.wjw.popularmovies.presenter.main.MovieListActivity;
-
-import java.util.List;
-import java.util.Observable;
 
 import timber.log.Timber;
 
@@ -60,6 +52,7 @@ public class DetailActivity extends AppCompatActivity implements VideoAdapter.On
         setUpVideoRecyclerView();
         setUpReviewRecyclerView();
         Timber.d("onCreate_finished");
+        binding.detailActivityProgressBarr.setVisibility(View.VISIBLE);
 
     }
 
