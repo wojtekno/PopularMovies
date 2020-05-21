@@ -15,10 +15,6 @@
             name="reviewAdapter"
             type="com.gmail.nowak.wjw.popularmovies.presenter.detail.ReviewAdapter" />
 
-        <!--        <variable-->
-        <!--            name="movie"-->
-        <!--            type="com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewData" />-->
-
         <variable
             name="viewModel"
             type="com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailViewModel" />

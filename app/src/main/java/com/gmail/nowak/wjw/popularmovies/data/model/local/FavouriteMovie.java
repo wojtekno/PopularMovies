@@ -15,7 +15,7 @@ public class FavouriteMovie implements MovieInterface {
     private int id;
 
     @ColumnInfo(name = "tmd_id")
-    private int tMDId;
+    private int apiId;
 
     @ColumnInfo(name = "title")
     private String title;
@@ -27,17 +27,17 @@ public class FavouriteMovie implements MovieInterface {
     }
 
     @Ignore
-    public FavouriteMovie(int tMDId, String title, String posterPath) {
-        this.tMDId = tMDId;
+    public FavouriteMovie(int apiId, String title, String posterPath) {
+        this.apiId = apiId;
         this.title = title;
         this.posterPath = posterPath;
 
     }
 
     @Ignore
-    public FavouriteMovie(int id, int tMDId, String title, String posterPath) {
+    public FavouriteMovie(int id, int apiId, String title, String posterPath) {
         this.id = id;
-        this.tMDId = tMDId;
+        this.apiId = apiId;
         this.title = title;
         this.posterPath = posterPath;
     }
@@ -58,12 +58,12 @@ public class FavouriteMovie implements MovieInterface {
         this.id = id;
     }
 
-    public int getTMDId() {
-        return tMDId;
+    public int getApiId() {
+        return apiId;
     }
 
-    public void setTMDId(int tMDId) {
-        this.tMDId = tMDId;
+    public void setApiId(int tMDId) {
+        this.apiId = tMDId;
     }
 
     public String getTitle() {

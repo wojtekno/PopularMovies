@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies.presenter.main;
+package com.gmail.nowak.wjw.popularmovies.presenter.list;
 
 import android.app.Application;
 import android.os.Build;
@@ -11,9 +11,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieListObject;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ public class MovieListViewModel extends AndroidViewModel {
     private MoviesRepository repository;
     private MutableLiveData<List<MovieListItemViewData>> popularMoviesLD = new MutableLiveData<List<MovieListItemViewData>>();
     private MutableLiveData<Boolean> popularMoviesStatusLD = new MutableLiveData<>();
-
     private MutableLiveData<List<MovieListItemViewData>> topRatedMoviesLD = new MutableLiveData<List<MovieListItemViewData>>();
     private MutableLiveData<Boolean> topRatedMoviesStatusLD = new MutableLiveData<>();
     private MutableLiveData<List<MovieListItemViewData>> favouriteMoviesLD = new MutableLiveData<>();
@@ -51,9 +50,12 @@ public class MovieListViewModel extends AndroidViewModel {
         if (list == null) {
             return null;
         }
-        return list.stream().map(fm -> new MovieListItemViewData(fm.getTMDId(), fm.getTitle(), fm.getPosterPath())).collect(Collectors.toList());
+        return list.stream().map(fm -> new MovieListItemViewData(fm.getApiId(), fm.getTitle(), fm.getPosterPath())).collect(Collectors.toList());
     }
 
+    /**
+     * Fetches data from repository, transforms it and populates popularMoviesLD and popularMoviesStatusLD
+     */
     private void setPopularMoviesLD() {
         Timber.d("Processing PopularLD from repo");
         LiveData<ApiResponseMovieListObject> response = repository.getPopularMoviesResponseLD();
@@ -63,6 +65,9 @@ public class MovieListViewModel extends AndroidViewModel {
         popularMoviesStatusLD = (MutableLiveData) newStatus;
     }
 
+    /**
+     * Fetches data from repository, transforms it and populates topRatedMoviesLD and topRatedMoviesStatusLD
+     */
     private void setTopRatedMoviesLD() {
         Timber.d("Processing TopRatedLD from repo");
         LiveData<ApiResponseMovieListObject> response = repository.getTopRatedMoviesResponseLD();
@@ -70,6 +75,11 @@ public class MovieListViewModel extends AndroidViewModel {
         topRatedMoviesLD = (MutableLiveData) newLiveData;
         LiveData<Boolean> newStatus = Transformations.map(response, this::transformTMDResponseStatus);
         topRatedMoviesStatusLD = (MutableLiveData) newStatus;
+    }
+
+
+    public LiveData<Boolean> getPopularMoviesStatusLD() {
+        return popularMoviesStatusLD;
     }
 
     public LiveData<List<MovieListItemViewData>> getPopularMoviesLD() {
@@ -81,8 +91,8 @@ public class MovieListViewModel extends AndroidViewModel {
         return popularMoviesLD;
     }
 
-    public LiveData<Boolean> getPopularMoviesStatusLD() {
-        return popularMoviesStatusLD;
+    public LiveData<Boolean> getTopRatedMoviesStatusLD() {
+        return topRatedMoviesStatusLD;
     }
 
     public LiveData<List<MovieListItemViewData>> getTopRatedMoviesLD() {
@@ -92,13 +102,13 @@ public class MovieListViewModel extends AndroidViewModel {
         }
         Timber.d("Returning LD");
         return topRatedMoviesLD;
-//        return new MutableLiveData<>();
     }
 
-    public LiveData<Boolean> getTopRatedMoviesStatusLD() {
-        return topRatedMoviesStatusLD;
-    }
-
+    /**
+     * Transform object held in repository to viewDataObjects
+     * @param input
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private List<MovieListItemViewData> transformTMDResponseResults(ApiResponseMovieListObject input) {
         Timber.d("transformTMDResponseResults()");
@@ -112,6 +122,7 @@ public class MovieListViewModel extends AndroidViewModel {
         }
     }
 
+    //todo Q?  is it reasonable to use the status at all? Maybe I should just update view based on List<MovieListItemViewData> ?
     private Boolean transformTMDResponseStatus(ApiResponseMovieListObject input) {
         if (input.getResponseResult() == 400) {
             return false;
@@ -120,6 +131,11 @@ public class MovieListViewModel extends AndroidViewModel {
         }
     }
 
+    /**
+     * Returns false if liveData.getValue == null or list's size inside of it is 0
+     * @param liveData
+     * @return
+     */
     private boolean isListPopulated(LiveData<List<MovieListItemViewData>> liveData) {
         if (liveData.getValue() == null || liveData.getValue().size() == 0) {
             return false;
@@ -134,6 +150,10 @@ public class MovieListViewModel extends AndroidViewModel {
         return true;
     }
 
+    /**
+     *
+     * @return list with all LiveData objects exposed to ListActivity
+     */
     public List<LiveData> getLiveDataList() {
         List<LiveData> lDList = new ArrayList();
         lDList.add(popularMoviesLD);

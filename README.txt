@@ -11,11 +11,17 @@ Project #2
 
 
 ###  IMPORTANT  ###
-In order this app to work you need to provide The Movie Database API KEY.
+In order this app to work you need to provide:
+1)The Movie Database API KEY.
 You can obtain the key signing up on https://www.themoviedb.org and than going to https://www.themoviedb.org/settings/api
+You need to assign your key to the THE_MOVIE_DATABASE_API_KEY field in gradle.properties (see point 2)
 
-You need to assign your key to 
-com/gmail/nowak/wjw/popularmovies/utils/PrivateApiKeyUtils.java class
-to TMD_API_KEY_VALUE.
+
+2) gradle.properties file
+Create the gradle.properties file in the project main folder and put the
+field "THE_MOVIE_DATABASE_API_KEY=" and add to it your API KEY from point above.
+
+
+
 
 

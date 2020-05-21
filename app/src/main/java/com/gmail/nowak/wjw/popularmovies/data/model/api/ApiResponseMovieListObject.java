@@ -22,9 +22,4 @@ public class ApiResponseMovieListObject {
         this.results = movies;
         this.responseResult = responseStatus;
     }
-
-    public ApiResponseMovieListObject(List<ApiMovie> movies) {
-        this.results = movies;
-        this.responseResult = RESULT_FAILURE;
-    }
 }

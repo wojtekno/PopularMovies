@@ -17,6 +17,7 @@ import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.ReviewViewD
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.VideoViewData;
 import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import timber.log.Timber;
@@ -29,6 +30,7 @@ public class DetailActivityBindingAdapters {
     @BindingAdapter("myImage")
     public static void setImageUrl(ImageView v, String url) {
 //        Timber.d("xml setImageURL");
+        //todo Q? should i use it with retrofit? or maybe build the url with retrofit interface?
         Uri mUri = NetworkUtils.buildTMDImageUri(url, NetworkUtils.IMAGE_SIZE_MEDIUM);
         NetworkUtils.fetchImageAndSetToVew(mUri, v, false);
     }
@@ -52,9 +54,6 @@ public class DetailActivityBindingAdapters {
     public static void setVideoAdapterList(RecyclerView view, List<VideoViewData> list) {
 //        Timber.d("xml updateAdapter: listSie: %d view.getAdapter: %s", list.getValue() != null ? list.getValue().size() : -1, view.getAdapter() == null ? "null" : "object");
 //        Timber.d("setVideoAdapterList movie = %s", movie==null?"null":"notNull");
-//        if(movie!=null && movie.getVideosLD()!=null && movie.getVideosLD().getValue()!=null){
-
-//            List<ApiVideo> list = movie.getVideosLD().getValue();
 //        Timber.d("xml updateAdapter: listSie: %d view.getAdapter: %s", list != null ? list.size() : -1, view.getAdapter() == null ? "null" : "object");
 
         VideoAdapter vAd = (VideoAdapter) view.getAdapter();
@@ -62,20 +61,32 @@ public class DetailActivityBindingAdapters {
 //            Timber.d("videoAdapter != null");
             vAd.setVideoList(list);
             vAd.notifyDataSetChanged();
-//            setDynamicHeight(view, isFolded);
         }
 
     }
 
     @BindingAdapter("adapterList")
-    public static void setAdapterList(RecyclerView view, List<ReviewViewData> list) {
+    public static void setReviewAdapterList(RecyclerView view, List<ReviewViewData> list) {
 //        Timber.d("setting reviewAdapter");
         ReviewAdapter adapter = (ReviewAdapter) view.getAdapter();
+        List<ReviewViewData> trimmedList = new ArrayList<>();
+
         if (list != null && adapter != null) {
-            adapter.setReviewList(list);
+            int trimmedSize = list.size()>10?10:list.size();
+
+            for(int i=0; i<trimmedSize; i++){
+                trimmedList.add(list.get(i));
+            }
+            adapter.setReviewList(trimmedList);
             adapter.notifyDataSetChanged();
         }
     }
+
+    //
+    //
+    //
+    // Debuging methods
+    //todo delete when submitting
 
     @BindingAdapter("mVisibility")
     public static void setMVisibility(View view, int size) {

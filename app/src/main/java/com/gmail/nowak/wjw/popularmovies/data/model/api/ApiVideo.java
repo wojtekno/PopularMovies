@@ -32,7 +32,11 @@ public class ApiVideo {
         return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+
+    public String getSite() {
+        return site;
     }
 }

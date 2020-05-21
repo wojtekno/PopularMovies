@@ -44,29 +44,6 @@ public class MovieDetailViewData {
         this.isFavourite = (MutableLiveData<Boolean>) isFavourite;
     }
 
-    public MovieDetailViewData(int apiId, String posterPath, String originalTitle, String title, String overview, float averageRating, String releaseDate, String originalLanguage, LiveData<List<ReviewViewData>> reviewsLD, List<VideoViewData> videos, LiveData<Boolean> isFavourite) {
-        this.apiId = apiId;
-        this.posterPath = posterPath;
-        this.originalTitle = originalTitle;
-        this.title = title;
-        this.overview = overview;
-        this.averageRating = averageRating;
-        this.releaseDate = releaseDate;
-        this.originalLanguage = originalLanguage;
-        this.reviewsLD = reviewsLD;
-        this.videosLD.setValue(videos);
-        this.isFavourite = (MutableLiveData<Boolean>) isFavourite;
-    }
-
-    public MovieDetailViewData(int apiId, String originalTitle, String posterPath, LiveData<List<ReviewViewData>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
-        this.apiId = apiId;
-        this.originalTitle = originalTitle;
-        this.reviewsLD = reviewsLD;
-        this.videosLD = (MutableLiveData) videosLD;
-        this.isFavourite = (MutableLiveData) isFavourite;
-        this.posterPath = posterPath;
-    }
-
     public int getApiId() {
         return apiId;
     }

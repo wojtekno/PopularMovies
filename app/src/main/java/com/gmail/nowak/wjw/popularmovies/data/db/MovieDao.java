@@ -15,13 +15,13 @@ import java.util.List;
 public interface MovieDao {
 
     @Query("SELECT * FROM favourite_movies")
-    public LiveData<List<FavouriteMovie>> getAllMoviesLIVE();
+    LiveData<List<FavouriteMovie>> getAllMoviesLIVE();
 
     @Query("SELECT * FROM favourite_movies")
-    public List<FavouriteMovie> getAllMovies();
+    List<FavouriteMovie> getAllMovies();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertMovie(FavouriteMovie... movies);
+    void insertMovie(FavouriteMovie... movies);
 
     @Query("SELECT * FROM favourite_movies where tmd_id =:tmdId")
     LiveData<FavouriteMovie> selectByTmdId(int tmdId);

@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies.presenter.main;
+package com.gmail.nowak.wjw.popularmovies.presenter.list;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -29,14 +29,19 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class MovieListActivity extends AppCompatActivity implements MovieAdapter.OnRecyclerItemClickListener {
+public class MovieListActivity extends AppCompatActivity implements MovieAdapter.OnMovieListItemClickListener {
 
-    private static final int MAX_PAGES_TO_FETCH = 3;
+    //todo in stage 3:
+    // - implement fragments holding each list - dissect ListActivity to three fragments
+    // - replace DetailActivity with DetailFragment - make it one activity app
+    // - implement dagger
+    // - implement javaRx
+    // - enable watching videos inside the app
 
     private static final String POPULARITY_TAG_TITLE = NetworkUtils.POPULARITY_TAG_TITLE;
     private static final String TOP_RATED_TAG_TITLE = NetworkUtils.TOP_RATED_TAG_TITLE;
     private static final String FAVOURITE_TAG_TITLE = "Favourite";
-
+    //todo Q? should I use Enum to make it accessible for other classes and stored in one place?  how about POPULARITY_TAG_TITLE?
     private static final int POPULAR_MOVIES_TAG = 0;
     private static final int TOP_RATED_MOVIES_TAG = 1;
     private static final int FAVOURITE_MOVIES_TAG = 2;
@@ -46,15 +51,15 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     private MovieAdapter movieAdapter;
     private ActivityMainBinding binding;
 
-    private Toast mToast;
     MovieListViewModel viewModel;
     // stores the currently displayed tab's tag
-    private int displayedTab = FAVOURITE_MOVIES_TAG;
+    private int displayedTab = POPULAR_MOVIES_TAG;
+
     //TODO delete call & implement cancelling requests
     //TODO handle app when no internet && on failure
 
     RecyclerView recyclerView;
-    MyGridLayoutManager myGridLayoutManager;
+//    MyGridLayoutManager myGridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +68,18 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        /*TODO Q?  I've got 3 recyclerViews - one here and two in detailActivity.
+           And the question is which one is the best? or the most appropriate one?
+           And I got them configured in 3 different ways
+           Here there is plain one with no data binding
+         */
         /*RecyclerView */
         recyclerView = binding.rvMovies;
         recyclerView.setHasFixedSize(true);
         movieAdapter = new MovieAdapter(this);
         recyclerView.setAdapter(movieAdapter);
-        //todo handle layoutmanager on demand
-        myGridLayoutManager = new MyGridLayoutManager(this, 1);
+        recyclerView.setLayoutManager(new MyGridLayoutManager(this, 1));
+
 
         viewModel = ViewModelProviders.of(this).get(MovieListViewModel.class);
         if (savedInstanceState != null) {
@@ -77,9 +87,6 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
             displayedTab = savedInstanceState.getInt(DISPLAYED_LIST_TAG);
         }
 
-        updateUIOnLoading();
-
-        //todo check how app behaves when this switch commentedout
         switch (displayedTab) {
             case TOP_RATED_MOVIES_TAG:
                 loadTopRatedMovies();
@@ -91,7 +98,6 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
                 loadPopularMovies();
         }
         Timber.d("onCreate-finished - displayedTab: %d", displayedTab);
-
     }
 
 
@@ -111,10 +117,13 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
         updateUIOnLoading();
         displayedTab = FAVOURITE_MOVIES_TAG;
         removeOldObserversAddNew(viewModel.getFavouriteMovies(), null);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false));
-//        reloadRecyclerView(viewModel.getFavouriteMovies().getValue());
     }
 
+    /**
+     * Remove observers from exposed LiveData objects.  Register new ones for specific list.
+     * @param listLD LiveData holding List<MovieListItemViewData>
+     * @param statusLD LiveData holding Boolean
+     */
     private void removeOldObserversAddNew(LiveData listLD, @Nullable LiveData statusLD) {
         //remove recent observers
         List<LiveData> list = viewModel.getLiveDataList();
@@ -133,7 +142,6 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
                 } else {
                     reloadRecyclerView(apiMovies);
                 }
-//                        }
             }
         });
 //        Timber.d("ListLd has observers %s  acive: %s", listLD.hasObservers(), listLD.hasActiveObservers());
@@ -155,25 +163,20 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
         }
     }
 
-    private void reloadRecyclerView(List<MovieListItemViewData> movieDTOS) {
-//        updateUIOnLoading();
+    /**
+     * Reload recyclerview with provided data. Remove old data held in adapter and set new one.
+     * @param movieList list of items to be displayed
+     */
+    private void reloadRecyclerView(List<MovieListItemViewData> movieList) {
         movieAdapter.clearMoviesData();
-        movieAdapter.setMoviesData(movieDTOS);
+        movieAdapter.setMovieList(movieList);
         movieAdapter.notifyDataSetChanged();
         updateUIOnResponse();
-        if (movieDTOS.size() > 0) {
+        //todo remove the block below
+        if (movieList.size() > 0) {
             binding.countTV.setVisibility(View.VISIBLE);
-            binding.countTV.setText(String.format("(%d)", movieDTOS.size()));
-            recyclerView.setLayoutManager(myGridLayoutManager);
-
-//            if (movieDTOS.get(0).getType() != MovieInterface.TYPE_MOVIE_DTO) {
-//                recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-//            } else {
-//                recyclerView.setLayoutManager(myGridLayoutManager);
-//            }
+            binding.countTV.setText(String.format("(%d)", movieList.size()));
         }
-
-
     }
 
     @Override
@@ -189,13 +192,18 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     }
 
     private void updateUIOnResponse() {
-        updateSortByTitleTV();
+        updateCategoryTitle();
         binding.centralErrorMessageTv.setVisibility(View.GONE);
         binding.mainProgressBarr.setVisibility(View.GONE);
         binding.upperErrorMessageTv.setVisibility(View.GONE);
-        binding.sortByTitleTv.setVisibility(View.VISIBLE);
+        binding.categoryTitleTv.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * This method should handle UI behaviour when I got response from API, but for some reason couldn't read the results.
+     * @param list
+     */
+    //todo Q?
     private void updateUIWhenNoResults(List<MovieListItemViewData> list) {
         if (list == null) {
             binding.centralErrorMessageTv.setText(getString(R.string.couldnt_read_results));
@@ -208,9 +216,12 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 //        binding.sortByTitleTv.setVisibility(View.GONE);
         movieAdapter.clearMoviesData();
         movieAdapter.notifyDataSetChanged();
-        updateSortByTitleTV();
+        updateCategoryTitle();
     }
 
+    /**
+     * Handle UI when API request onFailure or no internet connection
+     */
     private void updateUIOnFailure() {
         binding.centralErrorMessageTv.setText(getString(R.string.response_failure));
         binding.centralErrorMessageTv.setVisibility(View.VISIBLE);
@@ -218,7 +229,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 //        binding.sortByTitleTv.setVisibility(View.GONE);
         movieAdapter.clearMoviesData();
         movieAdapter.notifyDataSetChanged();
-        updateSortByTitleTV();
+        updateCategoryTitle();
     }
 
 
@@ -233,7 +244,6 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 
     /**
      * Set visibility of menuItems
-     *
      * @param menu
      */
     private void setMenuItemsVisibility(Menu menu) {
@@ -247,8 +257,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     }
 
     /**
-     * Set up onMenuItemClickListeners to menu's menuitems
-     *
+     * Set up onMenuItemClickListeners to menu's menuItems
      * @param menu
      */
     public void setUpOnMenuItemClickListeners(final Menu menu) {
@@ -275,47 +284,27 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        return super.onOptionsItemSelected(item);
-//    }
-
-
-    private void updateSortByTitleTV() {
+    private void updateCategoryTitle() {
         switch (displayedTab) {
             case TOP_RATED_MOVIES_TAG:
-                binding.sortByTitleTv.setText(TOP_RATED_TAG_TITLE);
+                binding.categoryTitleTv.setText(TOP_RATED_TAG_TITLE);
                 break;
             case FAVOURITE_MOVIES_TAG:
-                binding.sortByTitleTv.setText(FAVOURITE_TAG_TITLE);
+                binding.categoryTitleTv.setText(FAVOURITE_TAG_TITLE);
                 break;
             default:
-                binding.sortByTitleTv.setText(POPULARITY_TAG_TITLE);
+                binding.categoryTitleTv.setText(POPULARITY_TAG_TITLE);
         }
 
     }
 
     @Override
-    public void onRecyclerItemClick(int position) {
+    public void onMovieItemClicked(int position) {
         Timber.d("go to Detail clicked %d", position);
         Intent intent = new Intent(this, DetailActivity.class);
-//        intent.putExtra(Intent.EXTRA_SUBJECT, (MovieVM) movieAdapter.getMoviesData().get(position));
-//        if (displayedTab == FAVOURITE_MOVIES_TAG) {
-//            intent.putExtra(EXTRA_API_ID, movieAdapter.getNewData().get(position).getApiId());
-//        } else {
-//            intent.putExtra(EXTRA_API_ID, position);
-//        }
-        intent.putExtra(EXTRA_API_ID, movieAdapter.getNewData().get(position).getApiId());
-
+        intent.putExtra(EXTRA_API_ID, movieAdapter.getMovieList().get(position).getApiId());
         intent.putExtra(DISPLAYED_LIST_TAG, displayedTab);
         startActivity(intent);
     }
 
-    private void showBusyToast() {
-        if (mToast != null) {
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(MovieListActivity.this, "Downloading data in progress, try again later", Toast.LENGTH_SHORT);
-        mToast.show();
-    }
 }

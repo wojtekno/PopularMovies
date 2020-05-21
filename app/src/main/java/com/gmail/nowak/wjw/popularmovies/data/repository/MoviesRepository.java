@@ -38,8 +38,6 @@ import static com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils.TOP_RATED_TAG
 
 public class MoviesRepository {
 
-    private static final String LOG_TAG = MoviesRepository.class.getSimpleName();
-
     Retrofit retrofit;
     TheMovieDataBaseOrgAPI theMovieDatabaseOrgAPI;
     private static final Object LOCK = new Object();
@@ -74,7 +72,7 @@ public class MoviesRepository {
         theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
     }
 
-    //todo Q? move to another class?
+    //todo Q? move setUpOkHttpClient and all this retrofit preparing from constructor to another class? ie NetworkClient.getTheMovieDatabaseClient()?
 
     /**
      * Set up HttpClient intercepting with api key param
@@ -105,7 +103,14 @@ public class MoviesRepository {
         return httpClientBuilder.build();
     }
 
-    private void fetchFromTheMovieDatabase(final String category, Integer page) {
+    /**
+     * Fetching data - list of movies from theMovieDatabase.org
+     *
+     * @param category either topRated or popular
+     * @param page     unused, in the future implementing the possibility of fetching more than just one page
+     */
+    private void fetchMovieListFromApi(final String category, Integer page) {
+        //cancel all previous calls
         okHttpClient.dispatcher().cancelAll();
         Call<ApiResponseMovieListObject> call;
         if (TOP_RATED_TAG_TITLE.equals(category)) {
@@ -118,7 +123,6 @@ public class MoviesRepository {
             @Override
             public void onResponse(Call<ApiResponseMovieListObject> call, final retrofit2.Response<ApiResponseMovieListObject> response) {
                 Timber.d("fetchFromTMD.onResponse");
-
                 List<ApiMovie> results = response.body().getResults();
                 ApiResponseMovieListObject responseObj = null;
                 if (results == null) {
@@ -153,6 +157,34 @@ public class MoviesRepository {
     }
 
     //todo handle in viewmodel if list is null, or there is an error
+    public LiveData<ApiMovie> fetchMovieWithDetailsFromApi(int apiId) {
+        //todo call.cancel!!
+        okHttpClient.dispatcher().cancelAll();
+        Call<ApiMovie> call = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
+
+        Timber.d("calling TMDB");
+        //todo clear apiMovieDetails
+        apiMovieDetails = new MutableLiveData<>();
+        call.enqueue(new Callback<ApiMovie>() {
+            @Override
+            public void onResponse(Call<ApiMovie> call, retrofit2.Response<ApiMovie> response) {
+                //todo handle if error response
+                Timber.d("Fetching moviedetails response");
+                if (response.code() != 200) {
+                    apiMovieDetails.setValue(null);
+                }
+                apiMovieDetails.setValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiMovie> call, Throwable t) {
+                Timber.d("Fetching moviedetails failure");
+                Timber.e(t.getMessage());
+            }
+        });
+        return apiMovieDetails;
+    }
+
     public LiveData<List<FavouriteMovie>> getFavouriteMoviesLD() {
         if (favMoviesData == null || favMoviesData.getValue() == null) {
             Timber.d("Actively fetching from DB");
@@ -170,38 +202,43 @@ public class MoviesRepository {
         });
     }
 
+    public void removeFavouriteMovieByApiId(int id) {
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            database.movieDao().removeMovieById(id);
+        });
+    }
+
     public void removeFavouriteMovie(FavouriteMovie... movies) {
         AppExecutors.getInstance().diskIO().execute(() -> {
             database.movieDao().removeMovie(movies);
         });
     }
 
-    public void removeFavouriteMovieByServerId(int id) {
-        AppExecutors.getInstance().diskIO().execute(() -> {
-            database.movieDao().removeMovieById(id);
-        });
-    }
-
-
+    /**
+     * Get popularMoviesList. The result when fetched successfully is cached as field in repository
+     *
+     * @return
+     */
     public LiveData<ApiResponseMovieListObject> getPopularMoviesResponseLD() {
         if (popularMovieResponseLD.getValue() == null || popularMovieResponseLD.getValue().getResponseResult() != 100) {
-            fetchFromTheMovieDatabase(POPULARITY_TAG_TITLE, null);
+            fetchMovieListFromApi(POPULARITY_TAG_TITLE, null);
         }
         return popularMovieResponseLD;
     }
 
     public LiveData<ApiResponseMovieListObject> getTopRatedMoviesResponseLD() {
         if (topRatedMoviesResponseLD.getValue() == null || topRatedMoviesResponseLD.getValue().getResponseResult() != 100) {
-            fetchFromTheMovieDatabase(TOP_RATED_TAG_TITLE, null);
+            fetchMovieListFromApi(TOP_RATED_TAG_TITLE, null);
         }
         return topRatedMoviesResponseLD;
     }
 
-    public LiveData<FavouriteMovie> getFavouriteMovieByTmdId(int tmdId) {
+    public LiveData<FavouriteMovie> getFavouriteMovieByApiId(int tmdId) {
         return database.movieDao().selectByTmdId(tmdId);
     }
+    //todo Q? how difficult for me was to fetch the databse objects not as the LiveData - i quit!
 
-    public FavouriteMovie getFavouriteMovieByTmdIdDirctly(int tmdId) {
+    public FavouriteMovie getFavouriteMovieByApiIdDirectly(int tmdId) {
         final FavouriteMovie[] fm = new FavouriteMovie[1];
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -283,35 +320,5 @@ public class MoviesRepository {
         } else {
             return topRatedMoviesResponseLD.getValue().getResults().get(position);
         }
-    }
-
-    public LiveData<ApiMovie> fetchMovieWithDetails(int apiId) {
-        //todo call.cancel!!
-        okHttpClient.dispatcher().cancelAll();
-        Call<ApiMovie> call = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
-
-        Timber.d("calling TMDB");
-        //todo clear apiMovieDetails
-        apiMovieDetails = new MutableLiveData<>();
-        call.enqueue(new Callback<ApiMovie>() {
-            @Override
-            public void onResponse(Call<ApiMovie> call, retrofit2.Response<ApiMovie> response) {
-                //todo handle if error response
-                Timber.d("Fetching moviedetails response");
-                if (response.code() != 200) {
-                    apiMovieDetails.setValue(null);
-                }
-
-//                List<ApiVideo> videos =
-                apiMovieDetails.setValue(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<ApiMovie> call, Throwable t) {
-                Timber.d("Fetching moviedetails failure");
-                Timber.e(t.getMessage());
-            }
-        });
-        return apiMovieDetails;
     }
 }

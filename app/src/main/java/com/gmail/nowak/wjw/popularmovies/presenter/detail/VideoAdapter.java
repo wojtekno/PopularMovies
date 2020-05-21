@@ -46,14 +46,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         holder.itemBinding.setVideo(videoList.get(position));
         holder.itemBinding.executePendingBindings();
         holder.itemBinding.setListener(listener);
-//        holder.videoTitleTV.setText(videoList.get(position).getName());
-//        holder.rootView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-
     }
 
     @Override

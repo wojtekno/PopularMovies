@@ -10,11 +10,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewData;
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.ReviewViewData;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewDataFactory;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.VideoViewData;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
@@ -22,12 +20,14 @@ import java.util.List;
 
 import timber.log.Timber;
 
+//todo Q? problem with this one is that it has the Application which makes it harder to test - doesn't it? - (i don't really do junit here so far, but for the future).
+// And when I implement dagger it will be better? cause I won't need to pass Application as a VieWModel argument?
 public class DetailViewModel extends AndroidViewModel {
     private static final int VIDEOS_DISPLAYED = 2;
     private static final int MAX_VIDEOS_DISPLAYED = 10;
     //todo implement YT Android Player, so users can play trailer wihin the app
 
-    //todo Q? ask how to resolve this? why having MovieVN here? is having two variables in layout ok (movieVn and ViewModel)?
+    //todo Q? is it better if I bind MutableLiveData<MovieDetailViewData> in activity_detail and my DetailViewModel, or maybe just DetailViewModel and get the movie using viewModel?
     private MutableLiveData<MovieDetailViewData> movie = new MutableLiveData<>();
     private MoviesRepository repository;
     //todo update lifecycle dependency so there is a MutableData construcot with initial value
@@ -37,10 +37,9 @@ public class DetailViewModel extends AndroidViewModel {
     public DetailViewModel(@NonNull Application application, int apiId, int displayedTab) {
         super(application);
         Timber.d("constructor start  displayedTab: %d", displayedTab);
-        //todo Q? transform apiResultObject to DetailActivityViewModel or to object held within (MovieVN)
         repository = MoviesRepository.getInstance(application);
-        LiveData<ApiMovie> aMLD = repository.fetchMovieWithDetails(apiId);
-        movie = (MutableLiveData) Transformations.map(aMLD, this::convertToMovieDetail);
+        LiveData<ApiMovie> apiMovieLiveData = repository.fetchMovieWithDetailsFromApi(apiId);
+        movie = (MutableLiveData) Transformations.map(apiMovieLiveData, this::convertToMovieDetail);
         isVideoListFolded.setValue(true);
         Timber.d("Constructor END");
     }
@@ -53,14 +52,9 @@ public class DetailViewModel extends AndroidViewModel {
             return null;
         }
         //TODO handle UI if there is no apimovie for favourite movie
-        MutableLiveData<Boolean> isFavourite = (MutableLiveData) Transformations.map(repository.getFavouriteMovieByTmdId(apiMovie.getApiId()), this::transformIsFavourite);
+        MutableLiveData<Boolean> isFavourite = (MutableLiveData) Transformations.map(repository.getFavouriteMovieByApiId(apiMovie.getApiId()), this::transformIsFavourite);
 
         return MovieDetailViewDataFactory.create(apiMovie, isFavourite);
-    }
-
-
-    public MovieDetailViewData getMovieViewData() {
-        return movie.getValue();
     }
 
     public LiveData<MovieDetailViewData> getMovieLD() {
@@ -76,13 +70,6 @@ public class DetailViewModel extends AndroidViewModel {
         }
     }
 
-    public LiveData<Boolean> isFavourite() {
-        if (movie.getValue() == null) {
-            return null;
-        }
-        return movie.getValue().isFavourite();
-    }
-
     private void addToFavourite() {
         Timber.d("Adding to Favourite");
         FavouriteMovie fMovie = new FavouriteMovie(movie.getValue().getApiId(), movie.getValue().getOriginalTitle(), movie.getValue().getPosterPath());
@@ -91,18 +78,7 @@ public class DetailViewModel extends AndroidViewModel {
 
     private void removeFromFavourite() {
         Timber.d("removingFromFav");
-        repository.removeFavouriteMovieByServerId(movie.getValue().getApiId());
-    }
-
-    public LiveData<List<ReviewViewData>> getReviewsList() {
-//        if (movie.getValue() == null) {
-//            return new MutableLiveData<>();
-//        }
-        return movie.getValue().getReviewsLD();
-    }
-
-    public LiveData<List<VideoViewData>> getVideosLD() {
-        return movie.getValue().getVideosLD();
+        repository.removeFavouriteMovieByApiId(movie.getValue().getApiId());
     }
 
     public LiveData<Boolean> isVideoListFolded() {
@@ -120,27 +96,14 @@ public class DetailViewModel extends AndroidViewModel {
     public void unfoldVideoRVClicked(View view) {
         isVideoListFolded.setValue(!isVideoListFolded.getValue());
     }
-    public interface OnVideoItemClickListener {
-        void onVideoClick(String videoUrl);
 
-    }
-
+    //todo debuging method, delete when submitting
     public void addVideo() {
         Timber.d("movie %d", movie.getValue().getApiId());
-//        List<ApiVideo> list = videosLD.getValue();
         List<VideoViewData> list = movie.getValue().getVideosLD().getValue();
-
         VideoViewData mvideo = new VideoViewData("Title", "nonexistingKey");
-//        mvideo.setName("nowe");
         list.add(mvideo);
-//        videosLD.setValue(list);
         movie.getValue().getVideosLD().setValue(list);
-    }
-
-    private LiveData<ApiMovie> turnFavToApi(FavouriteMovie fMovie) {
-        Timber.d("getmovieDetails");
-        LiveData<ApiMovie> apiMovie = repository.fetchMovieWithDetails(fMovie.getTMDId());
-        return apiMovie;
     }
 
 }

@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 
 import timber.log.Timber;
 
-public class MovieDeserializer {} /* implements JsonDeserializer<ApiMovie> {
+public class MovieDeserializer  implements JsonDeserializer<ApiMovie> {
     @Override
     public ApiMovie deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 if(json.getAsJsonObject().has("videos")){
@@ -20,4 +20,3 @@ public class MovieDeserializer {} /* implements JsonDeserializer<ApiMovie> {
         return null;
     }
 }
-*/
