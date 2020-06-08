@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
+import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailActivity;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
@@ -29,6 +30,9 @@ import java.util.List;
 
 import timber.log.Timber;
 
+import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.FAVOURITE;
+import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.TOP_RATED;
+
 public class MovieListActivity extends AppCompatActivity implements MovieAdapter.OnMovieListItemClickListener {
 
     //todo in stage 3:
@@ -38,13 +42,6 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     // - implement javaRx
     // - enable watching videos inside the app
 
-    private static final String POPULARITY_TAG_TITLE = NetworkUtils.POPULARITY_TAG_TITLE;
-    private static final String TOP_RATED_TAG_TITLE = NetworkUtils.TOP_RATED_TAG_TITLE;
-    private static final String FAVOURITE_TAG_TITLE = "Favourite";
-    //todo Q? should I use Enum to make it accessible for other classes and stored in one place?  how about POPULARITY_TAG_TITLE?
-    private static final int POPULAR_MOVIES_TAG = 0;
-    private static final int TOP_RATED_MOVIES_TAG = 1;
-    private static final int FAVOURITE_MOVIES_TAG = 2;
     public static final String DISPLAYED_LIST_TAG = "displayed_list";
 
     public static final String EXTRA_API_ID = "extra_api_id";
@@ -53,7 +50,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 
     MovieListViewModel viewModel;
     // stores the currently displayed tab's tag
-    private int displayedTab = POPULAR_MOVIES_TAG;
+    private ListTag displayedTab = ListTag.POPULAR;
 
     //TODO delete call & implement cancelling requests
     //TODO handle app when no internet && on failure
@@ -83,39 +80,42 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 
         viewModel = ViewModelProviders.of(this).get(MovieListViewModel.class);
         if (savedInstanceState != null) {
-            Timber.d("savedInstanceState.DisplayedListTag: %d ", savedInstanceState.getInt(DISPLAYED_LIST_TAG));
-            displayedTab = savedInstanceState.getInt(DISPLAYED_LIST_TAG);
+            int displayedTabOrdinal = savedInstanceState.getInt(DISPLAYED_LIST_TAG);
+            Timber.d("savedInstanceState.DisplayedListTag: %d ", displayedTabOrdinal);
+            displayedTab = ListTag.values()[displayedTabOrdinal];
         }
 
+//        viewModel.loadMovieList(displayedTab);
+
         switch (displayedTab) {
-            case TOP_RATED_MOVIES_TAG:
+            case TOP_RATED:
                 loadTopRatedMovies();
                 break;
-            case FAVOURITE_MOVIES_TAG:
+            case FAVOURITE:
                 loadFavouriteMovies(null);
                 break;
             default:
                 loadPopularMovies();
         }
-        Timber.d("onCreate-finished - displayedTab: %d", displayedTab);
+        Timber.d("onCreate-finished - displayedTab: %s", displayedTab.name());
     }
 
 
     private void loadPopularMovies() {
         updateUIOnLoading();
-        displayedTab = POPULAR_MOVIES_TAG;
+        displayedTab = ListTag.POPULAR;
         removeOldObserversAddNew(viewModel.getPopularMoviesLD(), viewModel.getPopularMoviesStatusLD());
     }
 
     private void loadTopRatedMovies() {
         updateUIOnLoading();
-        displayedTab = TOP_RATED_MOVIES_TAG;
+        displayedTab = TOP_RATED;
         removeOldObserversAddNew(viewModel.getTopRatedMoviesLD(), viewModel.getTopRatedMoviesStatusLD());
     }
 
     private void loadFavouriteMovies(@Nullable List<FavouriteMovie> movies) {
         updateUIOnLoading();
-        displayedTab = FAVOURITE_MOVIES_TAG;
+        displayedTab = FAVOURITE;
         removeOldObserversAddNew(viewModel.getFavouriteMovies(), null);
     }
 
@@ -136,7 +136,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
         listLD.observe(this, new Observer<List<MovieListItemViewData>>() {
             @Override
             public void onChanged(List<MovieListItemViewData> apiMovies) {
-                Timber.d("%d OnChange triggered", displayedTab);
+                Timber.d("%s OnChange triggered", displayedTab.name());
                 if (apiMovies == null || apiMovies.size() == 0) {
                     updateUIWhenNoResults(apiMovies);
                 } else {
@@ -151,9 +151,9 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
                 @Override
                 public void onChanged(Boolean status) {
                     if (status) {
-                        Timber.d("%d status: true", displayedTab);
+                        Timber.d("%s status: true", displayedTab.name());
                     } else {
-                        Timber.d("%d status: failure", displayedTab);
+                        Timber.d("%s status: failure", displayedTab.name());
                         updateUIOnFailure();
                         movieAdapter.clearMoviesData();
                         movieAdapter.notifyDataSetChanged();
@@ -182,7 +182,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(DISPLAYED_LIST_TAG, displayedTab);
+        outState.putInt(DISPLAYED_LIST_TAG, displayedTab.ordinal());
 //        Timber.d("onSaveState.DisplayedListTag: %d" , displayedList);
     }
 
@@ -249,7 +249,7 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     private void setMenuItemsVisibility(Menu menu) {
 //        Timber.d("displayedIndex = %d", displayedList);
         for (int i = 0; i < menu.size(); i++) {
-            boolean visible = displayedTab == i ? false : true;
+            boolean visible = displayedTab.ordinal() == i ? false : true;
             MenuItem mitem = menu.getItem(i);
             mitem.setVisible(visible);
 //            Timber.d("menu item ndex: %d title %s, visible: %d", i, mitem.getTitle(), visible == true ? 1 : 0);
@@ -286,14 +286,14 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
 
     private void updateCategoryTitle() {
         switch (displayedTab) {
-            case TOP_RATED_MOVIES_TAG:
-                binding.categoryTitleTv.setText(TOP_RATED_TAG_TITLE);
+            case TOP_RATED:
+                binding.categoryTitleTv.setText(getString(R.string.top_rate_tag_title));
                 break;
-            case FAVOURITE_MOVIES_TAG:
-                binding.categoryTitleTv.setText(FAVOURITE_TAG_TITLE);
+            case FAVOURITE:
+                binding.categoryTitleTv.setText(getString(R.string.favourite_tag_title));
                 break;
             default:
-                binding.categoryTitleTv.setText(POPULARITY_TAG_TITLE);
+                binding.categoryTitleTv.setText(getString(R.string.popular_tag_title));
         }
 
     }

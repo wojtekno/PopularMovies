@@ -17,6 +17,8 @@ import com.gmail.nowak.wjw.popularmovies.databinding.ItemVideoBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
 
     List<VideoViewData> videoList = new ArrayList<>();
@@ -37,6 +39,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemVideoBinding itemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_video, parent, false);
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_video, parent, false);
+        Timber.d("onCreateViewHolder");
 
         return new VideoViewHolder(itemBinding);
     }
@@ -46,6 +49,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         holder.itemBinding.setVideo(videoList.get(position));
         holder.itemBinding.executePendingBindings();
         holder.itemBinding.setListener(listener);
+        Timber.d("onBindViewHolder");
     }
 
     @Override
