@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies.utils;
+package com.gmail.nowak.wjw.popularmovies.network;
 
 import android.net.Uri;
 import android.util.Log;
@@ -42,39 +42,6 @@ public class NetworkUtils {
 
 
     /**
-     * Build URL based on THE MOVIE DATABASE API, with a movie path.
-     *
-     * @param filter points to either popular or top rated movies
-     * @param page   set the desired page
-     * @return URL pointing to the specific path and page
-     */
-    public static URL buildTMDApiUrl(String filter, int page) {
-        String sortByValue = TMD_API_POPULAR_PATH;
-        if (filter.equals(TOP_RATED_TAG_TITLE)) {
-            sortByValue = TMD_API_TOP_RATED_PATH;
-        }
-
-        Uri mUri = Uri.parse(THE_MOVIE_DATABASE_API_BASE_URL).buildUpon()
-                .appendPath(TMD_API_MOVIE_PATH)
-                .appendPath(sortByValue)
-                .appendQueryParameter(PAGE_PARAM, String.valueOf(page))
-                .appendQueryParameter(API_KEY_PARAM, THE_MOVIE_DATABASE_PRIVATE_API_KEY)
-                .build();
-
-        URL mURL = null;
-
-        try {
-            mURL = new URL(mUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        Log.d(LOG_TAG, "buildUrl URL: " + mURL.toString());
-        return mURL;
-    }
-
-
-    /**
      * Build Uri based on THE MOVIE DATABASE pointing to images
      *
      * @param imageUrl component of the Uri - the image path
@@ -96,7 +63,7 @@ public class NetworkUtils {
      * @param imageView   view to set the image to
      * @param handleError set true if you want the method to handle request errors, otherwise set to false
      */
-    public static void fetchImageAndSetToVew(Uri imageUri, @NonNull ImageView imageView, boolean handleError) {
+    public static void fetchImageAndSetToView(Uri imageUri, @NonNull ImageView imageView, boolean handleError) {
         if (handleError) {
             Picasso.get()
                     .load(imageUri)
@@ -109,4 +76,36 @@ public class NetworkUtils {
         }
     }
 
+
+//    /**
+//     * Build URL based on THE MOVIE DATABASE API, with a movie path.
+//     *
+//     * @param filter points to either popular or top rated movies
+//     * @param page   set the desired page
+//     * @return URL pointing to the specific path and page
+//     */
+//    public static URL buildTMDApiUrl(String filter, int page) {
+//        String sortByValue = TMD_API_POPULAR_PATH;
+//        if (filter.equals(TOP_RATED_TAG_TITLE)) {
+//            sortByValue = TMD_API_TOP_RATED_PATH;
+//        }
+//
+//        Uri mUri = Uri.parse(THE_MOVIE_DATABASE_API_BASE_URL).buildUpon()
+//                .appendPath(TMD_API_MOVIE_PATH)
+//                .appendPath(sortByValue)
+//                .appendQueryParameter(PAGE_PARAM, String.valueOf(page))
+//                .appendQueryParameter(API_KEY_PARAM, THE_MOVIE_DATABASE_PRIVATE_API_KEY)
+//                .build();
+//
+//        URL mURL = null;
+//
+//        try {
+//            mURL = new URL(mUri.toString());
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Log.d(LOG_TAG, "buildUrl URL: " + mURL.toString());
+//        return mURL;
+//    }
 }

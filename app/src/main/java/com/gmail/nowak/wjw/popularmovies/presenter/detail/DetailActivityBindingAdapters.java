@@ -10,12 +10,11 @@ import androidx.databinding.BindingAdapter;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiReview;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewData;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.ReviewViewData;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.VideoViewData;
-import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
+import com.gmail.nowak.wjw.popularmovies.network.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class DetailActivityBindingAdapters {
 //        Timber.d("xml setImageURL");
         //todo Q? should i use it with retrofit? or maybe build the url with retrofit interface?
         Uri mUri = NetworkUtils.buildTMDImageUri(url, NetworkUtils.IMAGE_SIZE_MEDIUM);
-        NetworkUtils.fetchImageAndSetToVew(mUri, v, false);
+        NetworkUtils.fetchImageAndSetToView(mUri, v, false);
     }
 
 

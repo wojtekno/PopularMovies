@@ -40,6 +40,14 @@ android {
         targetCompatibility = 1.8
     }
 
+//    retrolambda {
+//        jdk System.getenv('JAVA8_HOME')
+//        oldJdk System.getenv('JAVA7_HOME')
+//        jvmArgs '-arg1', '-arg2'
+//        defaultMethods false
+//        incremental true
+//    }
+
 }
 
 dependencies {
@@ -51,13 +59,13 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
-//    // ViewModel
-//    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
-//    // LiveData
-//    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
 
-    implementation "android.arch.lifecycle:extensions:1.1.1"
-    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+//    implementation "android.arch.lifecycle:extensions:1.1.1"
+//    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
     def room_version = "2.2.5"
     implementation "androidx.room:room-runtime:$room_version"
@@ -70,6 +78,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     implementation "com.squareup.okhttp3:okhttp:4.5.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.5.0"
+
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.picasso:picasso:2.71828'
 

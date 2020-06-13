@@ -7,8 +7,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
@@ -34,13 +33,13 @@ public class DetailActivity extends AppCompatActivity implements VideoAdapter.On
         int displayedTab = 0;
         if (invokingIntent.getExtras().containsKey(MovieListActivity.EXTRA_API_ID)) {
             listPosition = invokingIntent.getExtras().getInt(MovieListActivity.EXTRA_API_ID);
-            displayedTab = invokingIntent.getExtras().getInt(MovieListActivity.DISPLAYED_LIST_TAG);
+//            displayedTab = invokingIntent.getExtras().getInt(MovieListActivity.DISPLAYED_LIST_TAG);
         } else {
             //todo Q? do not load activity - return to Main with ToastMessage "no api id error" how to do that?
         }
 
         DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), listPosition, displayedTab);
-        viewModel = ViewModelProviders.of(this, factory).get(DetailViewModel.class);
+        viewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
 
         binding.setViewModel(viewModel);
         //todo Q? is it better if I bind MutableLiveData<MovieDetailViewData> in activity_detail and my DetailViewModel, or maybe just DetailViewModel and get the movie using viewModel(how I did it now)?

@@ -15,6 +15,9 @@
     <string name="couldnt_read_results">Couldn\'t read results. Try again later.</string>
     <string name="no_items_found">Didn\'t find any items. Try again later.</string>
     <string name="response_failure">Connection problem, try again later</string>
+    <string name="refresh_action_title">Refresh</string>
+    <string name="error_problem_with_response">There are problems with server response</string>
+    <string name="error_cannot_connect_with_server">Cannot connect with server</string>
 
 
 </resources>

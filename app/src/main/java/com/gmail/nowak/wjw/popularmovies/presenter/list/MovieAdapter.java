@@ -1,18 +1,17 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.list;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.R;
-import com.gmail.nowak.wjw.popularmovies.utils.NetworkUtils;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
+import com.gmail.nowak.wjw.popularmovies.databinding.ItemMovieBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,34 +20,28 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieListVie
 
     private OnMovieListItemClickListener mListener;
     private List<MovieListItemViewData> movieList = new ArrayList<>();
+    private LifecycleOwner lifecycleOwner;
 
     public MovieAdapter(OnMovieListItemClickListener listener) {
         mListener = listener;
+    }
+    public MovieAdapter(OnMovieListItemClickListener listener, LifecycleOwner lifecycleOwner) {
+        mListener = listener;
+        this.lifecycleOwner = lifecycleOwner;
     }
 
     @NonNull
     @Override
     public MovieListViewDataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie_view_data, parent, false);
-        return new MovieListViewDataHolder(view);
+        ItemMovieBinding itemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),R.layout.item_movie, parent, false);
+        itemBinding.setLifecycleOwner(lifecycleOwner);
+        return new MovieListViewDataHolder(itemBinding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieListViewDataHolder holder, int position) {
-        MovieListItemViewData item = movieList.get(position);
-        Uri mUri = NetworkUtils.buildTMDImageUri(item.getImagePath(), NetworkUtils.IMAGE_SIZE_SMALL);
-        NetworkUtils.fetchImageAndSetToVew(mUri, holder.posterIV, true);
-        if (item.getImagePath() == null || item.getImagePath().isEmpty()) {
-            holder.titleTV.setVisibility(View.VISIBLE);
-            holder.titleTV.setText(item.getOriginalTitle());
-            holder.idTV.setVisibility(View.VISIBLE);
-            holder.idTV.setText(String.valueOf(item.getApiId()));
-        } else {
-            holder.titleTV.setVisibility(View.GONE);
-            holder.idTV.setVisibility(View.GONE);
-        }
-
-//        Timber.d("item data: TMDID: %d", item.getTMDId());
+        holder.binding.setMovieItem(movieList.get(position));
+        holder.binding.executePendingBindings();
         //TODO Q? how to load more data when last position displayed
     }
 
@@ -73,16 +66,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieListVie
     }
 
     public class MovieListViewDataHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView posterIV;
-        TextView titleTV;
-        TextView idTV;
+        ItemMovieBinding binding;
 
-        public MovieListViewDataHolder(@NonNull View itemView) {
-            super(itemView);
-            posterIV = itemView.findViewById(R.id.poster_IV);
-            titleTV = itemView.findViewById(R.id.master_title_tv);
-            idTV = itemView.findViewById(R.id.master_api_id_tv);
-            itemView.setOnClickListener(this);
+
+        public MovieListViewDataHolder(@NonNull ItemMovieBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.getRoot().setOnClickListener(this);
         }
 
         @Override
