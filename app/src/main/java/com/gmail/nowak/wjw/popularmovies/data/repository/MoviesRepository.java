@@ -1,12 +1,9 @@
 package com.gmail.nowak.wjw.popularmovies.data.repository;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.gmail.nowak.wjw.popularmovies.AppExecutors;
-import com.gmail.nowak.wjw.popularmovies.BuildConfig;
 import com.gmail.nowak.wjw.popularmovies.data.db.AppDatabase;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieList;
@@ -17,100 +14,37 @@ import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.network.TheMovieDataBaseOrgAPI;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
-import com.gmail.nowak.wjw.popularmovies.network.NetworkUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
 public class MoviesRepository {
 
-    Retrofit retrofit;
-    TheMovieDataBaseOrgAPI theMovieDatabaseOrgAPI;
-    private static final Object LOCK = new Object();
-    private static MoviesRepository sInstance;
+    //    Retrofit retrofit;
+    private TheMovieDataBaseOrgAPI theMovieDatabaseOrgAPI;
+    //    private static final Object LOCK = new Object();
+//    private static MoviesRepository sInstance;
     private MutableLiveData<ApiResponseMovieList> topRatedMoviesResponseLD = new MutableLiveData<>();
     private MutableLiveData<ApiResponseMovieList> popularMovieResponseLD = new MutableLiveData<>();
     private LiveData<List<FavouriteMovie>> favMoviesData;// = new MutableLiveData<>();
     private MutableLiveData<ApiMovie> apiMovieDetails = new MutableLiveData<>();
-    public AppDatabase database;
-    OkHttpClient okHttpClient;
+    private AppDatabase database;
+    private OkHttpClient okHttpClient;
 
-    public static MoviesRepository getInstance(Application application) {
-        if (sInstance == null) {
-            synchronized (LOCK) {
-                Timber.d("Creating new repository instance");
-                sInstance = new MoviesRepository(application);
-            }
-        }
-        Timber.d("Getting the repository instance");
-        return sInstance;
-    }
-
-    private MoviesRepository(Application application) {
-        database = AppDatabase.getInstance(application);
-
-        okHttpClient = setUpOkHttpClient();
-
-        retrofit = new Retrofit.Builder().baseUrl(NetworkUtils.THE_MOVIE_DATABASE_API_BASE_URL)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
-    }
-
-    //todo Q? move setUpOkHttpClient and all this retrofit preparing from constructor to another class? ie NetworkClient.getTheMovieDatabaseClient()?
-
-    /**
-     * Set up HttpClient intercepting with api key param
-     *
-     * @return
-     */
-    private OkHttpClient setUpOkHttpClient() {
-        OkHttpClient.Builder httpClientBuilder =
-                new OkHttpClient.Builder();
-        httpClientBuilder.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
-
-                HttpUrl originalHttpUrl = original.url();
-
-                HttpUrl newUrl = originalHttpUrl.newBuilder()
-                        .addQueryParameter(NetworkUtils.API_KEY_PARAM, BuildConfig.TMD_API_KEY)
-                        .build();
-
-                // Request customization: add request headers
-                Request.Builder requestBuilder = original.newBuilder()
-                        .url(newUrl);
-
-                Request newRequest = requestBuilder.build();
-
-                return chain.proceed(newRequest);
-            }
-        });
-
-        if (BuildConfig.DEBUG) {
-            Timber.d("adding NetworkInterceptor");
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClientBuilder.addNetworkInterceptor(loggingInterceptor);
-        }
-
-
-        return httpClientBuilder.build();
+    public MoviesRepository(AppDatabase appDatabase, OkHttpClient okHttpClient, TheMovieDataBaseOrgAPI theMovieDataBaseOrgAPI) {
+        Timber.d("MoviesRepository:newInstance");
+        database = appDatabase;
+        this.okHttpClient = okHttpClient;
+        this.theMovieDatabaseOrgAPI = theMovieDataBaseOrgAPI;
+        //todo Q? do I pass retrofit, or the TheMovieDataBaseOrgAPI
+//        retrofit = retrofit;
+//        theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
     }
 
 
@@ -347,5 +281,71 @@ public class MoviesRepository {
             return topRatedMoviesResponseLD.getValue().getResults().get(position);
         }
     }
+
+
+//    public static MoviesRepository getInstance(Application application) {
+//        if (sInstance == null) {
+//            synchronized (LOCK) {
+//                Timber.d("Creating new repository instance");
+//                sInstance = new MoviesRepository(application);
+//            }
+//        }
+//        Timber.d("Getting the repository instance");
+//        return sInstance;
+//    }
+//
+//    private MoviesRepository(Application application) {
+//        database = AppDatabase.getInstance(application);
+//
+//        okHttpClient = setUpOkHttpClient();
+//
+//        retrofit = new Retrofit.Builder().baseUrl(NetworkUtils.THE_MOVIE_DATABASE_API_BASE_URL)
+//                .client(okHttpClient)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
+//    }
+//
+//    //todo Q? move setUpOkHttpClient and all this retrofit preparing from constructor to another class? ie NetworkClient.getTheMovieDatabaseClient()?
+//
+//    /**
+//     * Set up HttpClient intercepting with api key param
+//     *
+//     * @return
+//     */
+//    private OkHttpClient setUpOkHttpClient() {
+//        OkHttpClient.Builder httpClientBuilder =
+//                new OkHttpClient.Builder();
+//        httpClientBuilder.addInterceptor(new Interceptor() {
+//            @Override
+//            public Response intercept(Chain chain) throws IOException {
+//                Request original = chain.request();
+//
+//                HttpUrl originalHttpUrl = original.url();
+//
+//                HttpUrl newUrl = originalHttpUrl.newBuilder()
+//                        .addQueryParameter(NetworkUtils.API_KEY_PARAM, BuildConfig.TMD_API_KEY)
+//                        .build();
+//
+//                // Request customization: add request headers
+//                Request.Builder requestBuilder = original.newBuilder()
+//                        .url(newUrl);
+//
+//                Request newRequest = requestBuilder.build();
+//
+//                return chain.proceed(newRequest);
+//            }
+//        });
+//
+//        if (BuildConfig.DEBUG) {
+//            Timber.d("adding NetworkInterceptor");
+//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//            httpClientBuilder.addNetworkInterceptor(loggingInterceptor);
+//        }
+//
+//
+//        return httpClientBuilder.build();
+//    }
 
 }

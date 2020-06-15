@@ -1,13 +1,10 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.list;
 
-import android.app.Application;
-
-import androidx.annotation.NonNull;
 import androidx.arch.core.util.Function;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
@@ -22,7 +19,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class MovieListViewModel extends AndroidViewModel {
+public class MovieListViewModel extends ViewModel {
 
     private MoviesRepository repository;
     private MutableLiveData<List<MovieListItemViewData>> popularMoviesLD;
@@ -37,9 +34,10 @@ public class MovieListViewModel extends AndroidViewModel {
     public MutableLiveData<Boolean> isErrorMessageVisible;
     public MutableLiveData<Boolean> isProgressBarVisible;
 
-    public MovieListViewModel(@NonNull Application application) {
-        super(application);
-        repository = MoviesRepository.getInstance(application);
+    public MovieListViewModel(MoviesRepository moviesRepository) {
+        super();
+        Timber.d("MovieListViewModel::newInstance");
+        repository = moviesRepository;
         isErrorMessageVisible = (MutableLiveData) Transformations.switchMap(listTagLD, transformErrorMessageVisibility);
         isProgressBarVisible = (MutableLiveData) Transformations.switchMap(listTagLD, transformProgressBarVisibility);
         //set the progress bar to be visible when starting application

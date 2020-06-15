@@ -11,9 +11,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.gmail.nowak.wjw.popularmovies.MyApplication;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityListBinding;
+import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailActivity;
 
@@ -51,16 +53,19 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.d("onCreate");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_list);
         binding.setLifecycleOwner(this);
 
         /*RecyclerView */
+        //todo Q? should i create factory and inject it(MovieAdapterFactory) from AppContainer or leave it like this?
         movieAdapter = new MovieAdapter(this, this);
         binding.moviesRecyclerView.setHasFixedSize(true);
         binding.moviesRecyclerView.setAdapter(movieAdapter);
         binding.moviesRecyclerView.setLayoutManager(new MyGridLayoutManager(this, 1));
 
-        viewModel = new ViewModelProvider(this, new MovieListViewModelFactory(getApplication())).get(MovieListViewModel.class);
+        AppContainer appContainer = ((MyApplication)getApplication()).appContainer;
+        viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(MovieListViewModel.class);
         binding.setViewModel(viewModel);
 
         setLiveDataObservers();
