@@ -21,19 +21,15 @@ import java.util.List;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Retrofit;
 import timber.log.Timber;
 
 public class MoviesRepository {
 
-    //    Retrofit retrofit;
     private TheMovieDataBaseOrgAPI theMovieDatabaseOrgAPI;
-    //    private static final Object LOCK = new Object();
-//    private static MoviesRepository sInstance;
-    private MutableLiveData<ApiResponseMovieList> topRatedMoviesResponseLD = new MutableLiveData<>();
-    private MutableLiveData<ApiResponseMovieList> popularMovieResponseLD = new MutableLiveData<>();
-    private LiveData<List<FavouriteMovie>> favMoviesData;// = new MutableLiveData<>();
-    private MutableLiveData<ApiMovie> apiMovieDetails = new MutableLiveData<>();
+    private MutableLiveData<ApiResponseMovieList> topRatedMoviesResponseLD;
+    private MutableLiveData<ApiResponseMovieList> popularMovieResponseLD;
+    private LiveData<List<FavouriteMovie>> favMoviesData;
+    private MutableLiveData<ApiMovie> apiMovieDetails;
     private AppDatabase database;
     private OkHttpClient okHttpClient;
 
@@ -47,14 +43,6 @@ public class MoviesRepository {
 //        theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
     }
 
-
-    public void reloadApiResponseMovieList(ListTag value) {
-        Timber.d("reloadList %s", value);
-        if (value == ListTag.FAVOURITE) {
-            return;
-        }
-        fetchMovieListFromApi(value, 0);
-    }
 
     /**
      * Fetching data - list of movies from theMovieDatabase.org
@@ -93,7 +81,8 @@ public class MoviesRepository {
                 } else if (ListTag.POPULAR.equals(category)) {
                     popularMovieResponseLD.setValue(apiResponseMovieList);
                 } else {
-                    // TODO: 10.06.20 throw exception
+                    // TODO: customize
+                    throw new RuntimeException();
                 }
             }
 
@@ -114,10 +103,10 @@ public class MoviesRepository {
         });
 
     }
-    //todo handle in viewModel if list is null, or there is an error
 
     public LiveData<ApiMovie> fetchMovieWithDetailsFromApi(int apiId) {
         //todo call.cancel!!
+        //todo test when response takes few seconds
         okHttpClient.dispatcher().cancelAll();
         Call<ApiMovie> call = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
 
@@ -144,8 +133,16 @@ public class MoviesRepository {
         return apiMovieDetails;
     }
 
+    public void reloadApiResponseMovieList(ListTag value) {
+        Timber.d("reloadList %s", value);
+        if (value == ListTag.FAVOURITE) {
+            return;
+        }
+        fetchMovieListFromApi(value, 0);
+    }
+
     public LiveData<List<FavouriteMovie>> getFavouriteMoviesLD() {
-        if (favMoviesData == null || favMoviesData.getValue() == null) {
+        if (favMoviesData == null) {
             Timber.d("Actively fetching from DB");
             favMoviesData = database.movieDao().getAllMoviesLIVE();
         } else {
@@ -157,7 +154,6 @@ public class MoviesRepository {
     public void addFavouriteMovie(FavouriteMovie... movies) {
         AppExecutors.getInstance().diskIO().execute(() -> {
             database.movieDao().insertMovie(movies);
-
         });
     }
 
@@ -179,14 +175,18 @@ public class MoviesRepository {
      * @return
      */
     public LiveData<ApiResponseMovieList> getPopularMoviesResponseLD() {
-        if (popularMovieResponseLD.getValue() == null || popularMovieResponseLD.getValue().getResponseCode() != 100) {
+        if (popularMovieResponseLD == null) {
+            popularMovieResponseLD = new MutableLiveData<>();
             fetchMovieListFromApi(ListTag.POPULAR, null);
         }
         return popularMovieResponseLD;
     }
 
     public LiveData<ApiResponseMovieList> getTopRatedMoviesResponseLD() {
-        if (topRatedMoviesResponseLD.getValue() == null || topRatedMoviesResponseLD.getValue().getResponseCode() != 100) {
+        Timber.d("getTopRatedMoviesResponseLD");
+        if (topRatedMoviesResponseLD == null) {
+            Timber.d("topRatedMoviesResponseLD::initializing");
+            topRatedMoviesResponseLD = new MutableLiveData<>();
             fetchMovieListFromApi(ListTag.TOP_RATED, null);
         }
         return topRatedMoviesResponseLD;
@@ -281,71 +281,5 @@ public class MoviesRepository {
             return topRatedMoviesResponseLD.getValue().getResults().get(position);
         }
     }
-
-
-//    public static MoviesRepository getInstance(Application application) {
-//        if (sInstance == null) {
-//            synchronized (LOCK) {
-//                Timber.d("Creating new repository instance");
-//                sInstance = new MoviesRepository(application);
-//            }
-//        }
-//        Timber.d("Getting the repository instance");
-//        return sInstance;
-//    }
-//
-//    private MoviesRepository(Application application) {
-//        database = AppDatabase.getInstance(application);
-//
-//        okHttpClient = setUpOkHttpClient();
-//
-//        retrofit = new Retrofit.Builder().baseUrl(NetworkUtils.THE_MOVIE_DATABASE_API_BASE_URL)
-//                .client(okHttpClient)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
-//    }
-//
-//    //todo Q? move setUpOkHttpClient and all this retrofit preparing from constructor to another class? ie NetworkClient.getTheMovieDatabaseClient()?
-//
-//    /**
-//     * Set up HttpClient intercepting with api key param
-//     *
-//     * @return
-//     */
-//    private OkHttpClient setUpOkHttpClient() {
-//        OkHttpClient.Builder httpClientBuilder =
-//                new OkHttpClient.Builder();
-//        httpClientBuilder.addInterceptor(new Interceptor() {
-//            @Override
-//            public Response intercept(Chain chain) throws IOException {
-//                Request original = chain.request();
-//
-//                HttpUrl originalHttpUrl = original.url();
-//
-//                HttpUrl newUrl = originalHttpUrl.newBuilder()
-//                        .addQueryParameter(NetworkUtils.API_KEY_PARAM, BuildConfig.TMD_API_KEY)
-//                        .build();
-//
-//                // Request customization: add request headers
-//                Request.Builder requestBuilder = original.newBuilder()
-//                        .url(newUrl);
-//
-//                Request newRequest = requestBuilder.build();
-//
-//                return chain.proceed(newRequest);
-//            }
-//        });
-//
-//        if (BuildConfig.DEBUG) {
-//            Timber.d("adding NetworkInterceptor");
-//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//            httpClientBuilder.addNetworkInterceptor(loggingInterceptor);
-//        }
-//
-//
-//        return httpClientBuilder.build();
-//    }
 
 }

@@ -13,7 +13,7 @@ import com.gmail.nowak.wjw.popularmovies.MyApplication;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
 import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
-import com.gmail.nowak.wjw.popularmovies.presenter.list.MovieListActivity;
+import com.gmail.nowak.wjw.popularmovies.presenter.list.ListActivity;
 
 import timber.log.Timber;
 
@@ -33,8 +33,8 @@ public class DetailActivity extends AppCompatActivity implements VideoAdapter.On
         //TODO Q? first make intent later viewModel or maybe put intent as parameter in viewmodel constructor?
         int listPosition = 0;
         int displayedTab = 0;
-        if (invokingIntent.getExtras().containsKey(MovieListActivity.EXTRA_API_ID)) {
-            listPosition = invokingIntent.getExtras().getInt(MovieListActivity.EXTRA_API_ID);
+        if (invokingIntent.getExtras().containsKey(ListActivity.EXTRA_API_ID)) {
+            listPosition = invokingIntent.getExtras().getInt(ListActivity.EXTRA_API_ID);
 //            displayedTab = invokingIntent.getExtras().getInt(MovieListActivity.DISPLAYED_LIST_TAG);
         } else {
             //todo Q? do not load activity - return to Main with ToastMessage "no api id error" how to do that?

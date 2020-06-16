@@ -42,16 +42,20 @@ public class ApiMovie {
     //TODO manage to set retrofit, gson,converterFactories and ApiReviewDeserialize so it can be List<ApiReview>
     @SerializedName("reviews")
     private ApiResponseReviewObject apiResponseReviewObject;
-    //    private List<ApiReview> reviewList;
     @SerializedName("videos")
     private ApiResponseVideoObject apiResponseVideoObject;
-//    private List<ApiVideo> videoList;
 
     public int getApiId() {
         return apiId;
     }
 
     public ApiMovie() {
+    }
+
+    public ApiMovie(int apiId, String posterPath, String originalTitle) {
+        this.apiId = apiId;
+        this.posterPath = posterPath;
+        this.originalTitle = originalTitle;
     }
 
     public List<ApiReview> getReviewList() {

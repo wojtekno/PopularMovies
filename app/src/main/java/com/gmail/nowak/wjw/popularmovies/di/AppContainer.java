@@ -3,11 +3,12 @@ package com.gmail.nowak.wjw.popularmovies.di;
 import android.app.Application;
 
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
+import com.gmail.nowak.wjw.popularmovies.domain.GetMovieListsUseCase;
 import com.gmail.nowak.wjw.popularmovies.network.HttpClientFactory;
 import com.gmail.nowak.wjw.popularmovies.network.NetworkUtils;
 import com.gmail.nowak.wjw.popularmovies.network.TheMovieDataBaseOrgAPI;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailViewModelAssistedFactory_Factory;
-import com.gmail.nowak.wjw.popularmovies.presenter.list.MovieListViewModelFactory;
+import com.gmail.nowak.wjw.popularmovies.presenter.list.ListViewModelFactory;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -24,14 +25,16 @@ public class AppContainer {
             .build().create(TheMovieDataBaseOrgAPI.class);
 
     private MoviesRepository moviesRepository;
+    private GetMovieListsUseCase getMovieListsUseCase;
 
     public AppContainer(Application application) {
         Timber.d("AppContainer::newInstance");
         moviesRepository = new MoviesRepository(new DatabaseModule(application).appDatabase, okHttpClient, theMovieDataBaseOrgAPI);
+        getMovieListsUseCase = new GetMovieListsUseCase(moviesRepository);
     }
 
-    public MovieListViewModelFactory listViewModelFactory() {
-        return new MovieListViewModelFactory(moviesRepository);
+    public ListViewModelFactory listViewModelFactory() {
+        return new ListViewModelFactory(getMovieListsUseCase);
     }
 
     public DetailViewModelAssistedFactory_Factory detailViewModelAssistedFactory_factory() {

@@ -27,7 +27,7 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.FAVOURITE;
 import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.POPULAR;
 import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.TOP_RATED;
 
-public class MovieListActivity extends AppCompatActivity implements MovieAdapter.OnMovieListItemClickListener {
+public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMovieListItemClickListener {
 
     //todo in stage 3:
     // - implement fragments holding each list - dissect ListActivity to three fragments
@@ -42,7 +42,8 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     private MovieAdapter movieAdapter;
     private ActivityListBinding binding;
 
-    MovieListViewModel viewModel;
+//    MovieListViewModel viewModel;
+    ListViewModel viewModel;
     // stores the currently displayed tab's tag
     private ListTag displayedTab;
 
@@ -65,7 +66,8 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
         binding.moviesRecyclerView.setLayoutManager(new MyGridLayoutManager(this, 1));
 
         AppContainer appContainer = ((MyApplication)getApplication()).appContainer;
-        viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(MovieListViewModel.class);
+        viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(ListViewModel.class);
+//        viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(MovieListViewModel.class);
         binding.setViewModel(viewModel);
 
         setLiveDataObservers();
@@ -96,11 +98,11 @@ public class MovieListActivity extends AppCompatActivity implements MovieAdapter
     }
 
     private void changeTabClicked(ListTag listTag) {
-        viewModel.changeTabClicked(listTag);
+        viewModel.listTagChanged(listTag);
     }
 
     private void reloadClicked() {
-        viewModel.reloadMovieList();
+        viewModel.refreshList();
     }
 
     /**

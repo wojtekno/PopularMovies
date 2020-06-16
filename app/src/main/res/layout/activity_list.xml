@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.gmail.nowak.wjw.popularmovies.presenter.list.MovieListViewModel" />
+            type="com.gmail.nowak.wjw.popularmovies.presenter.list.ListViewModel" />
 
         <import type="android.view.View" />
     </data>
@@ -33,15 +33,15 @@
             tools:text="Category title" />
 
         <!--Debugging purpose button        -->
-        <Button
-            android:id="@+id/add_movie_btn"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_gravity="center_horizontal"
-            android:onClick="@{()->viewModel.addPopularMovie()}"
-            android:text="Add new movie (debug)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <Button-->
+<!--            android:id="@+id/add_movie_btn"-->
+<!--            android:layout_width="72dp"-->
+<!--            android:layout_height="72dp"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:onClick="@{()->viewModel.addPopularMovie()}"-->
+<!--            android:text="Add new movie (debug)"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/movies_recycler_view"
@@ -68,13 +68,13 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:visibility="@{viewModel.isErrorMessageVisible?View.VISIBLE:View.INVISIBLE}"
+            android:visibility="@{viewModel.isErrMsgVisible?View.VISIBLE:View.INVISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/category_title_tv"
             tools:text="@string/error_problem_with_response"
-            android:text="@{viewModel.errorMessage}"/>
+            android:text="@{viewModel.errorResId}"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
