@@ -5,27 +5,25 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
+import com.gmail.nowak.wjw.popularmovies.domain.AddRemoveFromFavouriteUseCase;
+import com.gmail.nowak.wjw.popularmovies.domain.GetMovieDetailsUseCase;
 
 import timber.log.Timber;
 
 public class DetailViewModelAssistedFactory extends ViewModelProvider.NewInstanceFactory {
-    private int listPosition;
-    private int displayedTab;
-    private MoviesRepository moviesRepository;
+    private GetMovieDetailsUseCase mGetMovieDetailsUseCase;
+    private AddRemoveFromFavouriteUseCase mAddRemoveFromFavouriteUseCase;
 
-    public DetailViewModelAssistedFactory(MoviesRepository moviesRepository, int listPosition, int displayedTab) {
-        super();
-        Timber.d("DetailViewModelFactory::newInstance");
-        this.moviesRepository = moviesRepository;
-        this.listPosition = listPosition;
-        this.displayedTab = displayedTab;
+    public DetailViewModelAssistedFactory(GetMovieDetailsUseCase mGetMovieDetailsUseCase, AddRemoveFromFavouriteUseCase mAddRemoveFromFavouriteUseCase) {
+        this.mGetMovieDetailsUseCase = mGetMovieDetailsUseCase;
+        this.mAddRemoveFromFavouriteUseCase = mAddRemoveFromFavouriteUseCase;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         Timber.d("DetailViewModelFactory::create");
-        return (T) new DetailViewModel(moviesRepository, listPosition, displayedTab);
+        return (T) new DetailViewModel(mGetMovieDetailsUseCase, mAddRemoveFromFavouriteUseCase);
     }
 
 

@@ -67,7 +67,6 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
 
         AppContainer appContainer = ((MyApplication)getApplication()).appContainer;
         viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(ListViewModel.class);
-//        viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(MovieListViewModel.class);
         binding.setViewModel(viewModel);
 
         setLiveDataObservers();

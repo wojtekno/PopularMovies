@@ -3,6 +3,8 @@ package com.gmail.nowak.wjw.popularmovies.di;
 import android.app.Application;
 
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
+import com.gmail.nowak.wjw.popularmovies.domain.AddRemoveFromFavouriteUseCase;
+import com.gmail.nowak.wjw.popularmovies.domain.GetMovieDetailsUseCaseAssistedFactory;
 import com.gmail.nowak.wjw.popularmovies.domain.GetMovieListsUseCase;
 import com.gmail.nowak.wjw.popularmovies.network.HttpClientFactory;
 import com.gmail.nowak.wjw.popularmovies.network.NetworkUtils;
@@ -38,7 +40,15 @@ public class AppContainer {
     }
 
     public DetailViewModelAssistedFactory_Factory detailViewModelAssistedFactory_factory() {
-        return new DetailViewModelAssistedFactory_Factory(moviesRepository);
+        return new DetailViewModelAssistedFactory_Factory(getMovieDetailsUseCaseAssistedFactory(), addRemoveFromFavouriteUseCase());
+    }
+
+    private AddRemoveFromFavouriteUseCase addRemoveFromFavouriteUseCase() {
+        return new AddRemoveFromFavouriteUseCase(moviesRepository);
+    }
+
+    private GetMovieDetailsUseCaseAssistedFactory getMovieDetailsUseCaseAssistedFactory() {
+        return new GetMovieDetailsUseCaseAssistedFactory(moviesRepository);
     }
 
 

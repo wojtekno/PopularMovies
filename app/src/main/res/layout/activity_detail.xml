@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:tools="http://schemas.android.com/tools"
     tools:context=".presenter.detail.DetailActivity">
 
     <data>
 
         <import type="android.view.View" />
-
-        <variable
-            name="videoAdapter"
-            type="com.gmail.nowak.wjw.popularmovies.presenter.detail.VideoAdapter" />
-        <variable
-            name="reviewAdapter"
-            type="com.gmail.nowak.wjw.popularmovies.presenter.detail.ReviewAdapter" />
 
         <variable
             name="viewModel"
@@ -44,12 +36,13 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/content_description_movie_poster" />
+
                 <ProgressBar
                     android:id="@+id/detail_activity_progress_barr"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_gravity="center"
-                    android:visibility="@{viewModel.movieLD==null?View.VISIBLE:View.GONE}" />
+                    android:visibility="@{viewModel.isProgressBarVisible?View.VISIBLE:View.GONE}" />
 
                 <ImageButton
                     android:id="@+id/add_favourite_Bt"
@@ -57,7 +50,7 @@
                     android:layout_height="48dp"
                     android:layout_gravity="bottom|end"
                     android:background="@android:color/black"
-                    android:onClick="@{viewModel::favouriteButtonClicked}"
+                    android:onClick="@{()->viewModel.favouriteButtonClicked()}"
                     android:src="@drawable/ic_grade_black_24dp"
                     android:tint="@{viewModel.movieLD.isFavourite()?@color/colorFavourite: @android:color/darker_gray}" />
             </FrameLayout>
@@ -141,15 +134,6 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-<!--                <TextView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginBottom="16dp"-->
-<!--                    android:gravity="center"-->
-<!--                    android:text="@{viewModel.fm.title}"-->
-<!--                    android:textSize="24sp"-->
-<!--                    android:textStyle="bold" />-->
-
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -163,15 +147,13 @@
                     isFolded="@{viewModel.isVideoListFolded()}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:adapter="@{videoAdapter}"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    android:nestedScrollingEnabled="false" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:onClick="@{viewModel::unfoldVideoRVClicked}"
+                    android:onClick="@{()->viewModel.unfoldVideoRVClicked()}"
                     android:text='@{viewModel.isVideoListFolded()?"more...":"less"}'
                     android:textSize="24sp"
                     android:visibility="@{viewModel.movieLD.videosLD.size()>2?View.VISIBLE:View.GONE}" />
@@ -187,14 +169,11 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/reviews_rv"
+                    adapterList="@{viewModel.movieLD.reviewsLD}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:adapter="@{reviewAdapter}"
-                    adapterList="@{viewModel.movieLD.reviewsLD}"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    android:layout_marginBottom="16dp"/>
-
+                    android:layout_marginBottom="16dp"
+                    android:nestedScrollingEnabled="false" />
 
             </LinearLayout>
 

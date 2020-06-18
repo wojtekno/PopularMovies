@@ -3,11 +3,11 @@ package com.gmail.nowak.wjw.popularmovies.presenter.detail;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.gmail.nowak.wjw.popularmovies.MyApplication;
 import com.gmail.nowak.wjw.popularmovies.R;
@@ -16,6 +16,10 @@ import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
 import com.gmail.nowak.wjw.popularmovies.presenter.list.ListActivity;
 
 import timber.log.Timber;
+
+// todo: make the reviews and video behave as clickable
+// todo: implement YT Android Player, so users can play trailers within the app
+
 
 public class DetailActivity extends AppCompatActivity implements VideoAdapter.OnVideoCLickListener {
 
@@ -30,64 +34,41 @@ public class DetailActivity extends AppCompatActivity implements VideoAdapter.On
         binding.setLifecycleOwner(this);
 
         Intent invokingIntent = getIntent();
-        //TODO Q? first make intent later viewModel or maybe put intent as parameter in viewmodel constructor?
-        int listPosition = 0;
-        int displayedTab = 0;
+        int lApiId = 0;
         if (invokingIntent.getExtras().containsKey(ListActivity.EXTRA_API_ID)) {
-            listPosition = invokingIntent.getExtras().getInt(ListActivity.EXTRA_API_ID);
-//            displayedTab = invokingIntent.getExtras().getInt(MovieListActivity.DISPLAYED_LIST_TAG);
+            lApiId = invokingIntent.getExtras().getInt(ListActivity.EXTRA_API_ID);
         } else {
             //todo Q? do not load activity - return to Main with ToastMessage "no api id error" how to do that?
         }
         AppContainer appContainer = ((MyApplication) getApplication()).appContainer;
         DetailViewModelAssistedFactory_Factory detailViewModelAssistedFactory_factory = appContainer.detailViewModelAssistedFactory_factory();
-        viewModel = new ViewModelProvider(this, detailViewModelAssistedFactory_factory.create(listPosition, displayedTab)).get(DetailViewModel.class);
+        viewModel = new ViewModelProvider(this, detailViewModelAssistedFactory_factory.create(lApiId)).get(DetailViewModel.class);
 
         binding.setViewModel(viewModel);
-        //todo Q? is it better if I bind MutableLiveData<MovieDetailViewData> in activity_detail and my DetailViewModel, or maybe just DetailViewModel and get the movie using viewModel(how I did it now)?
-//        binding.setMovie(viewModel.getMovieViewData());
 
         setUpVideoRecyclerView();
         setUpReviewRecyclerView();
         Timber.d("onCreate_finished");
-        binding.detailActivityProgressBarr.setVisibility(View.VISIBLE);
+//        binding.detailActivityProgressBarr.setVisibility(View.VISIBLE);
 
     }
 
     private void setUpReviewRecyclerView() {
-        //todo Q? here I use databinging on the activity_detail level only - meaning I bind adapter in the activity.xml but I don't bind item_review.xml
-        ReviewAdapter reviewAdapter = new ReviewAdapter();
-        binding.setReviewAdapter(reviewAdapter);
-//        reviewsRV = binding.reviewsRv;
-//        reviewsRV.setLayoutManager(new LinearLayoutManager(this));
-//        reviewsRV.setAdapter(reviewAdapter);
-
-        //todo Q? but before I bound it with data binding I had the movie object - movieLD(that I have to initialize) which contains ReviewListLD.
-        // I couldn't see the way to observe it this(below way) way in DetailActvity
-//        Timber.d("Obserwing reviews list");
-//        viewModel.getReviewsList().observe(this, new Observer<List<ApiReview>>() {
-//            @Override
-//            public void onChanged(List<ApiReview> apiReviews) {
-//                Timber.d("reviewList onchanged");
-//                reviewAdapter.setReviewList(apiReviews);
-//                reviewAdapter.notifyDataSetChanged();
-//            }
-//        });
+        binding.reviewsRv.setAdapter(new ReviewAdapter());
+        binding.reviewsRv.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void setUpVideoRecyclerView() {
-        //todo Q? here I bind both adapter in activity_detail and also item_video. and that way I like the most :)
-        // And the question is which one is the best? or the most appropriate one?
-        VideoAdapter videoAdapter = new VideoAdapter(this);
-        binding.setVideoAdapter(videoAdapter);
+        binding.videoRv.setAdapter(new VideoAdapter(this));
+        binding.videoRv.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
     public void onVideoClicked(String videoKey) {
         String ytUrlBase = "https://www.youtube.com/watch?v=";
-        Uri webpage = Uri.parse(ytUrlBase.concat(videoKey));
-        Timber.d("string url: %s", webpage.toString());
-        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        Uri webPage = Uri.parse(ytUrlBase.concat(videoKey));
+        Timber.d("string url: %s", webPage.toString());
+        Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
