@@ -2,8 +2,8 @@ package com.gmail.nowak.wjw.popularmovies.network;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieList;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseReviewObject;
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseVideoObject;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseReview;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseVideo;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -22,12 +22,12 @@ public interface TheMovieDataBaseOrgAPI {
     @GET(TMDB_API_TOP_RATED_MOVIE_PATH)
     Call<ApiResponseMovieList> getTopRatedMovies();
 
-    @GET(TMDB_API_MOVIE_REVIEWS_PATH)
-    Call<ApiResponseReviewObject> getReviewsForMovie(@Path("apiId") int apiId);
-
-    @GET(TMDB_API_MOVIE_VIDEOS_PATH)
-    Call<ApiResponseVideoObject> getVideosForMovie(@Path("apiId") int apiId);
-
     @GET(TMDB_API_MOVIE_DETAILS_W_REVIEWS_AND_VIDEOS)
     Call<ApiMovie> getMovieDetailsWithVideosAndReviews(@Path("apiId") int apiId);
+
+    @GET(TMDB_API_MOVIE_REVIEWS_PATH)
+    Call<ApiResponseReview> getReviewsForMovie(@Path("apiId") int apiId);
+
+    @GET(TMDB_API_MOVIE_VIDEOS_PATH)
+    Call<ApiResponseVideo> getVideosForMovie(@Path("apiId") int apiId);
 }

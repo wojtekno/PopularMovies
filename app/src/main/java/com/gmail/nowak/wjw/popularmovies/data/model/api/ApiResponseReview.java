@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ApiResponseReviewObject {
+public class ApiResponseReview {
     private int id;
     private int page;
     @SerializedName("total_pages")

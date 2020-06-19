@@ -42,7 +42,6 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     private MovieAdapter movieAdapter;
     private ActivityListBinding binding;
 
-//    MovieListViewModel viewModel;
     ListViewModel viewModel;
     // stores the currently displayed tab's tag
     private ListTag displayedTab;

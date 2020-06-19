@@ -1,17 +1,14 @@
 package com.gmail.nowak.wjw.popularmovies.data.model.api;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import androidx.lifecycle.LiveData;
-
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieInterface;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ApiMovie {
+
+    public static final int RESULT_FAILURE = 999;
+    private int responseCode;
 
     //todo change to id
     @SerializedName("id")
@@ -41,15 +38,19 @@ public class ApiMovie {
 
     //TODO manage to set retrofit, gson,converterFactories and ApiReviewDeserialize so it can be List<ApiReview>
     @SerializedName("reviews")
-    private ApiResponseReviewObject apiResponseReviewObject;
+    private ApiResponseReview apiResponseReview;
     @SerializedName("videos")
-    private ApiResponseVideoObject apiResponseVideoObject;
+    private ApiResponseVideo apiResponseVideo;
 
     public int getApiId() {
         return apiId;
     }
 
     public ApiMovie() {
+    }
+
+    public ApiMovie(int responseCode) {
+        this.responseCode = responseCode;
     }
 
     public ApiMovie(int apiId, String posterPath, String originalTitle) {
@@ -59,17 +60,17 @@ public class ApiMovie {
     }
 
     public List<ApiReview> getReviewList() {
-        if (apiResponseReviewObject == null || apiResponseVideoObject.getResults() == null) {
-            return null;
+        if (apiResponseReview == null || apiResponseVideo.getResults() == null) {
+            return new ArrayList<>();
         }
-        return apiResponseReviewObject.getResults();
+        return apiResponseReview.getResults();
     }
 
     public List<ApiVideo> getVideoList() {
-        if (apiResponseVideoObject == null) {
-            return null;
+        if (apiResponseVideo == null || apiResponseVideo.getResults() == null) {
+            return new ArrayList<>();
         }
-        return apiResponseVideoObject.getResults();
+        return apiResponseVideo.getResults();
     }
 
     public String getOriginalTitle() {
@@ -98,6 +99,14 @@ public class ApiMovie {
 
     public String getOriginalLanguage() {
         return originalLanguage;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(int responseCode) {
+        this.responseCode = responseCode;
     }
 
 }

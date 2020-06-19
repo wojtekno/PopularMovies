@@ -2,7 +2,7 @@ package com.gmail.nowak.wjw.popularmovies.data.model.api;
 
 import java.util.List;
 
-public class ApiResponseVideoObject {
+public class ApiResponseVideo {
 
    private int id;
    private List<ApiVideo> results;

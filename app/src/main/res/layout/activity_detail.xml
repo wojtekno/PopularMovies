@@ -52,7 +52,17 @@
                     android:background="@android:color/black"
                     android:onClick="@{()->viewModel.favouriteButtonClicked()}"
                     android:src="@drawable/ic_grade_black_24dp"
-                    android:tint="@{viewModel.movieLD.isFavourite()?@color/colorFavourite: @android:color/darker_gray}" />
+                    android:tint="@{viewModel.movieLD.isFavourite()?@color/colorFavourite: @android:color/darker_gray}"
+                    android:visibility="@{viewModel.isErrMsgVisible?View.INVISIBLE:View.VISIBLE}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:text="@{viewModel.errorMessageResId}"
+                    android:textColor="@android:color/white"
+                    tools:text="@string/error_problem_with_response"
+                    android:visibility="@{viewModel.isErrMsgVisible?View.VISIBLE:View.GONE}"/>
             </FrameLayout>
 
             <TextView
@@ -64,14 +74,16 @@
                 android:paddingVertical="16dp"
                 android:text="@{viewModel.movieLD.originalTitle}"
                 android:textColor="@android:color/background_light"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:visibility="@{viewModel.isErrMsgVisible?View.INVISIBLE:View.VISIBLE}" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="16dp">
+                android:paddingHorizontal="16dp"
+                android:visibility="@{viewModel.isErrMsgVisible?View.INVISIBLE:View.VISIBLE}">
 
                 <TextView
                     android:layout_width="match_parent"

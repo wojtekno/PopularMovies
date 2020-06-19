@@ -3,8 +3,6 @@ package com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiVideo;
-
 import java.util.List;
 
 public class MovieDetailViewData {
@@ -17,9 +15,9 @@ public class MovieDetailViewData {
     private String releaseDate;
     private String originalLanguage;
 
-    private LiveData<List<ReviewViewData>> reviewsLD = new MutableLiveData<List<ReviewViewData>>();
-    private MutableLiveData<List<VideoViewData>> videosLD = new MutableLiveData<List<VideoViewData>>();
-    private MutableLiveData<Boolean> isFavourite;
+    private LiveData<List<ReviewViewData>> reviewsLD;
+    private MutableLiveData<List<VideoViewData>> videosLD;
+    private LiveData<Boolean> isFavourite;
 
 
     public MutableLiveData<List<VideoViewData>> getVideosLD() {
@@ -30,7 +28,7 @@ public class MovieDetailViewData {
         return reviewsLD;
     }
 
-    public MovieDetailViewData(int apiId, String posterPath, String originalTitle, String title, String overview, float averageRating, String releaseDate, String originalLanguage, LiveData<List<ReviewViewData>> reviewsLD, LiveData<List<ApiVideo>> videosLD, LiveData<Boolean> isFavourite) {
+    public MovieDetailViewData(int apiId, String posterPath, String originalTitle, String title, String overview, float averageRating, String releaseDate, String originalLanguage, LiveData<List<ReviewViewData>> reviewsLD, LiveData<List<VideoViewData>> videosLD, LiveData<Boolean> isFavourite) {
         this.apiId = apiId;
         this.posterPath = posterPath;
         this.originalTitle = originalTitle;
@@ -40,8 +38,8 @@ public class MovieDetailViewData {
         this.releaseDate = releaseDate;
         this.originalLanguage = originalLanguage;
         this.reviewsLD = reviewsLD;
-        this.videosLD = (MutableLiveData) videosLD;
-        this.isFavourite = (MutableLiveData<Boolean>) isFavourite;
+        this.videosLD = (MutableLiveData<List<VideoViewData>>) videosLD;
+        this.isFavourite = isFavourite;
     }
 
     public int getApiId() {

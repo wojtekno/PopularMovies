@@ -11,6 +11,8 @@ import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class ListViewModel extends ViewModel {
     private GetMovieListsUseCase mGetMovieListsUseCase;
     private LiveData<List<MovieListItemViewData>> mMovieListLd;
@@ -21,6 +23,7 @@ public class ListViewModel extends ViewModel {
 
 
     public ListViewModel(GetMovieListsUseCase getMovieListsUseCase) {
+        Timber.d("ListViewModel::newInstance");
         this.mGetMovieListsUseCase = getMovieListsUseCase;
 
         mErrorMessageResIdLd = Transformations.switchMap(mListTagLd, (mTag) -> {
@@ -55,6 +58,7 @@ public class ListViewModel extends ViewModel {
         });
 
         isProgressBarVisible = (MutableLiveData<Boolean>) Transformations.map(mMovieListLd, (x) -> false);
+        isProgressBarVisible.setValue(true);
     }
 
 
@@ -84,5 +88,12 @@ public class ListViewModel extends ViewModel {
 
     public LiveData<ListTag> getListTag() {
         return mListTagLd;
+    }
+
+
+    @Override
+    protected void onCleared() {
+        Timber.d("OnCleared");
+        super.onCleared();
     }
 }

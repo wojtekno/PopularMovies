@@ -17,15 +17,22 @@ import timber.log.Timber;
 public class DetailViewModel extends ViewModel {
 
     private MutableLiveData<MovieDetailViewData> movie;
-    private MutableLiveData<Boolean> isVideoListFolded = new MutableLiveData<Boolean>(true);
+    private MutableLiveData<Boolean> isVideoListFolded = new MutableLiveData<>(true);
     private AddRemoveFromFavouriteUseCase mAddRemoveUseCase;
     public MutableLiveData<Boolean> isProgressBarVisible;
+    public MutableLiveData<Boolean> isErrMsgVisible;
+    private LiveData<Integer> errorMessageResId;
 
 
     public DetailViewModel(GetMovieDetailsUseCase getMovieDetailsUseCase, AddRemoveFromFavouriteUseCase addRemoveFromFavouriteUseCase) {
         super();
         Timber.d("DetailViewModel::newInstance");
         mAddRemoveUseCase = addRemoveFromFavouriteUseCase;
+        errorMessageResId = getMovieDetailsUseCase.getErrorMessageResId();
+        isErrMsgVisible = (MutableLiveData<Boolean>) Transformations.map(errorMessageResId, (msg) -> {
+            if (msg == null) return false;
+            else return true;
+        });
         movie = (MutableLiveData<MovieDetailViewData>) getMovieDetailsUseCase.getMovieDetails();
         isProgressBarVisible = (MutableLiveData<Boolean>) Transformations.map(movie, (m) -> false);
         isProgressBarVisible.setValue(true);
@@ -34,6 +41,10 @@ public class DetailViewModel extends ViewModel {
 
     public LiveData<MovieDetailViewData> getMovieLD() {
         return movie;
+    }
+
+    public LiveData<Integer> getErrorMessageResId() {
+        return errorMessageResId;
     }
 
     public LiveData<Boolean> isVideoListFolded() {
