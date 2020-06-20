@@ -12,6 +12,7 @@
     <string name="error_cannot_connect_with_server">Cannot connect with server</string>
     <string name="more">more</string>
     <string name="less">less</string>
+    <string name="error_no_api_id">Data corrupted. Refresh list and try again.</string>
 
 
 </resources>

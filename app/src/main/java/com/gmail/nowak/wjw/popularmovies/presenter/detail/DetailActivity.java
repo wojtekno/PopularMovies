@@ -1,5 +1,6 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.detail;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,12 +34,15 @@ public class DetailActivity extends AppCompatActivity implements VideoAdapter.On
         binding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         binding.setLifecycleOwner(this);
 
+
+        int lApiId = -13;
         Intent invokingIntent = getIntent();
-        int lApiId = 0;
-        if (invokingIntent.getExtras().containsKey(ListActivity.EXTRA_API_ID)) {
-            lApiId = invokingIntent.getExtras().getInt(ListActivity.EXTRA_API_ID);
-        } else {
-            //todo Q? do not load activity - return to Main with ToastMessage "no api id error" how to do that?
+        if (invokingIntent.getExtras() != null) {
+            lApiId = invokingIntent.getExtras().getInt(ListActivity.EXTRA_API_ID, -13);
+        }
+        if (lApiId == -13) {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
         }
         AppContainer appContainer = ((MyApplication) getApplication()).appContainer;
         DetailViewModelAssistedFactory_Factory detailViewModelAssistedFactory_factory = appContainer.detailViewModelAssistedFactory_factory();

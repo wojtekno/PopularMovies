@@ -1,11 +1,14 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.list;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
@@ -37,8 +40,10 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     // - enable watching videos inside the app
 
     public static final String EXTRA_API_ID = "extra_api_id";
+    public static final int DETAIL_ACTIVITY_REQUEST_CODE = 123;
     private MovieAdapter movieAdapter;
     private ActivityListBinding binding;
+    private Toast mToast;
 
     ListViewModel viewModel;
     // stores the currently displayed tab's tag
@@ -61,7 +66,7 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
         binding.moviesRecyclerView.setAdapter(movieAdapter);
         binding.moviesRecyclerView.setLayoutManager(new MyGridLayoutManager(this, 1));
 
-        AppContainer appContainer = ((MyApplication)getApplication()).appContainer;
+        AppContainer appContainer = ((MyApplication) getApplication()).appContainer;
         viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(ListViewModel.class);
         binding.setViewModel(viewModel);
 
@@ -213,9 +218,23 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
 
     @Override
     public void onMovieItemClicked(int position) {
-        Timber.d("go to Detail clicked %d", position);
+//        Timber.d("go to Detail clicked %d", position);
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(EXTRA_API_ID, movieAdapter.getMovieList().get(position).getApiId());
-        startActivity(intent);
+        startActivityForResult(intent, DETAIL_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_CANCELED) {
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(this, getString(R.string.error_no_api_id), Toast.LENGTH_SHORT);
+                mToast.show();
+            }
+        }
     }
 }
