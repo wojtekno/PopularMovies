@@ -36,8 +36,6 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     // - implement javaRx
     // - enable watching videos inside the app
 
-    public static final String DISPLAYED_LIST_TAG = "displayed_list";
-
     public static final String EXTRA_API_ID = "extra_api_id";
     private MovieAdapter movieAdapter;
     private ActivityListBinding binding;
@@ -46,7 +44,6 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     // stores the currently displayed tab's tag
     private ListTag displayedTab;
 
-    // TODO handle app when no internet && on failure
     // TODO handle case when a list is already cached and there is no internet now -> display error, but keep the cached list
     // TODO: 11.06.20 handle system shutting down teh app
 
@@ -219,7 +216,6 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
         Timber.d("go to Detail clicked %d", position);
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(EXTRA_API_ID, movieAdapter.getMovieList().get(position).getApiId());
-//        intent.putExtra(DISPLAYED_LIST_TAG, displayedTab);
         startActivity(intent);
     }
 }

@@ -5,10 +5,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.gmail.nowak.wjw.popularmovies.data.model.MovieInterface;
-
 @Entity(tableName = "favourite_movies")
-public class FavouriteMovie implements MovieInterface {
+public class FavouriteMovie {
 
     @ColumnInfo(name = "_id")
     @PrimaryKey(autoGenerate = true)
@@ -72,10 +70,5 @@ public class FavouriteMovie implements MovieInterface {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Override
-    public int getType() {
-        return MovieInterface.TYPE_MOVIE_DAO;
     }
 }

@@ -61,8 +61,8 @@
                     android:layout_gravity="top|center_horizontal"
                     android:text="@{viewModel.errorMessageResId}"
                     android:textColor="@android:color/white"
-                    tools:text="@string/error_problem_with_response"
-                    android:visibility="@{viewModel.isErrMsgVisible?View.VISIBLE:View.GONE}"/>
+                    android:visibility="@{viewModel.isErrMsgVisible?View.VISIBLE:View.GONE}"
+                    tools:text="@string/error_problem_with_response" />
             </FrameLayout>
 
             <TextView
@@ -166,9 +166,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:onClick="@{()->viewModel.unfoldVideoRVClicked()}"
-                    android:text='@{viewModel.isVideoListFolded()?"more...":"less"}'
+                    android:text="@{viewModel.isVideoListFolded()? @string/more: @string/less}"
                     android:textSize="24sp"
-                    android:visibility="@{viewModel.movieLD.videosLD.size()>2?View.VISIBLE:View.GONE}" />
+                    android:visibility="@{viewModel.isMoreBtnVisible?View.VISIBLE:View.GONE}"
+                    tools:text="@string/more"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:layout_width="match_parent"

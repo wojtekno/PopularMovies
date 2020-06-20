@@ -31,7 +31,7 @@ public class AppContainer {
 
     public AppContainer(Application application) {
         Timber.d("AppContainer::newInstance");
-        moviesRepository = new MoviesRepository(new DatabaseModule(application).appDatabase, okHttpClient, theMovieDataBaseOrgAPI);
+        moviesRepository = new MoviesRepository(new DatabaseModule(application).appDatabase, theMovieDataBaseOrgAPI);
         getMovieListsUseCase = new GetMovieListsUseCase(moviesRepository);
     }
 

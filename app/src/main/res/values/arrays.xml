@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="movie_tabs_keys">
-        <item>@string/popular_tab_key</item>
-        <item>@string/top_rated_tab_key</item>
-        <item>@string/favourite_tab_key</item>
-    </string-array>
 
-    <integer-array name="movie_tabs_values">
-        <item>@integer/popular_tab_value</item>
-        <item>@integer/top_rated_tab_value</item>
-        <item>@integer/favourite_tab_value</item>
-    </integer-array>
 </resources>

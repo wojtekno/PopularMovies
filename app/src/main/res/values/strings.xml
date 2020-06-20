@@ -3,21 +3,15 @@
     <string name="detail_released_date">Release date</string>
     <string name="detail_rating">Rating</string>
     <string name="content_description_movie_poster">Movie poster</string>
-    <string name="reload_error_message">Can\'t reload, try again.</string>
-    <string name="no_data_error_message">No data, try again.</string>
     <string name="top_rate_tag_title">Top Rated</string>
     <string name="popular_tag_title">Popular</string>
     <string name="favourite_tag_title">Favourite</string>
 
-    <string name="popular_tab_key" translatable="false">popular</string>
-    <string name="top_rated_tab_key" translatable="false">top_rated</string>
-    <string name="favourite_tab_key" translatable="false">favourite</string>
-    <string name="couldnt_read_results">Couldn\'t read results. Try again later.</string>
-    <string name="no_items_found">Didn\'t find any items. Try again later.</string>
-    <string name="response_failure">Connection problem, try again later</string>
     <string name="refresh_action_title">Refresh</string>
     <string name="error_problem_with_response">There are problems with server response</string>
     <string name="error_cannot_connect_with_server">Cannot connect with server</string>
+    <string name="more">more</string>
+    <string name="less">less</string>
 
 
 </resources>

@@ -22,6 +22,7 @@ public class DetailViewModel extends ViewModel {
     public MutableLiveData<Boolean> isProgressBarVisible;
     public MutableLiveData<Boolean> isErrMsgVisible;
     private LiveData<Integer> errorMessageResId;
+    public LiveData<Boolean> isMoreBtnVisible;
 
 
     public DetailViewModel(GetMovieDetailsUseCase getMovieDetailsUseCase, AddRemoveFromFavouriteUseCase addRemoveFromFavouriteUseCase) {
@@ -36,6 +37,10 @@ public class DetailViewModel extends ViewModel {
         movie = (MutableLiveData<MovieDetailViewData>) getMovieDetailsUseCase.getMovieDetails();
         isProgressBarVisible = (MutableLiveData<Boolean>) Transformations.map(movie, (m) -> false);
         isProgressBarVisible.setValue(true);
+        isMoreBtnVisible = Transformations.map(movie, (m) -> {
+            if (m.getVideosLD().getValue().size() > 2) return true;
+            else return false;
+        });
         Timber.d("Constructor END");
     }
 

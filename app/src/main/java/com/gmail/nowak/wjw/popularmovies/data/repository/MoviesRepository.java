@@ -27,12 +27,11 @@ public class MoviesRepository {
     private LiveData<List<FavouriteMovie>> favMoviesData;
     private MutableLiveData<ApiMovie> apiMovieDetails;
     private AppDatabase database;
-    private OkHttpClient okHttpClient;
+    private Call<ApiMovie> movieDetailsCall;
 
-    public MoviesRepository(AppDatabase appDatabase, OkHttpClient okHttpClient, TheMovieDataBaseOrgAPI theMovieDataBaseOrgAPI) {
+    public MoviesRepository(AppDatabase appDatabase, TheMovieDataBaseOrgAPI theMovieDataBaseOrgAPI) {
         Timber.d("MoviesRepository:newInstance");
         database = appDatabase;
-        this.okHttpClient = okHttpClient;
         this.theMovieDatabaseOrgAPI = theMovieDataBaseOrgAPI;
         //todo Q? do I pass retrofit, or the TheMovieDataBaseOrgAPI
 //        retrofit = retrofit;
@@ -47,19 +46,18 @@ public class MoviesRepository {
      * @param page     unused, in the future implementing the possibility of fetching more than just one page
      */
     private void fetchMovieListFromApi(final ListTag category, Integer page) {
-        //cancel all previous calls
-//        okHttpClient.dispatcher().cancelAll();
-        Call<ApiResponseMovieList> call;
+//        Timber.d("fetchMovieListFromApi.start");
+        Call<ApiResponseMovieList> movieListCall;
         if (ListTag.TOP_RATED.equals(category)) {
-            call = theMovieDatabaseOrgAPI.getTopRatedMovies();
+            movieListCall = theMovieDatabaseOrgAPI.getTopRatedMovies();
         } else if (ListTag.POPULAR.equals(category)) {
-            call = theMovieDatabaseOrgAPI.getPopularMovies();
+            movieListCall = theMovieDatabaseOrgAPI.getPopularMovies();
         } else {
             // TODO: 10.06.20 throw exception
             return;
         }
 //        Timber.d("calling TMDB");
-        call.enqueue(new retrofit2.Callback<ApiResponseMovieList>() {
+        movieListCall.enqueue(new retrofit2.Callback<ApiResponseMovieList>() {
             @Override
             public void onResponse(Call<ApiResponseMovieList> call, final retrofit2.Response<ApiResponseMovieList> response) {
                 Timber.d("fetchMovieListFromApi(%s).onResponse response.code:%d", category, response.code());
@@ -70,12 +68,6 @@ public class MoviesRepository {
                 } else {
                     //create a special object when apiResponseMovieList == null
                     apiResponseMovieList = new ApiResponseMovieList(new ArrayList<>(), response.code());
-                }
-
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
 
                 if (ListTag.TOP_RATED.equals((category))) {
@@ -107,18 +99,17 @@ public class MoviesRepository {
     }
 
     public LiveData<ApiMovie> fetchMovieWithDetailsFromApi(int apiId) {
-        //todo call.cancel!!
-        //todo test when response takes few seconds
-        okHttpClient.dispatcher().cancelAll();
-        Call<ApiMovie> call = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
-
-//        Timber.d("calling TMDB");
         //clear apiMovieDetails
         apiMovieDetails = new MutableLiveData<>();
-        call.enqueue(new Callback<ApiMovie>() {
+        if (movieDetailsCall != null) {
+            movieDetailsCall.cancel();
+        }
+        movieDetailsCall = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
+
+//        Timber.d("calling TMDB");
+        movieDetailsCall.enqueue(new Callback<ApiMovie>() {
             @Override
             public void onResponse(Call<ApiMovie> call, retrofit2.Response<ApiMovie> response) {
-                //todo handle if error response
 //                Timber.d("fetchMovieWithDetailsFromApi onResponse");
                 ApiMovie lMovie = response.body();
                 if (lMovie == null) {
@@ -142,7 +133,7 @@ public class MoviesRepository {
     }
 
     public void reloadApiResponseMovieList(ListTag value) {
-        Timber.d("reloadList %s", value);
+//        Timber.d("reloadList %s", value);
         if (value == ListTag.FAVOURITE) {
             return;
         }
