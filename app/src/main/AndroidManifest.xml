@@ -12,18 +12,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".presenter.detail.DetailActivity"
-            android:parentActivityName=".presenter.list.ListActivity">
+<!--        <activity-->
+<!--            android:name=".presenter.detail.DetailActivity"-->
+<!--            android:parentActivityName=".presenter.list.ListActivity">-->
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".presenter.list.ListActivity" />
+<!--            &lt;!&ndash; Parent activity meta-data to support 4.0 and lower &ndash;&gt;-->
+<!--            <meta-data-->
+<!--                android:name="android.support.PARENT_ACTIVITY"-->
+<!--                android:value=".presenter.list.ListActivity" />-->
 
-        </activity>
+<!--        </activity>-->
         <activity
-            android:name=".presenter.list.ListActivity"
+            android:name=".presenter.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

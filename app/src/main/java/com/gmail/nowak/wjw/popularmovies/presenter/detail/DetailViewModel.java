@@ -25,6 +25,8 @@ public class DetailViewModel extends ViewModel {
     public LiveData<Boolean> isMoreBtnVisible;
 
 
+
+
     public DetailViewModel(GetMovieDetailsUseCase getMovieDetailsUseCase, AddRemoveFromFavouriteUseCase addRemoveFromFavouriteUseCase) {
         super();
         Timber.d("DetailViewModel::newInstance");
@@ -85,6 +87,12 @@ public class DetailViewModel extends ViewModel {
         VideoViewData lVideo = new VideoViewData("Title", "nonExistingKey");
         list.add(lVideo);
         movie.getValue().getVideosLD().setValue(list);
+    }
+
+    @Override
+    protected void onCleared() {
+        Timber.d("onCleared()");
+        super.onCleared();
     }
 
 }

@@ -27,7 +27,7 @@ public class NetworkUtils {
     public static final String ADD_QUERY ="?";
 
 
-    private static final String THE_MOVIE_DATABASE_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
+    private static final String THE_MOVIE_DATABASE_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
     public static final String IMAGE_SIZE_SMALL = "w185";
     public static final String IMAGE_SIZE_MEDIUM = "w300";
     public static final String IMAGE_SIZE_BIG = "w500";

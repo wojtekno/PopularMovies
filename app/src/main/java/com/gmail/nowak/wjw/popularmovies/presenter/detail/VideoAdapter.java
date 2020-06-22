@@ -1,6 +1,7 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.detail;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -33,9 +34,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
 //        Timber.d("onBindViewHolder");
+        videoList.get(position);
         holder.itemBinding.setVideo(videoList.get(position));
         holder.itemBinding.executePendingBindings();
-        holder.itemBinding.setListener(listener);
+        holder.itemBinding.setListener(listener); // wywal ten listener i setOnClickListener
+        // https://stackoverflow.com/questions/40509161/recycler-view-click-animation
+//        holder.itemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                listener.onVideoClicked();
+//            }
+//        })
     }
 
     @Override

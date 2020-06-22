@@ -5,12 +5,13 @@ import android.app.Application;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 import com.gmail.nowak.wjw.popularmovies.domain.AddRemoveFromFavouriteUseCase;
 import com.gmail.nowak.wjw.popularmovies.domain.GetMovieDetailsUseCaseAssistedFactory;
-import com.gmail.nowak.wjw.popularmovies.domain.GetMovieListsUseCase;
+import com.gmail.nowak.wjw.popularmovies.domain.GetMovieListsCaseUseCaseFactory;
+import com.gmail.nowak.wjw.popularmovies.navigation.Nav;
 import com.gmail.nowak.wjw.popularmovies.network.HttpClientFactory;
 import com.gmail.nowak.wjw.popularmovies.network.NetworkUtils;
 import com.gmail.nowak.wjw.popularmovies.network.TheMovieDataBaseOrgAPI;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailViewModelAssistedFactory_Factory;
-import com.gmail.nowak.wjw.popularmovies.presenter.list.ListViewModelFactory;
+import com.gmail.nowak.wjw.popularmovies.presenter.list.ListViewModelFactory_Factory;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -27,16 +28,19 @@ public class AppContainer {
             .build().create(TheMovieDataBaseOrgAPI.class);
 
     private MoviesRepository moviesRepository;
-    private GetMovieListsUseCase getMovieListsUseCase;
+    public Nav nav = new Nav();
 
     public AppContainer(Application application) {
         Timber.d("AppContainer::newInstance");
         moviesRepository = new MoviesRepository(new DatabaseModule(application).appDatabase, theMovieDataBaseOrgAPI);
-        getMovieListsUseCase = new GetMovieListsUseCase(moviesRepository);
     }
 
-    public ListViewModelFactory listViewModelFactory() {
-        return new ListViewModelFactory(getMovieListsUseCase);
+    private GetMovieListsCaseUseCaseFactory getMovieListsCaseUseCaseAssistedFactory(){
+        return new GetMovieListsCaseUseCaseFactory(moviesRepository);
+    }
+
+    public ListViewModelFactory_Factory listViewModeFactory_factory() {
+        return new ListViewModelFactory_Factory(nav, getMovieListsCaseUseCaseAssistedFactory());
     }
 
     public DetailViewModelAssistedFactory_Factory detailViewModelAssistedFactory_factory() {
@@ -50,6 +54,7 @@ public class AppContainer {
     private GetMovieDetailsUseCaseAssistedFactory getMovieDetailsUseCaseAssistedFactory() {
         return new GetMovieDetailsUseCaseAssistedFactory(moviesRepository);
     }
+
 
 
 }

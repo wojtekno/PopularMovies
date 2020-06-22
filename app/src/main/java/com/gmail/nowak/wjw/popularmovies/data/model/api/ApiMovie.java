@@ -10,7 +10,6 @@ public class ApiMovie {
     public static final int RESULT_FAILURE = 999;
     private int responseCode;
 
-    //todo change to id
     @SerializedName("id")
     private int apiId;
     @SerializedName("poster_path")

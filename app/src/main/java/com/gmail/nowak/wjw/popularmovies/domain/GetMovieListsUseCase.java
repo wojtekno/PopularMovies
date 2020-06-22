@@ -2,6 +2,7 @@ package com.gmail.nowak.wjw.popularmovies.domain;
 
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.gmail.nowak.wjw.popularmovies.R;
@@ -18,20 +19,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GetMovieListsUseCase {
-    private MoviesRepository moviesRepository;
-    private LiveData<List<MovieListItemViewData>> mPopularMovieListLd;
-    private LiveData<Integer> mPopularResponseCode;
-    private LiveData<List<MovieListItemViewData>> mTopRatedMovieListLd;
-    private LiveData<Integer> mTopRatedResponseCode;
-    private LiveData<List<MovieListItemViewData>> mFavouriteMovieListLd;
 
-    public GetMovieListsUseCase(MoviesRepository moviesRepository) {
-        this.moviesRepository = moviesRepository;
-        LiveData<ApiResponseMovieList> apiResponseMovieListLiveData = moviesRepository.getPopularMoviesResponseLD();
-        LiveData<Integer> lRespCode = Transformations.map(apiResponseMovieListLiveData, ApiResponseMovieList::getResponseCode);
-        mPopularResponseCode = Transformations.map(lRespCode, getErrMsgFromResponseCode());
+    private LiveData<List<MovieListItemViewData>> mMovieList;
+    private LiveData<Integer> mErrMsgResId;
 
-        mPopularMovieListLd = Transformations.map(apiResponseMovieListLiveData, getMovieListFromApiResponse());
+
+    public GetMovieListsUseCase(MoviesRepository moviesRepository, ListTag listTag) {
+        LiveData<ApiResponseMovieList> lApiResponseMovieList;
+        switch (listTag) {
+            case POPULAR:
+                lApiResponseMovieList = moviesRepository.getPopularMoviesResponseLD();
+                break;
+            case TOP_RATED:
+                lApiResponseMovieList = moviesRepository.getTopRatedMoviesResponseLD();
+                break;
+            case FAVOURITE:
+                lApiResponseMovieList = null;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+
+        if (lApiResponseMovieList == null) {
+            mErrMsgResId = new MutableLiveData<>(null);
+            mMovieList = Transformations.map(moviesRepository.getFavouriteMoviesLD(), (favourites) -> {
+                List<MovieListItemViewData> result = new ArrayList<>();
+                for (FavouriteMovie fm : favourites) {
+                    result.add(new MovieListItemViewData(fm.getApiId(), fm.getTitle(), fm.getPosterPath()));
+                }
+                return result;
+            });
+        } else {
+            LiveData<Integer> lRespCode = Transformations.map(lApiResponseMovieList, ApiResponseMovieList::getResponseCode);
+            mErrMsgResId = Transformations.map(lRespCode, getErrMsgFromResponseCode());
+            mMovieList = Transformations.map(lApiResponseMovieList, getMovieListFromApiResponse());
+        }
+
     }
 
     @NotNull
@@ -55,45 +78,13 @@ public class GetMovieListsUseCase {
         };
     }
 
-    public LiveData<List<MovieListItemViewData>> getPopularMovieList() {
-        return mPopularMovieListLd;
+
+    public LiveData<List<MovieListItemViewData>> getMovieList() {
+        return mMovieList;
     }
 
-    public LiveData<List<MovieListItemViewData>> getTopRatedMovieList() {
-//        Timber.d("getTopRatedMovieList");
-        if (mTopRatedMovieListLd == null) {
-            mTopRatedMovieListLd = Transformations.map(moviesRepository.getTopRatedMoviesResponseLD(), getMovieListFromApiResponse());
-        }
-        return mTopRatedMovieListLd;
+    public LiveData<Integer> getErrorMessageResId() {
+        return mErrMsgResId;
     }
 
-    public LiveData<Integer> getPopularResponseCode() {
-        return mPopularResponseCode;
-    }
-
-    public LiveData<Integer> getTopRatedResponseCode() {
-//        Timber.d("getTopRatedResponseCode");
-        if (mTopRatedResponseCode == null) {
-            LiveData<Integer> lRespCode = Transformations.map(moviesRepository.getTopRatedMoviesResponseLD(), ApiResponseMovieList::getResponseCode);
-            mTopRatedResponseCode = Transformations.map(lRespCode, getErrMsgFromResponseCode());
-        }
-        return mTopRatedResponseCode;
-    }
-
-    public void refreshMovieList(ListTag listTag) {
-        moviesRepository.reloadApiResponseMovieList(listTag);
-    }
-
-    public LiveData<List<MovieListItemViewData>> getFavouriteMovieList() {
-        if (mFavouriteMovieListLd == null) {
-            mFavouriteMovieListLd = Transformations.map(moviesRepository.getFavouriteMoviesLD(), (input) -> {
-                List<MovieListItemViewData> result = new ArrayList<>();
-                for (FavouriteMovie fm : input) {
-                    result.add(new MovieListItemViewData(fm.getApiId(), fm.getTitle(), fm.getPosterPath()));
-                }
-                return result;
-            });
-        }
-        return mFavouriteMovieListLd;
-    }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listPagerFragment">
+
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailFragment"
+        android:label="DetailFragment"
+        tools:layout="@layout/fragment_detail" >
+        <argument
+            android:name="api_id"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/listPagerFragment"
+        android:name="com.gmail.nowak.wjw.popularmovies.presenter.list.host.ListPagerFragment"
+        android:label="ListPagerFragment"
+        tools:layout="@layout/fragment_list">
+        <action
+            android:id="@+id/action_listPagerFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+</navigation>
