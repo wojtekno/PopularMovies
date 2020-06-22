@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presenter.detail.DetailActivity">
+<layout xmlns:tools="http://schemas.android.com/tools">
 
+<!--    tools:context=".presenter.detail.DetailActivity"-->
     <data>
 
         <import type="android.view.View" />

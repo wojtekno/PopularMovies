@@ -1,16 +1,19 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.list;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -20,7 +23,7 @@ import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItem
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityListBinding;
 import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
-import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailActivity;
+import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailFragment;
 
 import java.util.List;
 
@@ -30,14 +33,8 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.FAVOURITE;
 import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.POPULAR;
 import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.TOP_RATED;
 
-public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMovieListItemClickListener {
+public class ListFragment extends Fragment implements MovieAdapter.OnMovieListItemClickListener {
 
-    //todo in stage 3:
-    // - implement fragments holding each list - dissect ListActivity to three fragments
-    // - replace DetailActivity with DetailFragment - make it one activity app
-    // - implement dagger
-    // - implement javaRx
-    // - enable watching videos inside the app
 
     public static final String EXTRA_API_ID = "extra_api_id";
     public static final int DETAIL_ACTIVITY_REQUEST_CODE = 123;
@@ -49,14 +46,13 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     // stores the currently displayed tab's tag
     private ListTag displayedTab;
 
-    // TODO handle case when a list is already cached and there is no internet now -> display error, but keep the cached list
-    // TODO: 11.06.20 handle system shutting down teh app
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Timber.d("onCreate");
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_list);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Timber.d("onCreateView");
+        binding = DataBindingUtil.inflate(inflater, R.layout.activity_list, container, false);
+
         binding.setLifecycleOwner(this);
 
         /*RecyclerView */
@@ -64,13 +60,18 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
         movieAdapter = new MovieAdapter(this, this);
         binding.moviesRecyclerView.setHasFixedSize(true);
         binding.moviesRecyclerView.setAdapter(movieAdapter);
-        binding.moviesRecyclerView.setLayoutManager(new MyGridLayoutManager(this, 1));
+        binding.moviesRecyclerView.setLayoutManager(new MyGridLayoutManager(getContext(), 1));
 
-        AppContainer appContainer = ((MyApplication) getApplication()).appContainer;
+        //requireActivity()
+        AppContainer appContainer = ((MyApplication) getActivity().getApplication()).appContainer;
         viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(ListViewModel.class);
         binding.setViewModel(viewModel);
 
         setLiveDataObservers();
+        setHasOptionsMenu(true);
+        return binding.getRoot();
+
+//        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     private void setLiveDataObservers() {
@@ -97,32 +98,37 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
 
     }
 
-        private void changeTabClicked(ListTag listTag) {
-            viewModel.listTagChanged(listTag);
-        }
-
-        private void reloadClicked() {
-            viewModel.refreshList();
-        }
-
-    /**
-     * Reload recyclerview with provided data. Remove old data held in adapter and set new one.
-     *
-     * @param movieList list of items to be displayed
-     */
     private void reloadRecyclerView(List<MovieListItemViewData> movieList) {
         movieAdapter.clearMoviesData();
         movieAdapter.setMovieList(movieList);
         movieAdapter.notifyDataSetChanged();
     }
 
+    private void updateCategoryTitle(ListTag tag) {
+        switch (tag) {
+            case TOP_RATED:
+                binding.categoryTitleTv.setText(getString(R.string.top_rate_tag_title));
+                break;
+            case FAVOURITE:
+                binding.categoryTitleTv.setText(getString(R.string.favourite_tag_title));
+                break;
+            case POPULAR:
+                binding.categoryTitleTv.setText(getString(R.string.popular_tag_title));
+                break;
+            default:
+                // TODO: 10.06.20 customize exception
+                throw new RuntimeException();
+        }
+
+    }
+
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        new MenuInflater(this).inflate(R.menu.menu_main, menu);
-//        Timber.d("onCreateOptionsMenu()");
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
         setMenuItemsVisibility(menu);
         setUpOnMenuItemClickListeners(menu);
-        return true;
     }
 
     /**
@@ -198,43 +204,25 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
 
     }
 
-    private void updateCategoryTitle(ListTag tag) {
-        switch (tag) {
-            case TOP_RATED:
-                binding.categoryTitleTv.setText(getString(R.string.top_rate_tag_title));
-                break;
-            case FAVOURITE:
-                binding.categoryTitleTv.setText(getString(R.string.favourite_tag_title));
-                break;
-            case POPULAR:
-                binding.categoryTitleTv.setText(getString(R.string.popular_tag_title));
-                break;
-            default:
-                // TODO: 10.06.20 customize exception
-                throw new RuntimeException();
-        }
+    private void changeTabClicked(ListTag listTag) {
+        viewModel.listTagChanged(listTag);
+    }
 
+    private void reloadClicked() {
+        viewModel.refreshList();
     }
 
     @Override
     public void onMovieItemClicked(int position) {
-//        Timber.d("go to Detail clicked %d", position);
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(EXTRA_API_ID, movieAdapter.getMovieList().get(position).getApiId());
-        startActivityForResult(intent, DETAIL_ACTIVITY_REQUEST_CODE);
-    }
+        FragmentManager manager = getFragmentManager();
+        DetailFragment detailFragment = new DetailFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("api_id" ,movieAdapter.getMovieList().get(position).getApiId());
+        detailFragment.setArguments(bundle);
+        manager.beginTransaction().replace(R.id.fragment_container, detailFragment).addToBackStack(null).commit();
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_CANCELED) {
-                if (mToast != null) {
-                    mToast.cancel();
-                }
-                mToast = Toast.makeText(this, getString(R.string.error_no_api_id), Toast.LENGTH_SHORT);
-                mToast.show();
-            }
-        }
+//        Intent intent = new Intent(getContext(), DetailActivity.class);
+//        intent.putExtra(EXTRA_API_ID, movieAdapter.getMovieList().get(position).getApiId());
+//        startActivityForResult(intent, DETAIL_ACTIVITY_REQUEST_CODE);
     }
 }
