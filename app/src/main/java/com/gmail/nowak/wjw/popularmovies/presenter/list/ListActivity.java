@@ -146,7 +146,7 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
                 break;
             case FAVOURITE:
                 invisibleItem = menu.findItem(R.id.action_show_favourite);
-                menu.findItem(R.id.refreshAction).setVisible(false);
+                menu.findItem(R.id.action_refresh).setVisible(false);
                 break;
             case POPULAR:
                 invisibleItem = menu.findItem(R.id.action_show_popular);
@@ -172,7 +172,7 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
                 public boolean onMenuItemClick(MenuItem item) {
                     int itemId = item.getItemId();
                     switch (itemId) {
-                        case R.id.refreshAction:
+                        case R.id.action_refresh:
                             reloadClicked();
                             break;
                         case R.id.action_show_top_rated:
@@ -188,7 +188,7 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
                             // TODO: 10.06.20 customize exception
                             throw new RuntimeException();
                     }
-                    if (itemId != R.id.refreshAction) {
+                    if (itemId != R.id.action_refresh) {
                         setMenuItemsVisibility(menu);
                     }
                     return true;
