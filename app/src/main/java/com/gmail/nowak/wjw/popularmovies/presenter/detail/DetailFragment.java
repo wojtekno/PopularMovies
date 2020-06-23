@@ -18,6 +18,7 @@ import com.gmail.nowak.wjw.popularmovies.MyApplication;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
 import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
+import com.gmail.nowak.wjw.popularmovies.presenter.MainViewModel;
 
 import timber.log.Timber;
 
@@ -25,6 +26,7 @@ public class DetailFragment extends Fragment implements VideoAdapter.OnVideoCLic
 
     private ActivityDetailBinding binding;
     private DetailViewModel viewModel;
+    private MainViewModel mainViewModel;
 
     @Nullable
     @Override
@@ -36,20 +38,27 @@ public class DetailFragment extends Fragment implements VideoAdapter.OnVideoCLic
         binding.setLifecycleOwner(this);
 
 
-        int lApiId = -13;
-        Bundle args = getArguments();
-        if (args != null) {
-            lApiId = args.getInt("api_id", -13);
-        }
+//        int lApiId = -13;
+//        Bundle args = getArguments();
+//        if (args != null) {
+//            lApiId = args.getInt("api_id", -13);
+//        }
 //        if (lApiId == -13) {
 //            setResult(Activity.RESULT_CANCELED);
 //            finish();
 //        }
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         AppContainer appContainer = ((MyApplication) getActivity().getApplication()).appContainer;
         DetailViewModelAssistedFactory_Factory detailViewModelAssistedFactory_factory = appContainer.detailViewModelAssistedFactory_factory();
-        viewModel = new ViewModelProvider(this, detailViewModelAssistedFactory_factory.create(lApiId)).get(DetailViewModel.class);
+        mainViewModel.getSelectedApiId().observe(this, (lApiId)->{
 
-        binding.setViewModel(viewModel);
+            Timber.d("mainViewModel.getSelectedApiId(): %d" , lApiId);
+            viewModel = new ViewModelProvider(this, detailViewModelAssistedFactory_factory.create(lApiId)).get(DetailViewModel.class);
+            binding.setViewModel(viewModel);
+
+        });
+//        viewModel = new ViewModelProvider(this, detailViewModelAssistedFactory_factory.create(lApiId)).get(DetailViewModel.class);
+//        binding.setViewModel(viewModel);
 
         setUpVideoRecyclerView();
         setUpReviewRecyclerView();

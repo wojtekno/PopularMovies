@@ -30,6 +30,7 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.FAVOURITE;
 import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.POPULAR;
 import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.TOP_RATED;
 
+@Deprecated
 public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMovieListItemClickListener {
 
     //todo in stage 3:

@@ -23,6 +23,7 @@ import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItem
 import com.gmail.nowak.wjw.popularmovies.databinding.ActivityListBinding;
 import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
+import com.gmail.nowak.wjw.popularmovies.presenter.MainViewModel;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailFragment;
 
 import java.util.List;
@@ -42,7 +43,8 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
     private ActivityListBinding binding;
     private Toast mToast;
 
-    ListViewModel viewModel;
+    ListViewModel listViewModel;
+    MainViewModel mainViewModel;
     // stores the currently displayed tab's tag
     private ListTag displayedTab;
 
@@ -64,8 +66,9 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
 
         //requireActivity()
         AppContainer appContainer = ((MyApplication) getActivity().getApplication()).appContainer;
-        viewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(ListViewModel.class);
-        binding.setViewModel(viewModel);
+        listViewModel = new ViewModelProvider(this, appContainer.listViewModelFactory()).get(ListViewModel.class);
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        binding.setViewModel(listViewModel);
 
         setLiveDataObservers();
         setHasOptionsMenu(true);
@@ -75,7 +78,7 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
     }
 
     private void setLiveDataObservers() {
-        viewModel.getListTag().observe(this, new Observer<ListTag>() {
+        listViewModel.getListTag().observe(this, new Observer<ListTag>() {
             @Override
             public void onChanged(ListTag listTag) {
 //                Timber.d("getListTag().onChange triggered %s", listTag);
@@ -84,7 +87,7 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
             }
         });
 
-        viewModel.getMovieList().observe(this, new Observer<List<MovieListItemViewData>>() {
+        listViewModel.getMovieList().observe(this, new Observer<List<MovieListItemViewData>>() {
             @Override
             public void onChanged(List<MovieListItemViewData> movieList) {
 //                Timber.d("getMovieList().onChange %s triggered %s", displayedTab, movieList.size());
@@ -205,24 +208,24 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
     }
 
     private void changeTabClicked(ListTag listTag) {
-        viewModel.listTagChanged(listTag);
+        listViewModel.listTagChanged(listTag);
     }
 
     private void reloadClicked() {
-        viewModel.refreshList();
+        listViewModel.refreshList();
     }
 
     @Override
     public void onMovieItemClicked(int position) {
+        int apiId = movieAdapter.getMovieList().get(position).getApiId();
+        mainViewModel.setSelectedApiId(apiId);
+
         FragmentManager manager = getFragmentManager();
         DetailFragment detailFragment = new DetailFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("api_id" ,movieAdapter.getMovieList().get(position).getApiId());
-        detailFragment.setArguments(bundle);
+//        Bundle bundle = new Bundle();
+//        bundle.putInt("api_id" , apiId);
+//        detailFragment.setArguments(bundle);
         manager.beginTransaction().replace(R.id.fragment_container, detailFragment).addToBackStack(null).commit();
 
-//        Intent intent = new Intent(getContext(), DetailActivity.class);
-//        intent.putExtra(EXTRA_API_ID, movieAdapter.getMovieList().get(position).getApiId());
-//        startActivityForResult(intent, DETAIL_ACTIVITY_REQUEST_CODE);
     }
 }

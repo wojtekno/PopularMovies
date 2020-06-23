@@ -21,7 +21,7 @@ import timber.log.Timber;
 // todo: make the reviews and video behave as clickable
 // todo: implement YT Android Player, so users can play trailers within the app
 
-
+@Deprecated
 public class DetailActivity extends AppCompatActivity implements VideoAdapter.OnVideoCLickListener {
 
     private ActivityDetailBinding binding;
