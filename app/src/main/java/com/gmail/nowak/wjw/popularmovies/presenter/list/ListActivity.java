@@ -33,13 +33,6 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.TOP_RATED;
 @Deprecated
 public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMovieListItemClickListener {
 
-    //todo in stage 3:
-    // - implement fragments holding each list - dissect ListActivity to three fragments
-    // - replace DetailActivity with DetailFragment - make it one activity app
-    // - implement dagger
-    // - implement javaRx
-    // - enable watching videos inside the app
-
     public static final String EXTRA_API_ID = "extra_api_id";
     public static final int DETAIL_ACTIVITY_REQUEST_CODE = 123;
     private MovieAdapter movieAdapter;
@@ -50,8 +43,7 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     // stores the currently displayed tab's tag
     private ListTag displayedTab;
 
-    // TODO handle case when a list is already cached and there is no internet now -> display error, but keep the cached list
-    // TODO: 11.06.20 handle system shutting down teh app
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +53,6 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
         binding.setLifecycleOwner(this);
 
         /*RecyclerView */
-        //todo Q? should i create factory and inject it(MovieAdapterFactory) from AppContainer or leave it like this?
         movieAdapter = new MovieAdapter(this, this);
         binding.moviesRecyclerView.setHasFixedSize(true);
         binding.moviesRecyclerView.setAdapter(movieAdapter);
@@ -133,7 +124,6 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
      */
     private void setMenuItemsVisibility(Menu menu) {
 //        Timber.d("setMenuItemsVisibility");
-        //todo Q? how to get rid of displayedTab?
         //by default set all menuItems visible...
         for (int i = 0; i < menu.size(); i++) {
             MenuItem mitem = menu.getItem(i);

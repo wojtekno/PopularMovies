@@ -23,7 +23,7 @@ public class DetailActivityBindingAdapters {
     @BindingAdapter("myImage")
     public static void setImageUrl(ImageView v, String url) {
 //        Timber.d("xml setImageURL");
-        //todo Q? should i use it with retrofit? or maybe build the url with retrofit interface?
+        //todo 2 Q? should i use it with retrofit? or maybe build the url with retrofit interface?
         Uri mUri = NetworkUtils.buildTMDImageUri(url, NetworkUtils.IMAGE_SIZE_MEDIUM);
         NetworkUtils.fetchImageAndSetToView(mUri, v, false);
     }

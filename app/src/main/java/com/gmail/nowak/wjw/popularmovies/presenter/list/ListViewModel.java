@@ -19,6 +19,9 @@ public class ListViewModel extends ViewModel {
     private LiveData<Integer> mErrorMessageResIdLd;
     private MutableLiveData<ListTag> mListTagLd = new MutableLiveData<>(ListTag.POPULAR);
     public MutableLiveData<Boolean> isErrMsgVisible;
+
+
+
     public MutableLiveData<Boolean> isProgressBarVisible;
 
 
@@ -57,6 +60,7 @@ public class ListViewModel extends ViewModel {
             else return true;
         });
 
+        // TODO: 6 Q? I modify it here in viewModel, but I would like to call ie loadingFinished() from fragment - what is better/cleaner?
         isProgressBarVisible = (MutableLiveData<Boolean>) Transformations.map(mMovieListLd, (x) -> false);
         isProgressBarVisible.setValue(true);
     }

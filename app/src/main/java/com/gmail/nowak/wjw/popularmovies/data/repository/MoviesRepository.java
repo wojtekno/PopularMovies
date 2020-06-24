@@ -33,7 +33,7 @@ public class MoviesRepository {
         Timber.d("MoviesRepository:newInstance");
         database = appDatabase;
         this.theMovieDatabaseOrgAPI = theMovieDataBaseOrgAPI;
-        //todo Q? do I pass retrofit, or the TheMovieDataBaseOrgAPI
+        //todo 1 Q? do I pass retrofit, or the TheMovieDataBaseOrgAPI
 //        retrofit = retrofit;
 //        theMovieDatabaseOrgAPI = retrofit.create(TheMovieDataBaseOrgAPI.class);
     }
@@ -53,8 +53,7 @@ public class MoviesRepository {
         } else if (ListTag.POPULAR.equals(category)) {
             movieListCall = theMovieDatabaseOrgAPI.getPopularMovies();
         } else {
-            // TODO: 10.06.20 throw exception
-            return;
+            throw new RuntimeException();
         }
 //        Timber.d("calling TMDB");
         movieListCall.enqueue(new retrofit2.Callback<ApiResponseMovieList>() {

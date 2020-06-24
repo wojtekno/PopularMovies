@@ -22,6 +22,9 @@ import com.gmail.nowak.wjw.popularmovies.presenter.MainViewModel;
 
 import timber.log.Timber;
 
+// todo 3 Q? : make the reviews and video behave as clickable
+// todo: implement YT Android Player, so users can play trailers within the app
+
 public class DetailFragment extends Fragment implements VideoAdapter.OnVideoCLickListener {
 
     private FragmentDetailBinding binding;
