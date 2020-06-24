@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.gmail.nowak.wjw.popularmovies.presenter.list.ListFragment"
+        android:label="ListFragment"
+        >
+        <action
+            android:id="@+id/action_listFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/fragment_open_enter" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailFragment"
+        android:label="DetailFragment" />
+</navigation>

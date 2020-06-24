@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.gmail.nowak.wjw.popularmovies.MyApplication;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
-import com.gmail.nowak.wjw.popularmovies.databinding.ActivityListBinding;
+import com.gmail.nowak.wjw.popularmovies.databinding.FragmentListBinding;
 import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
 import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailActivity;
@@ -43,7 +43,7 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     public static final String EXTRA_API_ID = "extra_api_id";
     public static final int DETAIL_ACTIVITY_REQUEST_CODE = 123;
     private MovieAdapter movieAdapter;
-    private ActivityListBinding binding;
+    private FragmentListBinding binding;
     private Toast mToast;
 
     ListViewModel viewModel;
@@ -57,7 +57,7 @@ public class ListActivity extends AppCompatActivity implements MovieAdapter.OnMo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.d("onCreate");
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_list);
+        binding = DataBindingUtil.setContentView(this, R.layout.fragment_list);
         binding.setLifecycleOwner(this);
 
         /*RecyclerView */

@@ -13,18 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.gmail.nowak.wjw.popularmovies.MyApplication;
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
-import com.gmail.nowak.wjw.popularmovies.databinding.ActivityListBinding;
+import com.gmail.nowak.wjw.popularmovies.databinding.FragmentListBinding;
 import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
+import com.gmail.nowak.wjw.popularmovies.presenter.MainActivity;
 import com.gmail.nowak.wjw.popularmovies.presenter.MainViewModel;
-import com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailFragment;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
     public static final String EXTRA_API_ID = "extra_api_id";
     public static final int DETAIL_ACTIVITY_REQUEST_CODE = 123;
     private MovieAdapter movieAdapter;
-    private ActivityListBinding binding;
+    private FragmentListBinding binding;
     private Toast mToast;
 
     ListViewModel listViewModel;
@@ -53,7 +52,7 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Timber.d("onCreateView");
-        binding = DataBindingUtil.inflate(inflater, R.layout.activity_list, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_list, container, false);
 
         binding.setLifecycleOwner(this);
 
@@ -78,7 +77,7 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
     }
 
     private void setLiveDataObservers() {
-        listViewModel.getListTag().observe(this, new Observer<ListTag>() {
+        listViewModel.getListTag().observe(getViewLifecycleOwner(), new Observer<ListTag>() {
             @Override
             public void onChanged(ListTag listTag) {
 //                Timber.d("getListTag().onChange triggered %s", listTag);
@@ -87,7 +86,7 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
             }
         });
 
-        listViewModel.getMovieList().observe(this, new Observer<List<MovieListItemViewData>>() {
+        listViewModel.getMovieList().observe(getViewLifecycleOwner(), new Observer<List<MovieListItemViewData>>() {
             @Override
             public void onChanged(List<MovieListItemViewData> movieList) {
 //                Timber.d("getMovieList().onChange %s triggered %s", displayedTab, movieList.size());
@@ -219,13 +218,6 @@ public class ListFragment extends Fragment implements MovieAdapter.OnMovieListIt
     public void onMovieItemClicked(int position) {
         int apiId = movieAdapter.getMovieList().get(position).getApiId();
         mainViewModel.setSelectedApiId(apiId);
-
-        FragmentManager manager = getFragmentManager();
-        DetailFragment detailFragment = new DetailFragment();
-//        Bundle bundle = new Bundle();
-//        bundle.putInt("api_id" , apiId);
-//        detailFragment.setArguments(bundle);
-        manager.beginTransaction().replace(R.id.fragment_container, detailFragment).addToBackStack(null).commit();
-
+        ((MainActivity) requireActivity()).navController.navigate(R.id.action_listFragment_to_detailFragment);
     }
 }

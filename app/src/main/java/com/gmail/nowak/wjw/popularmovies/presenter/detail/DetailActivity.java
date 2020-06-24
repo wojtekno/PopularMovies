@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.gmail.nowak.wjw.popularmovies.MyApplication;
 import com.gmail.nowak.wjw.popularmovies.R;
-import com.gmail.nowak.wjw.popularmovies.databinding.ActivityDetailBinding;
+import com.gmail.nowak.wjw.popularmovies.databinding.FragmentDetailBinding;
 import com.gmail.nowak.wjw.popularmovies.di.AppContainer;
 import com.gmail.nowak.wjw.popularmovies.presenter.list.ListActivity;
 
@@ -24,14 +24,14 @@ import timber.log.Timber;
 @Deprecated
 public class DetailActivity extends AppCompatActivity implements VideoAdapter.OnVideoCLickListener {
 
-    private ActivityDetailBinding binding;
+    private FragmentDetailBinding binding;
     private DetailViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.d("onCreate");
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+        binding = DataBindingUtil.setContentView(this, R.layout.fragment_detail);
         binding.setLifecycleOwner(this);
 
 
