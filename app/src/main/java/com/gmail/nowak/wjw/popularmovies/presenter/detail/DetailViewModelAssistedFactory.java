@@ -4,11 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 import com.gmail.nowak.wjw.popularmovies.domain.AddRemoveFromFavouriteUseCase;
 import com.gmail.nowak.wjw.popularmovies.domain.GetMovieDetailsUseCase;
-
-import timber.log.Timber;
 
 public class DetailViewModelAssistedFactory extends ViewModelProvider.NewInstanceFactory {
     private GetMovieDetailsUseCase mGetMovieDetailsUseCase;
@@ -22,7 +19,7 @@ public class DetailViewModelAssistedFactory extends ViewModelProvider.NewInstanc
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        Timber.d("DetailViewModelFactory::create");
+//        Timber.d("DetailViewModelFactory::create");
         return (T) new DetailViewModel(mGetMovieDetailsUseCase, mAddRemoveFromFavouriteUseCase);
     }
 

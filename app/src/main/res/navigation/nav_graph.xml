@@ -7,21 +7,24 @@
 
 
     <fragment
-        android:id="@+id/detailFragment"
-        android:name="com.gmail.nowak.wjw.popularmovies.presenter.detail.DetailFragment"
-        android:label="DetailFragment"
-        tools:layout="@layout/fragment_detail" >
-        <argument
-            android:name="api_id"
-            app:argType="integer" />
-    </fragment>
-    <fragment
         android:id="@+id/listPagerFragment"
-        android:name="com.gmail.nowak.wjw.popularmovies.presenter.list.host.ListPagerFragment"
+        android:name="com.gmail.nowak.wjw.popularmovies.presenter.list.pager.ListPagerFragment"
         android:label="ListPagerFragment"
         tools:layout="@layout/fragment_list">
         <action
-            android:id="@+id/action_listPagerFragment_to_detailFragment"
-            app:destination="@id/detailFragment" />
+            android:id="@+id/action_listPagerFragment_to_detailPagerFragment"
+            app:destination="@id/detailPagerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailPagerFragment"
+        android:name="com.gmail.nowak.wjw.popularmovies.presenter.detail.pager.DetailPagerFragment"
+        android:label="DetailPagerFragment"
+        tools:layout="@layout/fragment_detail">
+        <argument
+            android:name="api_id_list"
+            app:argType="integer[]" />
+        <argument
+            android:name="list_position"
+            app:argType="integer" />
     </fragment>
 </navigation>

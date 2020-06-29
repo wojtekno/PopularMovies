@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies.presenter.list.host;
+package com.gmail.nowak.wjw.popularmovies.presenter.list.pager;
 
 import android.os.Bundle;
 

@@ -1,4 +1,4 @@
-package com.gmail.nowak.wjw.popularmovies.presenter.list.host;
+package com.gmail.nowak.wjw.popularmovies.presenter.list.pager;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,7 +34,6 @@ public class ListPagerFragment extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> {
-//                    tab.setText(ListTag.values()[position].name());
                     ListTag lTag = ListTag.values()[position];
                     int resId;
                     switch (lTag) {

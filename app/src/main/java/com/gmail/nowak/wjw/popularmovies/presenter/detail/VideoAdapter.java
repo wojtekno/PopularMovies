@@ -37,7 +37,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         videoList.get(position);
         holder.itemBinding.setVideo(videoList.get(position));
         holder.itemBinding.executePendingBindings();
-        holder.itemBinding.setListener(listener); // wywal ten listener i setOnClickListener
+        holder.itemBinding.setListener(listener); // todo  wywal ten listener i setOnClickListener
         // https://stackoverflow.com/questions/40509161/recycler-view-click-animation
 //        holder.itemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
 //            @Override

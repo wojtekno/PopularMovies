@@ -36,7 +36,12 @@ public class DetailFragment extends Fragment implements VideoAdapter.OnVideoCLic
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false);
         binding.setLifecycleOwner(this);
 
-        int lApiId = DetailFragmentArgs.fromBundle(getArguments()).getApiId();
+        int lApiId = -1;
+        if (getArguments() != null) {
+            lApiId = getArguments().getInt("api_id", -1);
+        }
+        if (lApiId == -1) throw new IllegalArgumentException();
+
         AppContainer appContainer = ((MyApplication) getActivity().getApplication()).appContainer;
         DetailViewModelAssistedFactory_Factory detailViewModelAssistedFactory_factory = appContainer.detailViewModelAssistedFactory_factory();
 

@@ -19,7 +19,7 @@ public class MovieDetailViewDataFactory {
         List<VideoViewData> videoList = new ArrayList<>();
         for (ApiVideo apiVideo : apiMovie.getVideoList()) {
             videoList.add(new VideoViewData(apiVideo.getName(), apiVideo.getKey()));
-            Timber.d("apiVideoSite = %s", apiVideo.getSite());
+//            Timber.d("apiVideoSite = %s", apiVideo.getSite());
             if ("youtube".compareToIgnoreCase(apiVideo.getSite()) != 0) {
                 Timber.e("apiVideo.getSite() is not youtube. It's: %s. You won't be able to watch this video", apiVideo.getSite());
             }

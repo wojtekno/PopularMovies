@@ -43,9 +43,6 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
     private FragmentListBinding binding;
 
     ListViewModel listViewModel;
-    // stores the currently displayed tab's tag
-//    private ListTag displayedTab;
-
 
     @Nullable
     @Override
@@ -74,9 +71,6 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
         binding.setViewModel(listViewModel);
 
         setLiveDataObservers();
-//        displayedTab = mTab;
-//        updateCategoryTitle(displayedTab);
-//        setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
@@ -87,10 +81,6 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
             public void onChanged(List<MovieListItemViewData> movieList) {
 //                Timber.d("getMovieList().onChange %s triggered %s", displayedTab, movieList.size());
                 reloadRecyclerView(movieList);
-
-//                //for debugging purposes todo remove the block below
-//                updateCategoryTitle(displayedTab);
-//                binding.categoryTitleTv.append(String.format(" (%d)", movieList.size()));
             }
         });
 
@@ -105,7 +95,6 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
 
     @Override
     public void onMovieItemClicked(int position) {
-        int apiId = movieAdapter.getMovieList().get(position).getApiId();
-        listViewModel.movieItemClicked(apiId);
+        listViewModel.movieItemClicked(position);
     }
 }

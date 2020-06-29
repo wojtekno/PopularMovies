@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.domain.GetMovieListsUseCase;
 import com.gmail.nowak.wjw.popularmovies.navigation.Nav;
-import com.gmail.nowak.wjw.popularmovies.presenter.list.host.ListPagerFragmentDirections;
+import com.gmail.nowak.wjw.popularmovies.presenter.list.pager.ListPagerFragmentDirections;
 
 import java.util.List;
 
@@ -18,7 +18,6 @@ public class ListViewModel extends ViewModel {
     private GetMovieListsUseCase mGetMovieListsUseCase;
     private LiveData<List<MovieListItemViewData>> mMovieListLd;
     private LiveData<Integer> mErrorMessageResIdLd;
-    //    private MutableLiveData<ListTag> mListTagLd = new MutableLiveData<>(ListTag.POPULAR);
     private Nav mNav;
     public MutableLiveData<Boolean> isErrMsgVisible;
 
@@ -28,7 +27,7 @@ public class ListViewModel extends ViewModel {
     public ListViewModel(GetMovieListsUseCase getMovieListsUseCase, Nav nav) {
         Timber.d("ListViewModel::newInstance");
         mNav = nav;
-        this.mGetMovieListsUseCase = getMovieListsUseCase;
+        mGetMovieListsUseCase = getMovieListsUseCase;
         mErrorMessageResIdLd = getMovieListsUseCase.getErrorMessageResId();
         mMovieListLd = getMovieListsUseCase.getMovieList();
 
@@ -52,8 +51,8 @@ public class ListViewModel extends ViewModel {
         return mErrorMessageResIdLd;
     }
 
-    public void movieItemClicked(int apiId) {
-        ListPagerFragmentDirections.ActionListPagerFragmentToDetailFragment action = ListPagerFragmentDirections.actionListPagerFragmentToDetailFragment(apiId);
+    public void movieItemClicked(int position) {
+        ListPagerFragmentDirections.ActionListPagerFragmentToDetailPagerFragment action = ListPagerFragmentDirections.actionListPagerFragmentToDetailPagerFragment(getApiIdArray(), position);
         mNav.setNavDirections(action);
     }
 
@@ -61,6 +60,16 @@ public class ListViewModel extends ViewModel {
     protected void onCleared() {
         Timber.d("onCleared()");
         super.onCleared();
+    }
+
+    private int[] getApiIdArray() {
+        int[] mIds = new int[mMovieListLd.getValue().size()];
+        List<MovieListItemViewData> value = mMovieListLd.getValue();
+        for (int i = 0; i < value.size(); i++) {
+            MovieListItemViewData movie = value.get(i);
+            mIds[i] = movie.getApiId();
+        }
+        return mIds;
     }
 
 

@@ -14,7 +14,6 @@ import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import timber.log.Timber;
@@ -25,9 +24,7 @@ public class MoviesRepository {
     private MutableLiveData<ApiResponseMovieList> topRatedMoviesResponseLD;
     private MutableLiveData<ApiResponseMovieList> popularMovieResponseLD;
     private LiveData<List<FavouriteMovie>> favMoviesData;
-    private MutableLiveData<ApiMovie> apiMovieDetails;
     private AppDatabase database;
-    private Call<ApiMovie> movieDetailsCall;
 
     public MoviesRepository(AppDatabase appDatabase, TheMovieDataBaseOrgAPI theMovieDataBaseOrgAPI) {
         Timber.d("MoviesRepository:newInstance");
@@ -95,13 +92,8 @@ public class MoviesRepository {
     }
 
     public LiveData<ApiMovie> fetchMovieWithDetailsFromApi(int apiId) {
-        //clear apiMovieDetails
-        apiMovieDetails = new MutableLiveData<>();
-        if (movieDetailsCall != null) {
-            movieDetailsCall.cancel();
-        }
-        movieDetailsCall = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
-
+        MutableLiveData<ApiMovie> apiMovieDetails = new MutableLiveData<>();
+        Call<ApiMovie> movieDetailsCall = theMovieDatabaseOrgAPI.getMovieDetailsWithVideosAndReviews(apiId);
 //        Timber.d("calling TMDB");
         movieDetailsCall.enqueue(new Callback<ApiMovie>() {
             @Override

@@ -1,7 +1,5 @@
 package com.gmail.nowak.wjw.popularmovies.navigation;
 
-import androidx.appcompat.app.WindowDecorActionBar;
-
 import timber.log.Timber;
 
 public class Event<T> {
@@ -18,7 +16,7 @@ public class Event<T> {
             Timber.d("handled before");
             return null;
         } else {
-            Timber.d("handled for the first time");
+//            Timber.d("handled for the first time");
             hasBeenHandled = true;
             return mContent;
         }
