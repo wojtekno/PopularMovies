@@ -20,11 +20,15 @@ import java.util.List;
 
 public class GetMovieListsUseCase {
 
+    private MoviesRepository mMoviesRepository;
+    private ListTag mListTag;
     private LiveData<List<MovieListItemViewData>> mMovieList;
     private LiveData<Integer> mErrMsgResId;
 
 
     public GetMovieListsUseCase(MoviesRepository moviesRepository, ListTag listTag) {
+        mMoviesRepository = moviesRepository;
+        mListTag = listTag;
         LiveData<ApiResponseMovieList> lApiResponseMovieList;
         switch (listTag) {
             case POPULAR:
@@ -85,6 +89,13 @@ public class GetMovieListsUseCase {
 
     public LiveData<Integer> getErrorMessageResId() {
         return mErrMsgResId;
+    }
+
+    public boolean refreshList() {
+        if (mListTag == ListTag.FAVOURITE) return false;
+
+        mMoviesRepository.reloadApiResponseMovieList(mListTag);
+        return true;
     }
 
 }

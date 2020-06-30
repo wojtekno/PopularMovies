@@ -27,8 +27,6 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.POPULAR;
 
 
 //todo in stage 3:
-// - implement fragments holding each list - dissect ListActivity to three fragments
-// - replace DetailActivity with DetailFragment - make it one activity app
 // - implement dagger
 // - implement javaRx
 // - enable watching videos inside the app
@@ -36,7 +34,6 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.POPULAR;
 
 // TODO handle case when a list is already cached and there is no internet now -> display error, but keep the cached list
 // TODO: 11.06.20 handle system shutting down teh app
-// todo 9 Q? how to communicate between list and fragment -> viewModel ?  two vm for a fragment ?
 public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieListItemClickListener {
 
     private MovieAdapter movieAdapter;
@@ -69,7 +66,10 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
         ListViewModelFactory_Factory listViewModelFactory_factory = appContainer.listViewModeFactory_factory();
         listViewModel = new ViewModelProvider(this, listViewModelFactory_factory.create(mTab)).get(ListViewModel.class);
         binding.setViewModel(listViewModel);
-
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            Timber.d("refreshingList");
+            listViewModel.refreshList();
+        });
         setLiveDataObservers();
         return binding.getRoot();
     }
@@ -81,6 +81,7 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
             public void onChanged(List<MovieListItemViewData> movieList) {
 //                Timber.d("getMovieList().onChange %s triggered %s", displayedTab, movieList.size());
                 reloadRecyclerView(movieList);
+                listViewModel.finishedLoading();
             }
         });
 

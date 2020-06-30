@@ -20,9 +20,7 @@ public class ListViewModel extends ViewModel {
     private LiveData<Integer> mErrorMessageResIdLd;
     private Nav mNav;
     public MutableLiveData<Boolean> isErrMsgVisible;
-
-
-    public MutableLiveData<Boolean> isProgressBarVisible;
+    public MutableLiveData<Boolean> isProgressBarVisible = new MutableLiveData<>(true);
 
     public ListViewModel(GetMovieListsUseCase getMovieListsUseCase, Nav nav) {
         Timber.d("ListViewModel::newInstance");
@@ -36,10 +34,6 @@ public class ListViewModel extends ViewModel {
             if (error == null) return false;
             else return true;
         });
-
-        // TODO: 6 Q? I modify it here in viewModel, but I would like to call ie loadingFinished() from fragment - what is better/cleaner?
-        isProgressBarVisible = (MutableLiveData<Boolean>) Transformations.map(mMovieListLd, (x) -> false);
-        isProgressBarVisible.setValue(true);
     }
 
 
@@ -72,28 +66,17 @@ public class ListViewModel extends ViewModel {
         return mIds;
     }
 
+    public void refreshList() {
+//        Timber.d("refreshList");
+        isErrMsgVisible.setValue(false);
+        isProgressBarVisible.setValue(true);
+        if (!mGetMovieListsUseCase.refreshList()) {
+            finishedLoading();
+        }
+    }
 
-//    //todo remove used only in tests
-//    public void refreshList() {
-////        Timber.d("refreshList");
-//        isErrMsgVisible.setValue(false);
-//        isProgressBarVisible.setValue(true);
-//        mGetMovieListsUseCase.refreshMovieList(mListTagLd.getValue());
-//    }
-//
-//    //todo remove used only in tests
-//    public void listTagChanged(ListTag listTag) {
-//        isErrMsgVisible.setValue(false);
-//        isProgressBarVisible.setValue(true);
-//        mListTagLd.setValue(listTag);
-//        if (mErrorMessageResIdLd.getValue() != null) {
-//            refreshList();
-//        }
-//    }
-//
-//    //todo remove used only in tests
-//    public LiveData<ListTag> getListTag() {
-//        return mListTagLd;
-//    }
+    public void finishedLoading() {
+        isProgressBarVisible.setValue(false);
+    }
 
 }

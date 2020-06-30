@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
 
         ((MyApplication) getApplication()).appContainer.nav.getNavDirectionsEvent().observe(this, (navDirEvent) -> {
-            Timber.d("navDirEvent: %s : %d", navDirEvent.peekContent().getActionId(), navDirEvent.peekContent().getArguments().getInt("list_position"));
+//            Timber.d("navDirEvent: %s : %d", navDirEvent.peekContent().getActionId(), navDirEvent.peekContent().getArguments().getInt("list_position"));
             if (!navDirEvent.hasBeenHandled()) {
                 navController.navigate(navDirEvent.getContentIfNotHandled());
             }
