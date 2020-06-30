@@ -68,8 +68,7 @@ public class MoviesRepository {
                 } else if (ListTag.POPULAR.equals(category)) {
                     popularMovieResponseLD.setValue(apiResponseMovieList);
                 } else {
-                    // TODO: customize
-                    throw new RuntimeException();
+                    throw new UnsupportedOperationException();
                 }
             }
 

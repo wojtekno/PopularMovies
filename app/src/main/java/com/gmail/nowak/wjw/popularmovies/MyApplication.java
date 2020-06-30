@@ -15,9 +15,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEBUG) {
-            //todo implement prod and debug logging
-//        Timber.d("Timber initialized");
             Timber.plant(new MyTagDebugTree());
+//        Timber.d("Timber initialized");
         }
 
         appContainer = new AppContainer(this);

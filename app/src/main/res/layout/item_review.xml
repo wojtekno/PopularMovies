@@ -13,9 +13,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:foreground="?selectableItemBackground"
         android:onClick="@{()->wrappedReview.setExpanded(!wrappedReview.isExpanded())}"
         android:orientation="vertical"
         android:paddingTop="12dp">
+
 
         <TextView
             android:id="@+id/review_content_tv"

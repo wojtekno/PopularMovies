@@ -35,7 +35,7 @@ public class ApiMovie {
     private int[] genreIds;
     private boolean adult;
 
-    //TODO manage to set retrofit, gson,converterFactories and ApiReviewDeserialize so it can be List<ApiReview>
+    //TODO Q? should i use convertFactory and ApiReviewDeserialize to have a List<ApiReview> or leave it like this?
     @SerializedName("reviews")
     private ApiResponseReview apiResponseReview;
     @SerializedName("videos")

@@ -27,9 +27,10 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.POPULAR;
 
 
 //todo in stage 3:
-// - implement dagger
+// -implement paging
 // - implement javaRx
 // - enable watching videos inside the app
+// - implement dagger
 
 
 // TODO handle case when a list is already cached and there is no internet now -> display error, but keep the cached list
