@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.PagedList;
 
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.domain.GetMovieListsUseCase;
@@ -16,6 +17,7 @@ import timber.log.Timber;
 
 public class ListViewModel extends ViewModel {
     private GetMovieListsUseCase mGetMovieListsUseCase;
+    public LiveData<PagedList<MovieListItemViewData>> pagedList;
     private LiveData<List<MovieListItemViewData>> mMovieListLd;
     private LiveData<Integer> mErrorMessageResIdLd;
     private Nav mNav;
@@ -26,14 +28,15 @@ public class ListViewModel extends ViewModel {
         Timber.d("ListViewModel::newInstance");
         mNav = nav;
         mGetMovieListsUseCase = getMovieListsUseCase;
-        mErrorMessageResIdLd = getMovieListsUseCase.getErrorMessageResId();
-        mMovieListLd = getMovieListsUseCase.getMovieList();
-
-        isErrMsgVisible = (MutableLiveData<Boolean>) Transformations.map(mErrorMessageResIdLd, (error) ->
-        {
-            if (error == null) return false;
-            else return true;
-        });
+        pagedList = mGetMovieListsUseCase.pagedItems;
+//        mErrorMessageResIdLd = getMovieListsUseCase.getErrorMessageResId();
+//        mMovieListLd = getMovieListsUseCase.getMovieList();
+        isErrMsgVisible = new MutableLiveData<>(false);
+//        isErrMsgVisible = (MutableLiveData<Boolean>) Transformations.map(mErrorMessageResIdLd, (error) ->
+//        {
+//            if (error == null) return false;
+//            else return true;
+//        });
     }
 
 
@@ -67,7 +70,7 @@ public class ListViewModel extends ViewModel {
     }
 
     public void refreshList() {
-//        Timber.d("refreshList");
+        Timber.d("refreshList");
         isErrMsgVisible.setValue(false);
         isProgressBarVisible.setValue(true);
         if (!mGetMovieListsUseCase.refreshList()) {

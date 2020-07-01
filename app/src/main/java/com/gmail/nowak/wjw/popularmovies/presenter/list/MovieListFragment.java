@@ -37,9 +37,10 @@ import static com.gmail.nowak.wjw.popularmovies.presenter.ListTag.POPULAR;
 // TODO: 11.06.20 handle system shutting down teh app
 public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieListItemClickListener {
 
-    private MovieAdapter movieAdapter;
+//    private MovieAdapter movieAdapter;
     private FragmentListBinding binding;
 
+    private MoviePagedAdapter pagedAdapter;
     ListViewModel listViewModel;
 
     @Nullable
@@ -51,9 +52,11 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
         binding.setLifecycleOwner(this);
 
         /*RecyclerView */
-        movieAdapter = new MovieAdapter(this, this);
+//        movieAdapter = new MovieAdapter(this, this);
+        pagedAdapter = new MoviePagedAdapter(this, this);
         binding.moviesRecyclerView.setHasFixedSize(true);
-        binding.moviesRecyclerView.setAdapter(movieAdapter);
+//        binding.moviesRecyclerView.setAdapter(movieAdapter);
+        binding.moviesRecyclerView.setAdapter(pagedAdapter);
         binding.moviesRecyclerView.setLayoutManager(new MyGridLayoutManager(getContext(), 1));
 
 
@@ -77,21 +80,29 @@ public class MovieListFragment extends Fragment implements MovieAdapter.OnMovieL
 
     private void setLiveDataObservers() {
 
-        listViewModel.getMovieList().observe(getViewLifecycleOwner(), new Observer<List<MovieListItemViewData>>() {
-            @Override
-            public void onChanged(List<MovieListItemViewData> movieList) {
-//                Timber.d("getMovieList().onChange %s triggered %s", displayedTab, movieList.size());
-                reloadRecyclerView(movieList);
-                listViewModel.finishedLoading();
-            }
+//        listViewModel.getMovieList().observe(getViewLifecycleOwner(), new Observer<List<MovieListItemViewData>>() {
+//            @Override
+//            public void onChanged(List<MovieListItemViewData> movieList) {
+////                Timber.d("getMovieList().onChange %s triggered %s", displayedTab, movieList.size());
+//                reloadRecyclerView(movieList);
+//                listViewModel.finishedLoading();
+//            }
+//        });
+
+        listViewModel.pagedList.observe(getViewLifecycleOwner(),(l)->{
+            Timber.d("pagedListChanged : %s", l.get(0).getOriginalTitle());
+            pagedAdapter.submitList(l);
+            listViewModel.finishedLoading();
         });
 
     }
 
     private void reloadRecyclerView(List<MovieListItemViewData> movieList) {
-        movieAdapter.clearMoviesData();
-        movieAdapter.setMovieList(movieList);
-        movieAdapter.notifyDataSetChanged();
+//        movieAdapter.clearMoviesData();
+//        movieAdapter.setMovieList(movieList);
+//        movieAdapter.notifyDataSetChanged();
+        //todo
+//        pagedAdapter.submitList(movieList);
     }
 
 

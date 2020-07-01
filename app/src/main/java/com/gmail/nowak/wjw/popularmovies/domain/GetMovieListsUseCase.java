@@ -4,6 +4,9 @@ import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 import com.gmail.nowak.wjw.popularmovies.R;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
@@ -24,40 +27,45 @@ public class GetMovieListsUseCase {
     private ListTag mListTag;
     private LiveData<List<MovieListItemViewData>> mMovieList;
     private LiveData<Integer> mErrMsgResId;
+    public LiveData<PagedList<MovieListItemViewData>> pagedItems;
 
 
     public GetMovieListsUseCase(MoviesRepository moviesRepository, ListTag listTag) {
         mMoviesRepository = moviesRepository;
         mListTag = listTag;
         LiveData<ApiResponseMovieList> lApiResponseMovieList;
-        switch (listTag) {
-            case POPULAR:
-                lApiResponseMovieList = moviesRepository.getPopularMoviesResponseLD();
-                break;
-            case TOP_RATED:
-                lApiResponseMovieList = moviesRepository.getTopRatedMoviesResponseLD();
-                break;
-            case FAVOURITE:
-                lApiResponseMovieList = null;
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
+        DataSource.Factory<Integer, MovieListItemViewData> factory = moviesRepository.movieListDataSourceFactory.map(apiMovie ->
+                new MovieListItemViewData(apiMovie.getApiId(), apiMovie.getOriginalTitle(), apiMovie.getPosterPath()));
+        pagedItems = new LivePagedListBuilder(factory, 20).build();
 
-        if (lApiResponseMovieList == null) {
-            mErrMsgResId = new MutableLiveData<>(null);
-            mMovieList = Transformations.map(moviesRepository.getFavouriteMoviesLD(), (favourites) -> {
-                List<MovieListItemViewData> result = new ArrayList<>();
-                for (FavouriteMovie fm : favourites) {
-                    result.add(new MovieListItemViewData(fm.getApiId(), fm.getTitle(), fm.getPosterPath()));
-                }
-                return result;
-            });
-        } else {
-            LiveData<Integer> lRespCode = Transformations.map(lApiResponseMovieList, ApiResponseMovieList::getResponseCode);
-            mErrMsgResId = Transformations.map(lRespCode, getErrMsgFromResponseCode());
-            mMovieList = Transformations.map(lApiResponseMovieList, getMovieListFromApiResponse());
-        }
+//        switch (listTag) {
+//            case POPULAR:
+//                lApiResponseMovieList = moviesRepository.getPopularMoviesResponseLD();
+//                break;
+//            case TOP_RATED:
+//                lApiResponseMovieList = moviesRepository.getTopRatedMoviesResponseLD();
+//                break;
+//            case FAVOURITE:
+//                lApiResponseMovieList = null;
+//                break;
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
+
+//        if (lApiResponseMovieList == null) {
+//            mErrMsgResId = new MutableLiveData<>(null);
+//            mMovieList = Transformations.map(moviesRepository.getFavouriteMoviesLD(), (favourites) -> {
+//                List<MovieListItemViewData> result = new ArrayList<>();
+//                for (FavouriteMovie fm : favourites) {
+//                    result.add(new MovieListItemViewData(fm.getApiId(), fm.getTitle(), fm.getPosterPath()));
+//                }
+//                return result;
+//            });
+//        } else {
+//            LiveData<Integer> lRespCode = Transformations.map(lApiResponseMovieList, ApiResponseMovieList::getResponseCode);
+//            mErrMsgResId = Transformations.map(lRespCode, getErrMsgFromResponseCode());
+//            mMovieList = Transformations.map(lApiResponseMovieList, getMovieListFromApiResponse());
+//        }
 
     }
 

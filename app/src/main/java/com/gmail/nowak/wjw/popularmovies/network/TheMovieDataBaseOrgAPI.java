@@ -8,10 +8,14 @@ import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseVideo;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface TheMovieDataBaseOrgAPI {
     @GET("movie/popular")
     Call<ApiResponseMovieList> getPopularMovies();
+
+    @GET("movie/popular")
+    Call<ApiResponseMovieList> getPopularMoviesByPage(@Query("page") int page);
 
     @GET("movie/top_rated")
     Call<ApiResponseMovieList> getTopRatedMovies();

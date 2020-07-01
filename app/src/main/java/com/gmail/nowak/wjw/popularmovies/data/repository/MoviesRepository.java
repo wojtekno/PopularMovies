@@ -2,12 +2,16 @@ package com.gmail.nowak.wjw.popularmovies.data.repository;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.DataSource;
 
 import com.gmail.nowak.wjw.popularmovies.AppExecutors;
 import com.gmail.nowak.wjw.popularmovies.data.db.AppDatabase;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieList;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.MovieListDataSource;
+import com.gmail.nowak.wjw.popularmovies.data.model.api.MovieListDataSourceFactory;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
+import com.gmail.nowak.wjw.popularmovies.data.model.view_data.list.MovieListItemViewData;
 import com.gmail.nowak.wjw.popularmovies.network.TheMovieDataBaseOrgAPI;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
 
@@ -25,11 +29,13 @@ public class MoviesRepository {
     private MutableLiveData<ApiResponseMovieList> popularMovieResponseLD;
     private LiveData<List<FavouriteMovie>> favMoviesData;
     private AppDatabase database;
+    public DataSource.Factory<Integer, ApiMovie> movieListDataSourceFactory;
 
     public MoviesRepository(AppDatabase appDatabase, TheMovieDataBaseOrgAPI theMovieDataBaseOrgAPI) {
         Timber.d("MoviesRepository:newInstance");
         database = appDatabase;
         this.theMovieDatabaseOrgAPI = theMovieDataBaseOrgAPI;
+        movieListDataSourceFactory = new MovieListDataSourceFactory(theMovieDatabaseOrgAPI);
     }
 
 
