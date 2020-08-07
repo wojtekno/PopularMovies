@@ -18,12 +18,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Observable;
+
 public class GetMovieListsUseCase {
 
     private MoviesRepository mMoviesRepository;
     private ListTag mListTag;
     private LiveData<List<MovieListItemViewData>> mMovieList;
     private LiveData<Integer> mErrMsgResId;
+    Observable<MovieListItemViewData> viewDataObservable;
 
 
     public GetMovieListsUseCase(MoviesRepository moviesRepository, ListTag listTag) {
@@ -96,6 +99,9 @@ public class GetMovieListsUseCase {
 
         mMoviesRepository.reloadApiResponseMovieList(mListTag);
         return true;
+    }
+    public Observable<MovieListItemViewData> getViewDataObservable( ){
+        return mMoviesRepository.observableApiMovies().map(r ->  new MovieListItemViewData(r.getApiId(), r.getOriginalTitle(), r.getPosterPath()));
     }
 
 }

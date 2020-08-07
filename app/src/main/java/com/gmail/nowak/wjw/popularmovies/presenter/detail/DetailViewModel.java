@@ -1,6 +1,7 @@
 package com.gmail.nowak.wjw.popularmovies.presenter.detail;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
@@ -12,19 +13,19 @@ import com.gmail.nowak.wjw.popularmovies.domain.GetMovieDetailsUseCase;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.BackpressureStrategy;
 import timber.log.Timber;
 
 public class DetailViewModel extends ViewModel {
 
-    private MutableLiveData<MovieDetailViewData> movie;
+//    private MutableLiveData<MovieDetailViewData> movie;
     private MutableLiveData<Boolean> isVideoListFolded = new MutableLiveData<>(true);
     private AddRemoveFromFavouriteUseCase mAddRemoveUseCase;
     public MutableLiveData<Boolean> isProgressBarVisible;
     public MutableLiveData<Boolean> isErrMsgVisible;
     private LiveData<Integer> errorMessageResId;
     public LiveData<Boolean> isMoreBtnVisible;
-
-
+    public LiveData<MovieDetailViewData> movieFromRx;// = new MutableLiveData<>();
 
 
     public DetailViewModel(GetMovieDetailsUseCase getMovieDetailsUseCase, AddRemoveFromFavouriteUseCase addRemoveFromFavouriteUseCase) {
@@ -36,19 +37,30 @@ public class DetailViewModel extends ViewModel {
             if (msg == null) return false;
             else return true;
         });
-        movie = (MutableLiveData<MovieDetailViewData>) getMovieDetailsUseCase.getMovieDetails();
-        isProgressBarVisible = (MutableLiveData<Boolean>) Transformations.map(movie, (m) -> false);
+//        movie = (MutableLiveData<MovieDetailViewData>) getMovieDetailsUseCase.getMovieDetails();
+        movieFromRx =  LiveDataReactiveStreams.fromPublisher(getMovieDetailsUseCase.viewDataObservable.filter(a -> {
+            Timber.d("movie %s", a.getOriginalTitle());
+            return true;
+        }).toFlowable(BackpressureStrategy.BUFFER));
+        isProgressBarVisible = (MutableLiveData<Boolean>) Transformations.map(movieFromRx, (m) -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return false;
+        });
         isProgressBarVisible.setValue(true);
-        isMoreBtnVisible = Transformations.map(movie, (m) -> {
+        isMoreBtnVisible = Transformations.map(movieFromRx, (m) -> {
             if (m.getVideosLD().getValue().size() > 2) return true;
             else return false;
         });
         Timber.d("Constructor END");
     }
 
-    public LiveData<MovieDetailViewData> getMovieLD() {
-        return movie;
-    }
+//    public LiveData<MovieDetailViewData> getMovieLD() {
+//        return movie;
+//    }
 
     public LiveData<Integer> getErrorMessageResId() {
         return errorMessageResId;
@@ -59,7 +71,7 @@ public class DetailViewModel extends ViewModel {
     }
 
     public void favouriteButtonClicked() {
-        if (movie.getValue().isFavourite().getValue()) {
+        if (movieFromRx.getValue().isFavourite().getValue()) {
             removeFromFavourite();
         } else {
             addToFavourite();
@@ -68,12 +80,12 @@ public class DetailViewModel extends ViewModel {
 
     private void addToFavourite() {
         Timber.d("Adding to Favourite");
-        mAddRemoveUseCase.addToFavourites(movie.getValue());
+        mAddRemoveUseCase.addToFavourites(movieFromRx.getValue());
     }
 
     private void removeFromFavourite() {
         Timber.d("removingFromFav");
-        mAddRemoveUseCase.removeFromFavourites(movie.getValue().getApiId());
+        mAddRemoveUseCase.removeFromFavourites(movieFromRx.getValue().getApiId());
     }
 
     public void unfoldVideoRVClicked() {
@@ -82,11 +94,11 @@ public class DetailViewModel extends ViewModel {
 
     //todo debugging method, delete when submitting
     public void addVideo() {
-        Timber.d("movie %d", movie.getValue().getApiId());
-        List<VideoViewData> list = movie.getValue().getVideosLD().getValue();
+        Timber.d("movie %d", movieFromRx.getValue().getApiId());
+        List<VideoViewData> list = movieFromRx.getValue().getVideosLD().getValue();
         VideoViewData lVideo = new VideoViewData("Title", "nonExistingKey");
         list.add(lVideo);
-        movie.getValue().getVideosLD().setValue(list);
+        movieFromRx.getValue().getVideosLD().setValue(list);
     }
 
     @Override

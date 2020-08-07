@@ -9,11 +9,14 @@ import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetail
 import com.gmail.nowak.wjw.popularmovies.data.model.view_data.detail.MovieDetailViewDataFactory;
 import com.gmail.nowak.wjw.popularmovies.data.repository.MoviesRepository;
 
+import io.reactivex.rxjava3.core.Observable;
+
 public class GetMovieDetailsUseCase {
 
     private MoviesRepository mRepository;
     private LiveData<MovieDetailViewData> mMovieLd;
     private LiveData<Integer> mErrorMessageResId;
+    public Observable<MovieDetailViewData> viewDataObservable;
 
     public GetMovieDetailsUseCase(MoviesRepository mRepository, int apiId) {
         this.mRepository = mRepository;
@@ -30,6 +33,8 @@ public class GetMovieDetailsUseCase {
             if (resp == null) return false;
             else return true;
         });
+        viewDataObservable = mRepository.getMovieDetailObservable(apiId).map(apiMovie -> MovieDetailViewDataFactory.create(apiMovie,isFav));
+
         mMovieLd = Transformations.map(lApiMovie, (m) -> MovieDetailViewDataFactory.create(m, isFav));
     }
 

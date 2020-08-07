@@ -9,11 +9,14 @@ import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiMovie;
 import com.gmail.nowak.wjw.popularmovies.data.model.api.ApiResponseMovieList;
 import com.gmail.nowak.wjw.popularmovies.data.model.local.FavouriteMovie;
 import com.gmail.nowak.wjw.popularmovies.network.TheMovieDataBaseOrgAPI;
+import com.gmail.nowak.wjw.popularmovies.network.TheMovieDataBaseOrgAPIwRx;
 import com.gmail.nowak.wjw.popularmovies.presenter.ListTag;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import timber.log.Timber;
@@ -21,6 +24,7 @@ import timber.log.Timber;
 public class MoviesRepository {
 
     private TheMovieDataBaseOrgAPI theMovieDatabaseOrgAPI;
+    private TheMovieDataBaseOrgAPIwRx theMovieDatabaseOrgAPIRX;
     private MutableLiveData<ApiResponseMovieList> topRatedMoviesResponseLD;
     private MutableLiveData<ApiResponseMovieList> popularMovieResponseLD;
     private LiveData<List<FavouriteMovie>> favMoviesData;
@@ -30,6 +34,17 @@ public class MoviesRepository {
         Timber.d("MoviesRepository:newInstance");
         database = appDatabase;
         this.theMovieDatabaseOrgAPI = theMovieDataBaseOrgAPI;
+    }
+
+    public MoviesRepository(AppDatabase appDatabase, TheMovieDataBaseOrgAPI theMovieDataBaseOrgAPI, TheMovieDataBaseOrgAPIwRx theMovieDataBaseOrgAPIwRx) {
+        Timber.d("MoviesRepository:newInstance");
+        database = appDatabase;
+        this.theMovieDatabaseOrgAPI = theMovieDataBaseOrgAPI;
+        this.theMovieDatabaseOrgAPIRX = theMovieDataBaseOrgAPIwRx;
+    }
+
+    public Observable<ApiMovie> observableApiMovies() {
+        return theMovieDatabaseOrgAPIRX.getPopularMovies().flatMapIterable(x -> x.getResults());
     }
 
 
@@ -88,6 +103,11 @@ public class MoviesRepository {
 
         });
 
+    }
+
+    public Observable<ApiMovie> getMovieDetailObservable(int apiId){
+        return theMovieDatabaseOrgAPIRX.getMovieDetailsWithVideosAndReviews(apiId)
+                .subscribeOn(Schedulers.io());
     }
 
     public LiveData<ApiMovie> fetchMovieWithDetailsFromApi(int apiId) {

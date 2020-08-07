@@ -30,7 +30,7 @@
                 android:paddingTop="40dp">
 
                 <ImageView
-                    myImage="@{viewModel.movieLD.posterPath}"
+                    myImage="@{viewModel.movieFromRx.posterPath}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -52,7 +52,7 @@
                     android:background="@android:color/black"
                     android:onClick="@{()->viewModel.favouriteButtonClicked()}"
                     android:src="@drawable/ic_grade_black_24dp"
-                    android:tint="@{viewModel.movieLD.isFavourite()?@color/colorFavourite: @android:color/darker_gray}"
+                    android:tint="@{viewModel.movieFromRx.isFavourite()?@color/colorFavourite: @android:color/darker_gray}"
                     android:visibility="@{viewModel.isErrMsgVisible?View.INVISIBLE:View.VISIBLE}" />
 
                 <TextView
@@ -72,7 +72,7 @@
                 android:background="@android:color/black"
                 android:gravity="center"
                 android:paddingVertical="16dp"
-                android:text="@{viewModel.movieLD.originalTitle}"
+                android:text="@{viewModel.movieFromRx.originalTitle}"
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp"
                 android:visibility="@{viewModel.isErrMsgVisible?View.INVISIBLE:View.VISIBLE}" />
@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@{String.valueOf(viewModel.movieLD.apiId)}"
+                    android:text="@{String.valueOf(viewModel.movieFromRx.apiId)}"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:visibility="visible" />
@@ -101,16 +101,16 @@
                     android:text="@string/detail_rating"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:visibility="@{viewModel.movieLD.averageRating==0 ? View.GONE : View.VISIBLE}" />
+                    android:visibility="@{viewModel.movieFromRx.averageRating==0 ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
-                    android:text="@{String.valueOf(viewModel.movieLD.averageRating)}"
+                    android:text="@{String.valueOf(viewModel.movieFromRx.averageRating)}"
                     android:textSize="24sp"
-                    android:visibility="@{viewModel.movieLD.averageRating==0 ? View.GONE : View.VISIBLE}" />
+                    android:visibility="@{viewModel.movieFromRx.averageRating==0 ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -119,21 +119,21 @@
                     android:text="@string/detail_released_date"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:visibility="@{viewModel.movieLD.releaseDate == null || viewModel.movieLD.releaseDate.empty ? View.GONE : View.VISIBLE}" />
+                    android:visibility="@{viewModel.movieFromRx.releaseDate == null || viewModel.movieFromRx.releaseDate.empty ? View.GONE : View.VISIBLE}" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
-                    android:text="@{viewModel.movieLD.releaseDate}"
+                    android:text="@{viewModel.movieFromRx.releaseDate}"
                     android:textSize="24sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@{viewModel.movieLD.overview}"
+                    android:text="@{viewModel.movieFromRx.overview}"
                     android:textSize="24sp" />
 
 
@@ -154,8 +154,8 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/video_rv"
-                    adapterList="@{viewModel.movieLD.videosLD}"
-                    dynamicHeight="@{viewModel.movieLD.videosLD.size()}"
+                    adapterList="@{viewModel.movieFromRx.videosLD}"
+                    dynamicHeight="@{viewModel.movieFromRx.videosLD.size()}"
                     isFolded="@{viewModel.isVideoListFolded()}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -183,7 +183,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/reviews_rv"
-                    adapterList="@{viewModel.movieLD.reviewsLD}"
+                    adapterList="@{viewModel.movieFromRx.reviewsLD}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"

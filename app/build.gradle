@@ -89,4 +89,11 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    //rx
+    implementation "io.reactivex.rxjava3:rxjava:3.0.4"
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+//    implementation 'com.squareup.retrofit2:adapter-rxjava
+    implementation "com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0"
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.3.0-alpha06'
 }
